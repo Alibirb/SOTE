@@ -1,0 +1,11 @@
+Registering:
+	engine->RegisterGlobalProperty("CObject @g_object", &g_object);	// to register a global object. Note that the class type must have already been registered.
+	engine->RegisterGlobalProperty("int g_number", &g_number);	// Same method is used for integers and such, too. Note that you must always pass a pointer to whatever you really want to reference in AngelScript.
+	engine->RegisterObjectType("ref", 0, asOBJ_REF);	// To register a reference type class.
+		engine->RegisterObjectBehaviour("ref", asBEHAVE_FACTORY, "ref@ f()", asFUNCTION(Ref_Factory), asCALL_CDECL);	// To register the "factory function", which returns a new object of that type. Function must be a gloabl function (can be a static class method, though)
+		engine->RegisterObjectMethod("mytype", "void ClassMethod()", asMETHOD(MyClass, ClassMethod), asCALL_THISCALL);	// To register a class method
+		// Static methods should be registered as global functions
+		// Can register any method as a global function, just need to specify which object to use for it.
+		
+Scripts:
+	Uses object handles. Used very much like pointers, but specified with '@' instead of '*'.

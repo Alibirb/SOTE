@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="ScumOfTheEarth" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/ScumOfTheEarth" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/ScumOfTheEarth" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+			<Add directory="/usr/local/include" />
+			<Add directory="../Box2D_v2.3.0/Box2D" />
+		</Compiler>
+		<Linker>
+			<Add library="osg" />
+			<Add library="osgDB" />
+			<Add library="osgGA" />
+			<Add library="osgText" />
+			<Add library="osgViewer" />
+			<Add library="Box2D" />
+			<Add directory="/usr/local/lib" />
+			<Add directory="/usr/local/lib64" />
+			<Add directory="../ScumOfTheEarth" />
+			<Add directory="../Box2D_v2.3.0/Box2D/Box2D" />
+		</Linker>
+		<Unit filename="AngelScript.notes" />
+		<Unit filename="BaseCameraManipulator.cpp" />
+		<Unit filename="BaseCameraManipulator.h" />
+		<Unit filename="Box2DIntegration.cpp" />
+		<Unit filename="Box2DIntegration.h" />
+		<Unit filename="DebugDrawer.cpp" />
+		<Unit filename="DebugDrawer.h" />
+		<Unit filename="Enemy.cpp" />
+		<Unit filename="Enemy.h" />
+		<Unit filename="Entity.cpp" />
+		<Unit filename="Entity.h" />
+		<Unit filename="Item.cpp" />
+		<Unit filename="Item.h" />
+		<Unit filename="Level2D.cpp" />
+		<Unit filename="Level2D.h" />
+		<Unit filename="Notes.txt" />
+		<Unit filename="Player.cpp" />
+		<Unit filename="Player.h" />
+		<Unit filename="Projectile.cpp" />
+		<Unit filename="Projectile.h" />
+		<Unit filename="RandomGenerator.h" />
+		<Unit filename="Sprite.cpp" />
+		<Unit filename="Sprite.h" />
+		<Unit filename="TextDisplay.cpp" />
+		<Unit filename="TextDisplay.h" />
+		<Unit filename="Tile.cpp" />
+		<Unit filename="Tile.h" />
+		<Unit filename="TmxParser/Tmx.h" />
+		<Unit filename="TmxParser/TmxEllipse.cpp" />
+		<Unit filename="TmxParser/TmxEllipse.h" />
+		<Unit filename="TmxParser/TmxImage.cpp" />
+		<Unit filename="TmxParser/TmxImage.h" />
+		<Unit filename="TmxParser/TmxImageLayer.cpp" />
+		<Unit filename="TmxParser/TmxImageLayer.h" />
+		<Unit filename="TmxParser/TmxLayer.cpp" />
+		<Unit filename="TmxParser/TmxLayer.h" />
+		<Unit filename="TmxParser/TmxMap.cpp" />
+		<Unit filename="TmxParser/TmxMap.h" />
+		<Unit filename="TmxParser/TmxMapTile.h" />
+		<Unit filename="TmxParser/TmxObject.cpp" />
+		<Unit filename="TmxParser/TmxObject.h" />
+		<Unit filename="TmxParser/TmxObjectGroup.cpp" />
+		<Unit filename="TmxParser/TmxObjectGroup.h" />
+		<Unit filename="TmxParser/TmxPoint.h" />
+		<Unit filename="TmxParser/TmxPolygon.cpp" />
+		<Unit filename="TmxParser/TmxPolygon.h" />
+		<Unit filename="TmxParser/TmxPolyline.cpp" />
+		<Unit filename="TmxParser/TmxPolyline.h" />
+		<Unit filename="TmxParser/TmxPropertySet.cpp" />
+		<Unit filename="TmxParser/TmxPropertySet.h" />
+		<Unit filename="TmxParser/TmxTile.cpp" />
+		<Unit filename="TmxParser/TmxTile.h" />
+		<Unit filename="TmxParser/TmxTileset.cpp" />
+		<Unit filename="TmxParser/TmxTileset.h" />
+		<Unit filename="TmxParser/TmxUtil.cpp" />
+		<Unit filename="TmxParser/TmxUtil.h" />
+		<Unit filename="TmxParser/adler32.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="TmxParser/base64/base64.cpp" />
+		<Unit filename="TmxParser/base64/base64.h" />
+		<Unit filename="TmxParser/compress.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="TmxParser/crc32.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="TmxParser/crc32.h" />
+		<Unit filename="TmxParser/deflate.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="TmxParser/deflate.h" />
+		<Unit filename="TmxParser/gzclose.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="TmxParser/gzguts.h" />
+		<Unit filename="TmxParser/gzlib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="TmxParser/gzread.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="TmxParser/gzwrite.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="TmxParser/infback.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="TmxParser/inffast.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="TmxParser/inffast.h" />
+		<Unit filename="TmxParser/inffixed.h" />
+		<Unit filename="TmxParser/inflate.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="TmxParser/inflate.h" />
+		<Unit filename="TmxParser/inftrees.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="TmxParser/inftrees.h" />
+		<Unit filename="TmxParser/tinystr.cpp" />
+		<Unit filename="TmxParser/tinystr.h" />
+		<Unit filename="TmxParser/tinyxml.cpp" />
+		<Unit filename="TmxParser/tinyxml.h" />
+		<Unit filename="TmxParser/tinyxmlerror.cpp" />
+		<Unit filename="TmxParser/tinyxmlparser.cpp" />
+		<Unit filename="TmxParser/trees.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="TmxParser/trees.h" />
+		<Unit filename="TmxParser/uncompr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="TmxParser/zconf.h" />
+		<Unit filename="TmxParser/zlib.h" />
+		<Unit filename="TmxParser/zutil.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="TmxParser/zutil.h" />
+		<Unit filename="TwoDimensionalCameraManipulator.cpp" />
+		<Unit filename="TwoDimensionalCameraManipulator.h" />
+		<Unit filename="Weapon.cpp" />
+		<Unit filename="Weapon.h" />
+		<Unit filename="globals.h" />
+		<Unit filename="input.cpp" />
+		<Unit filename="main.cpp" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

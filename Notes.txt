@@ -1,0 +1,63 @@
+Basics:
+	Action-adventure game.
+
+TODO:
+	Physics:
+		Debug drawing
+		Improve integration with OSG.
+	Figure out the coordinate system. Currently, it's y-down, because that's how the tile map works. But I really don't like that too much. It's awkward.
+	Stuff for first playable
+	Add AngelScript scripting--		NOW!! So I can set up a startup script to run for testing purposes.
+		AngelScript seems like the best solution. For one thing, it's strongly typed and has a C-like syntax, so there's familiarity. In addition, though, it'll just be easier. It was designed to integrate well with C++, and you don't need to do much extra work to expose C++ functions to AngelScript, which is pretty essential if I want the flexibility to code with either language. Can use C++ for core functionality, and run scripts where necessary for anything that's likely to change (eg AI).
+	Cleanup:
+		Header files should only contain the declarations.
+	Input:
+		Should be able to register a function to be executed on key press/release.
+	Use a game clock that's separate from the real-time clock. For debugging purposes. Allows to run the game in slow/fast motion.
+	Development cheats
+	Fix z-location of objects.
+
+BUGS:
+	input handler does not respond to releasing a key if Ctrl is pressed. Most likely due to the way OSG reports the button. I think it's a different value if a modkey is pressed.
+
+
+Useful notes:
+	Entity systems:
+		Rationalization for entities instead of traditional class-based system is that in most applications, the behavior of objects doesn't change, but in games, an object could change roles (e.g. an enemy is stunned and no longer attacks). An entity-component system allows behavior to be changed during runtime simply by adding and removing components.
+
+Scripting Uses:
+	Input-- so that options can be set more easily. In addition to the standard key bindings, it'll also be possible to define custom controls that depend on more than a single binding.
+	AI?
+	Weapons/attacks/enemies
+	Main usage is for me, but there may be some things that players will want to customize. Granted, using AngelScript makes it a bit more difficult for non-programmers, but honestly, nobody's gonna get this game, anyway.
+	"you want to expose capable, but soulless actors to your scripting code. The scripting code describes what the actors should do, but the C++ code takes care of the how."	-- http://stackoverflow.com/questions/609076/the-role-of-scripting-languages-in-game-programming
+
+Expose to scripting:
+	Camera control?
+
+
+Innovative combat system:
+	Rather than simply hand the player a bunch of weapons, you're given tools to make your own. You get various weapon bodies that you add some kind of magic power source to, and it creates an elemental weapon. A lot of enemies have some sort of immunity, so you need to think about what attack you use. Often, attacks must be chained, e.g. freeze the enemy, then shatter them.
+	Not sure how far to go with this. Could just have body + magic = weapon, or could provide a more flexible system that allows people to experiment and design new weapons, controlling not just element and weapon type, but properties like fire rate, power, etc. For example, you might be able to alter the component that interacts with the magic power source, and overclock it to get more power or faster firing. I think it could be a pretty awesome system.
+	Power sources:
+		Phoenix feather-- Fire. Also good for healing.
+
+
+Goals:
+	First playable-- demo level demonstrating basic functionality.
+		Functionality:
+			Combat
+			Weapon system
+			Basic enemy AI-- look for the player, and try to kill him.
+			Tilemap rendering-- DONE!!!
+			Scripting?-- Eventually, enemies are probably going to use scripting, so depending on how advanced I make the first playable enemies, I may want to implement scripting as part of this phase.
+			Physics?
+		Assets:
+			Enemies-- at least two types, killed in different ways
+			Weapons-- at least one body, at least two power sources.
+			Basic tilemap
+
+
+Stuff Learned:
+	Tile maps:
+		To avoid bad edges, set filtering to "Nearest", meaning that GL shouldn't try any antialiasing.
