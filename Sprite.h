@@ -20,7 +20,6 @@ private:
 	osg::Vec3 position;
 
 public:
-	//osg::Geometry* geometry;
 
 	Sprite(std::string imageName = "test.png", float x = 0.0, float y = 0.0, float z = 0.0)
 	{
@@ -43,7 +42,6 @@ public:
 		position = osg::Vec3(x, y, z);
 		width = 1.0;
 		height = 1.0;
-		//this->geometry = geometry;
 		this->addDrawable(geometry);
 	}
 

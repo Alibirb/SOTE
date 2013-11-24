@@ -2,40 +2,27 @@
 #define LEVEL2D_H
 
 
-
 #include "TmxParser/Tmx.h"
 #include "Box2D/Box2D.h"
 
 
-#include "Tile.h"
 #include "Box2DIntegration.h"
 #include "DebugDrawer.h"
+#include "TiledMap.h"
 
-/*
-Bugs:
-	Code does not account for maps with multiple tilesets
-*/
 
+
+/// Class for a 2D level.
 class Level2D
 {
 private:
 	b2World *physicsWorld;
 	b2Vec2 gravity;
 	DebugDrawer *debugDrawer;
+	TiledMap *tiledMap;
 
 public:
-	int sizeX, sizeY;
-	int numLayers;
-	std::vector<std::vector<std::vector<Tile*> > > tiles;
-	osg::Geode *geode;
-	Tmx::Map *tiledMap;
-	bool usesTmx;
-	osg::StateSet* state;
-
 	Level2D(std::string mapFilename);
-
-	Tile* createTile(const osg::Vec3& corner, float width, float height, int gid);
-	osg::Vec2Array* getTextureCoordinates(int gid);
 
 	b2World* getPhysicsWorld() {
 		return physicsWorld;

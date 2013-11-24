@@ -20,11 +20,6 @@ void Player::setPosition(osg::Vec3 newPosition) {
 
 void Player::processMovementControls(osg::Vec3 controlVector)
 {
-#define Y_DOWN_2D_COORDINATE_SYSTEM
-
-#ifdef Y_DOWN_2D_COORDINATE_SYSTEM
-	controlVector.set(controlVector.x(), -controlVector.y(), controlVector.z());
-#endif
 
 	osg::Vec3 movementVector = controlVector * maxSpeed * getDeltaTime();
 

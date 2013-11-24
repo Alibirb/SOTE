@@ -19,12 +19,15 @@ private:
 	float minZoom = .01;
 	float maxZoom = 100.0;
 	bool followPlayer;
+	bool ThreeDRotationOn;
 public:
 	TwoDimensionalCameraManipulator()
 	{
-		this->setHomePosition( osg::Vec3(0.0, 0.0, -1.0), osg::Vec3(0.0, 0.0, 10.0), osg::Vec3(0.0, -1.0, 0.0));
+		_up = osg::Vec3(0.0, 1.0, 0.0);
+		this->setHomePosition( osg::Vec3(0.0, 0.0, 1.0), osg::Vec3(0.0, 0.0, 0.0), _up);
 		this->setTransformation(_homeEye, _homeCenter, _homeUp);
 		currentZoom = 1.0f;
+		followPlayer = true;
 		updateProjectionMatrix();
 	}
 
@@ -68,6 +71,39 @@ public:
 			dx += scrollAmount;
 		translate(dx, dy);
 		*/
+
+		osg::Vec3d eye;
+		osg::Vec3d center;
+		osg::Vec3d up;
+
+		getTransformation(eye,center,up);
+
+		getDebugDisplayer()->addText("CameraManipulator eye vector: ");
+		getDebugDisplayer()->addText(eye);
+		getDebugDisplayer()->addText("\n");
+		getDebugDisplayer()->addText("CameraManipulator center: ");
+		getDebugDisplayer()->addText(center);
+		getDebugDisplayer()->addText("\n");
+		getDebugDisplayer()->addText("CameraManipulator up vector: ");
+		getDebugDisplayer()->addText(up);
+		getDebugDisplayer()->addText("\n");
+
+
+		//osg::Vec3f eye;
+		osg::Vec3d dir;
+		//osg::Vec3f up;
+
+		viewer.getCamera()->getViewMatrixAsLookAt(eye,dir,up);
+
+		getDebugDisplayer()->addText("Camera eye vector: ");
+		getDebugDisplayer()->addText(eye);
+		getDebugDisplayer()->addText("\n");
+		getDebugDisplayer()->addText("Camera look at position: ");
+		getDebugDisplayer()->addText(dir);
+		getDebugDisplayer()->addText("\n");
+		getDebugDisplayer()->addText("Camera up vector: ");
+		getDebugDisplayer()->addText(up);
+		getDebugDisplayer()->addText("\n");
 
 		return false;
 	}
@@ -139,10 +175,33 @@ public:
 			return true;
 
 		case osgGA::GUIEventAdapter::MIDDLE_MOUSE_BUTTON :
-			osg::Vec3 eye = osg::Vec3(-10.0, 0.0, -0.1);
-			eye.normalize();
-			this->setTransformation(eye, osg::Vec3(5.0, 5.0, 5.0), osg::Vec3(0.0, -1.0, 0.0));
-			us.requestRedraw();
+			return false;
+		}
+		return false;
+	}
+
+	bool handleMouseDrag(const GUIEventAdapter& ea, GUIActionAdapter& aa)
+	{
+		if (ea.getButtonMask() == GUIEventAdapter::MIDDLE_MOUSE_BUTTON)
+		{
+			int windowCenterX = (ea.getXmin() + ea.getXmax()) / 2.0f;
+			int windowCenterY = (ea.getYmin() + ea.getYmax()) / 2.0f;
+			float dx = ea.getX() - windowCenterX;
+			float dy = ea.getY() - windowCenterY;
+
+			if( dx == 0.f && dy == 0.f ) return false;	// if there's no movement, return now.
+
+			centerMousePointer( ea, aa );
+
+			_azimuth -= dx * .001;
+			_zenith -= dy * .001;
+			/*if ( _zenith < zenithMin) zenith = zenithMin;
+			else if ( zenith > zenithMax) zenith = zenithMax;
+			if ( _azimuth >= 2 * pi ) azimuth -= 2 * pi;
+			else if ( azimuth < 0 ) azimuth += 2 * pi;
+*/
+			setRotation(_azimuth, _zenith);
+			//calculateRotation();
 			return true;
 		}
 		return false;

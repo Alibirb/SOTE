@@ -5,7 +5,6 @@ TODO:
 	Physics:
 		Debug drawing
 		Improve integration with OSG.
-	Figure out the coordinate system. Currently, it's y-down, because that's how the tile map works. But I really don't like that too much. It's awkward.
 	Stuff for first playable
 	Add AngelScript scripting--		NOW!! So I can set up a startup script to run for testing purposes.
 		AngelScript seems like the best solution. For one thing, it's strongly typed and has a C-like syntax, so there's familiarity. In addition, though, it'll just be easier. It was designed to integrate well with C++, and you don't need to do much extra work to expose C++ functions to AngelScript, which is pretty essential if I want the flexibility to code with either language. Can use C++ for core functionality, and run scripts where necessary for anything that's likely to change (eg AI).
@@ -15,7 +14,6 @@ TODO:
 		Should be able to register a function to be executed on key press/release.
 	Use a game clock that's separate from the real-time clock. For debugging purposes. Allows to run the game in slow/fast motion.
 	Development cheats
-	Fix z-location of objects.
 
 BUGS:
 	input handler does not respond to releasing a key if Ctrl is pressed. Most likely due to the way OSG reports the button. I think it's a different value if a modkey is pressed.

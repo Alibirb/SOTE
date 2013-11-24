@@ -1,0 +1,3 @@
+Eye: the position of the camera
+Center: the point the camera is looking at
+up: the up vector

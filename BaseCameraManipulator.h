@@ -3,6 +3,7 @@
 
 
 #include "osgGA/CameraManipulator"
+#include "osg/Quat"
 #include "globals.h"
 
 using namespace osgGA;
@@ -10,15 +11,19 @@ using namespace osg;
 
 class BaseCameraManipulator : public osgGA::CameraManipulator
 {
-private:
+protected:
 	float currentZoom;
 	float scrollAmount = .25f;
 
 	osg::Vec3d _center;	// The point the camera is centered on
 	osg::Quat _rotation;	// the rotation around the center
 	double _distance;	// The distance from the center
+	osg::Vec3d _up;		// the up axis
 
 	bool _verticalAxisFixed;	// Whether to fix the up vector.
+
+	double _azimuth = 0.0;	// heading
+	double _zenith = pi/4;	// inclination angle
 
 public:
 
@@ -41,6 +46,8 @@ public:
 	void setByInverseMatrix(const osg::Matrixd& matrix) {
 		setByMatrix( osg::Matrixd::inverse( matrix ) );
 	}
+
+
 	osg::Matrixd getMatrix() const {
 		return osg::Matrixd::translate( 0, 0, _distance) *
 				osg::Matrixd::rotate(_rotation) *
@@ -120,7 +127,6 @@ public:
 		rotation = _rotation;
 	}
 
-
 	void setTransformation( const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up )
 	{
 		Vec3d lv( center - eye );
@@ -175,6 +181,19 @@ public:
 	{
 		setTransformation( _homeEye, _homeCenter, _homeUp );
 		aa.requestRedraw();
+	}
+
+	/// Set the rotation based on azimuth (heading) and zenith (inclination)
+	virtual void setRotation(double azimuth, double zenith)
+	{
+		_rotation =  osg::Quat(zenith, osg::Vec3(1,0,0)) * osg::Quat(azimuth, _up);
+	}
+
+	void centerMousePointer(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa)
+	{
+		int windowCenterX = (ea.getXmin() + ea.getXmax()) / 2.0f;
+		int windowCenterY = (ea.getYmin() + ea.getYmax()) / 2.0f;
+		aa.requestWarpPointer( windowCenterX, windowCenterY);
 	}
 
 

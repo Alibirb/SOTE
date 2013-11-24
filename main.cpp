@@ -100,6 +100,10 @@ int main()
 		frameRateStream << "FPS: " << (fpsTotal / fpsArrayLength) << std::endl;
 		getDebugDisplayer()->addText(frameRateStream);
 
+		std::ostringstream playerCoordinatesStream;
+		playerCoordinatesStream << "Player: " << getActivePlayer()->getPosition().x() << ", " << getActivePlayer()->getPosition().y() << ", " << getActivePlayer()->getPosition().z() << std::endl;
+		getDebugDisplayer()->addText(playerCoordinatesStream);
+
 		viewer.frame();
 
 		removeDeadEntities();

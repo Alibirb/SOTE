@@ -43,6 +43,10 @@ public:
 	{
 		stream << newText;
 	}
+	void addText(osg::Vec3 coordinates)
+	{
+		stream << coordinates.x() << ", " << coordinates.y() << ", " << coordinates.z();
+	}
 };
 
 class TextGeodeCallback : public osg::NodeCallback
