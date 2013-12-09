@@ -1,22 +1,23 @@
 #include "Sprite.h"
 
-/// create quad at specified position.
-osg::Geometry* Sprite::createSquare(const osg::Vec3& corner,const osg::Vec3& width,const osg::Vec3& height, osg::Image* image)
+/// create quad of the specified size
+osg::Geometry* Sprite::createSquare(const osg::Vec3& corner, double width, double height, osg::Image* image)
 {
     // set up the Geometry.
-    osg::Geometry* geom = new osg::Geometry;
+    osg::Geometry* geom = new osg::Geometry();
 
     osg::Vec3Array* coords = new osg::Vec3Array(4);
     (*coords)[0] = corner;
-    (*coords)[1] = corner+width;
-    (*coords)[2] = corner+width+height;
-    (*coords)[3] = corner+height;
+    (*coords)[1] = corner+osg::Vec3(width, 0, 0);
+    (*coords)[2] = corner+osg::Vec3(width, height, 0);
+    (*coords)[3] = corner+osg::Vec3(0, height, 0);
 
 
     geom->setVertexArray(coords);
 
     osg::Vec3Array* norms = new osg::Vec3Array(1);
-    (*norms)[0] = width^height;
+    // (*norms)[0] = width^height;
+    (*norms)[0] = osg::Vec3(0, 0, 1);
     (*norms)[0].normalize();
 
     geom->setNormalArray(norms, osg::Array::BIND_OVERALL);

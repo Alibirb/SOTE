@@ -3,9 +3,13 @@
 std::list<Enemy*> enemyList;
 
 
-Enemy::Enemy(std::string name, osg::Vec3 position) : Entity(name, position)
+Enemy::Enemy(std::string name, osg::Vec3 position) : Entity(name, position, DEFAULT_ENEMY_IMAGE)
 {
 	addEnemy(this);	// put this Enemy in the enemyList.
+	Box2DUserData *userData = new Box2DUserData;
+	userData->owner = this;
+	userData->ownerType = "Enemy";
+	physicsBody->SetUserData(userData);
 }
 
 Enemy::~Enemy()
@@ -24,9 +28,8 @@ void Enemy::takeDamage(float amount)
 	if (health <= 0.0)
 	{
 		this->state = dead;
-		//markEntityForRemoval(this);	// Cannot call delete on itself, so must flag for deletion instead.
+		markForRemoval(this, "Enemy");	// this may not be a safe time to delete the enemy (for instance, if we're in the middle of running physics), so simply mark this for deletion at a safer time.
 		std::cout << this->name << " has died" << std::endl;
-		delete this;
 	}
 }
 

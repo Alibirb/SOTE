@@ -7,6 +7,8 @@
 #include <osgDB/FileUtils>
 #include <osg/Texture2D>
 
+#define DEFAULT_SPRITE_IMAGE "test.png"
+
 /**
  * Class for a sprite.
  * Extends osg::Geode so it can be used in the same manner as a 3D model node.
@@ -14,39 +16,48 @@
 class Sprite : public osg::Geode
 {
 private:
-	osg::Geometry* createSquare(const osg::Vec3& corner,const osg::Vec3& width,const osg::Vec3& height, osg::Image* image=NULL);
+	osg::Geometry* createSquare(const osg::Vec3& corner, double width, double height, osg::Image* image=NULL);
 	float width;
 	float height;
-	osg::Vec3 position;
 
 public:
 
-	Sprite(std::string imageName = "test.png", float x = 0.0, float y = 0.0, float z = 0.0)
+	Sprite(std::string imageName = DEFAULT_SPRITE_IMAGE, float width = 1.0, float height = 1.0)
 	{
-		position = osg::Vec3(x, y, z);
-		width = 1.0;
-		height = 1.0;
-		this->addDrawable(createSquare( position, osg::Vec3(1.0f, 0.0f, 0.0f), osg::Vec3(0.0f,1.0f,0.0f), osgDB::readImageFile(imageName)));
+		osg::Vec3 position = osg::Vec3(0, 0, 0);
+		this->width = width;
+		this->height = height;
+		this->addDrawable(createSquare(position, width, height, osgDB::readImageFile(imageName)));
+		setTransparent(true);
 	}
 
-	Sprite(osg::Image* image, float x, float y, float z = 0.0)
-	{
-		position = osg::Vec3(x, y, z);
-		width = 1.0;
-		height = 1.0;
-		this->addDrawable(createSquare( position, osg::Vec3(1.0f, 0.0f, 0.0f), osg::Vec3(0.0f,1.0f,0.0f), image));
-	}
 
-	Sprite(osg::Geometry* geometry, float x, float y, float z = 0.0)
+	/// Sets the offset of the sprite.
+	void setOffset(osg::Vec3 offset)
 	{
-		position = osg::Vec3(x, y, z);
-		width = 1.0;
-		height = 1.0;
-		this->addDrawable(geometry);
+		//TODO
 	}
 
 	osg::Geometry* getGeometry() {
 		return this->getDrawable(0)->asGeometry();
+	}
+
+	void setImage(std::string imageFilename)
+	{
+		osg::Texture2D* texture = new osg::Texture2D;
+        texture->setImage(osgDB::readImageFile(imageFilename));
+		getGeometry()->getStateSet()->setTextureAttributeAndModes(0,texture,osg::StateAttribute::ON);
+	}
+
+	/// Set whether the sprite should be transparent.
+	void setTransparent(bool transparent)
+	{
+		if(transparent)
+		{
+			this->getGeometry()->getStateSet()->setRenderBinDetails(1, "transparent");	// Use a different rendering bin that gets rendered after the default one
+			this->getGeometry()->getStateSet()->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);	// Tell OpenGL that this is a transparent bin, and thus everything should be rendered back-to-front
+		}
+		// TODO: reverse this to set sprite as opaque.
 	}
 };
 

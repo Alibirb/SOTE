@@ -6,16 +6,18 @@ std::string activePlayerName;
 std::map<std::string, Player*> playerList;
 #endif
 
-Player::Player(std::string name, osg::Vec3 position) : Entity(name, position)
+Player::Player(std::string name, osg::Vec3 position) : Entity(name, position, DEFAULT_PLAYER_IMAGE)
 {
 	modelNode->setUpdateCallback(new PlayerNodeCallback(this));
 	equipWeapon(new Weapon());
-	equipedWeapon->setPosition(position);
+	//equipedWeapon->setPosition(position);
+	transformNode->addChild(equipedWeapon->getTransformNode());
 }
 
 void Player::setPosition(osg::Vec3 newPosition) {
-	transformNode->setPosition(newPosition);
-	equipedWeapon->setPosition(newPosition);
+	//transformNode->setPosition(newPosition);
+	Entity::setPosition(newPosition);
+	//equipedWeapon->setPosition(newPosition);
 }
 
 void Player::processMovementControls(osg::Vec3 controlVector)
@@ -23,7 +25,10 @@ void Player::processMovementControls(osg::Vec3 controlVector)
 
 	osg::Vec3 movementVector = controlVector * maxSpeed * getDeltaTime();
 
-	this->setPosition(getPosition() + movementVector);
+	//this->setPosition(getPosition() + movementVector);
+
+	physicsBody->SetLinearVelocity(maxSpeed * toB2Vec2(controlVector));
+
 	/*
 	osg::Vec3 worldMovement = cameraToWorldTranslation(controlVector);
 	if ( worldMovement.length() > 1.0f ) worldMovement.normalize();

@@ -19,14 +19,52 @@ osgViewer::Viewer viewer;
 int windowWidth, windowHeight;
 double deltaTime;
 
-double getDeltaTime() {
+void logError(std::string errorMessage)
+{
+	std::cout << errorMessage;
+}
+
+double getDeltaTime()
+{
 	return deltaTime;
+}
+
+double sind(double x) {
+	return sin(x*pi/180);
+}
+double cosd(double x) {
+	return cos(x*pi/180);
+}
+double tand(double x) {
+	return tan(x*pi/180);
+}
+double asind(double x) {
+	return asin(x) * 180/pi;
+}
+double acosd(double x) {
+	return acos(x) * 180/pi;
+}
+double atand(double x) {
+	return atan(x) * 180/pi;
+}
+
+
+osg::Vec3 getWorldCoordinates(osg::Node *node)
+{
+	osg::Vec3 localPosition;
+	if(node->asTransform() != 0)
+		if(node->asTransform()->asPositionAttitudeTransform() != 0)
+			localPosition = node->asTransform()->asPositionAttitudeTransform()->getPosition();
+	if (node->getNumParents() == 0)
+		return localPosition;	// No parents, which means this is the root node. Or it's not attached to the scene graph. In either case, this is the last node we look at.
+	else
+		return localPosition + getWorldCoordinates(node->getParent(0));	// Add on the position of the parent node.
 }
 
 
 int main()
 {
-    root = new osg::Group();
+	root = new osg::Group();
 	lightGroup = new osg::Group();
 	root->addChild(lightGroup);
 
@@ -85,6 +123,9 @@ int main()
 		frame_tick = now_tick;
 
 		getCurrentLevel()->getPhysicsWorld()->Step(deltaTime, 6, 2);
+		getCurrentLevel()->getDebugDrawer()->beginDraw();
+		getCurrentLevel()->getPhysicsWorld()->DrawDebugData();
+		getCurrentLevel()->getDebugDrawer()->endDraw();
 
 		if (deltaTime > 0)
 		{
@@ -97,16 +138,20 @@ int main()
 
 		std::ostringstream frameRateStream;
 		frameRateStream << "FPS: " << (1 / deltaTime) << "(current)" << std::endl;
-		frameRateStream << "FPS: " << (fpsTotal / fpsArrayLength) << std::endl;
+		frameRateStream << "FPS: " << (fpsTotal / fpsArrayLength) << "(average)"<< std::endl;
 		getDebugDisplayer()->addText(frameRateStream);
 
 		std::ostringstream playerCoordinatesStream;
 		playerCoordinatesStream << "Player: " << getActivePlayer()->getPosition().x() << ", " << getActivePlayer()->getPosition().y() << ", " << getActivePlayer()->getPosition().z() << std::endl;
 		getDebugDisplayer()->addText(playerCoordinatesStream);
 
+		//std::ostringstream weaponStream;
+		//weaponStream << "Weapon angle: " << getActivePlayer()->getWeapon()->getTransformNode()->getAttitude() << std::endl;
+		//getDebugDisplayer()->addText(weaponStream);
+
 		viewer.frame();
 
-		removeDeadEntities();
+		removeExpiredObjects();
 
 	}
 	return 0;

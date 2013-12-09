@@ -3,6 +3,8 @@
 
 #include "Entity.h"
 
+#define DEFAULT_ENEMY_IMAGE "enemy.png"
+
 class Enemy : public Entity
 {
 protected:

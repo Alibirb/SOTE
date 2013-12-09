@@ -8,6 +8,8 @@
 
 #define MULTIPLE_PLAYERS
 
+#define DEFAULT_PLAYER_IMAGE "player.png"
+
 
 class Player : public Entity
 {
@@ -42,6 +44,14 @@ public:
 
 	void equipWeapon(Weapon *theWeapon) {
 		equipedWeapon = theWeapon;
+	}
+
+	void aimWeapon(Enemy *theOneWhoMustDie) {
+		equipedWeapon->aimAt(theOneWhoMustDie->getPosition());
+	}
+
+	Weapon* getWeapon() {
+		return equipedWeapon;
 	}
 
 	virtual ~Player(){};

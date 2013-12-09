@@ -25,6 +25,7 @@
 
 #include "TextDisplay.h"
 #include "RandomGenerator.h"
+#include "ExpiredObjectRemoval.h"
 
 
 
@@ -46,8 +47,17 @@ extern int windowWidth;
 extern int windowHeight;
 extern double deltaTime;
 
+void logError(std::string errorMessage);
+
+double sind(double x);
+double cosd(double x);
+double tand(double x);
+double asind(double x);
+double acosd(double x);
+double atand(double x);
 
 
+osg::Vec3 getWorldCoordinates(osg::Node *node);
 
 double getDeltaTime();
 

@@ -13,8 +13,11 @@
 
 #include "globals.h"
 #include "Sprite.h"
+#include "Box2D/Box2D.h"
+#include "Box2DIntegration.h"
 
 
+#define DEFAULT_ENTITY_IMAGE "test.png"
 
 class Entity
 {
@@ -26,6 +29,8 @@ public:
 	osg::Geode *modelNode;
 	osg::PositionAttitudeTransform *transformNode;
 	float maxSpeed = 3.0f;
+	b2Body *physicsBody;
+	osg::Vec3 box2DToOsgAdjustment;	//adjustment between the visual and physical components
 
 
 	enum State {
@@ -34,7 +39,7 @@ public:
 
 	State state;
 
-	Entity(std::string name, osg::Vec3 position);
+	Entity(std::string name, osg::Vec3 position, std::string imageFilename = DEFAULT_ENTITY_IMAGE);
 
 	virtual void jump();
 
@@ -49,36 +54,10 @@ public:
 	}
 	virtual void setPosition(osg::Vec3 newPosition) {
 		transformNode->setPosition(newPosition);
-	}
-/*
-	double getHeading()
-	{
-		double angle;
-		osg::Vec3 axis;
-		transformNode->getAttitude().getRotate(angle, axis);
-		if (axis == osg::Vec3(0,0,1))	// make sure the rotation is only around the z-axis. If it's not, this will crash the program, because nothing is returned.
-		{
-			return angle;
-		}
-		//FIXME: this will crash if the rotation isn't centered on the z-axis.
-	}
-	void setHeading(double angle)
-	{
-		this->setAttitude(osg::Quat(angle, osg::Vec3(0,0,1)));
+		physicsBody->SetTransform(toB2Vec2(newPosition - box2DToOsgAdjustment), physicsBody->GetAngle());
 	}
 
-	const osg::Quat& getAttitude()
-	{
-		return transformNode->getAttitude();
-	}
-	void setAttitude(const osg::Quat& newAttitude)
-	{
-		transformNode->setAttitude(newAttitude);
-	}
-*/
 };
 
-void removeDeadEntities();
-void markEntityForRemoval(Entity *toBeEXTERMINATED);
 
 #endif /* ENTITY_H_ */

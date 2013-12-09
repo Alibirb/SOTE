@@ -1,11 +1,24 @@
 #include "Item.h"
 
-Item::Item()
+Item::Item(std::string imageFilename)
 {
-	//ctor
+	sprite = new Sprite(imageFilename);
+	transformNode = new osg::PositionAttitudeTransform();
+	transformNode->addChild(sprite);
+	//root->addChild(transformNode);
 }
 
 Item::~Item()
 {
-	//dtor
+	transformNode->getParent(0)->removeChild(transformNode);	// remove the node from the scenegraph.
+}
+
+Sprite* Item::getSprite()
+{
+	return sprite;
+}
+
+osg::PositionAttitudeTransform* Item::getTransformNode()
+{
+	return transformNode;
 }

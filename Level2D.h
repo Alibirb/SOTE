@@ -9,6 +9,7 @@
 #include "Box2DIntegration.h"
 #include "DebugDrawer.h"
 #include "TiledMap.h"
+#include "PhysicsContactListener.h"
 
 
 
@@ -26,6 +27,9 @@ public:
 
 	b2World* getPhysicsWorld() {
 		return physicsWorld;
+	}
+	DebugDrawer* getDebugDrawer() {
+		return debugDrawer;
 	}
 
 protected:

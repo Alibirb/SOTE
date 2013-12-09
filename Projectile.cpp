@@ -1,48 +1,57 @@
 #include "Projectile.h"
 #include "Level2D.h"
-
+#include "PhysicsNodeCallback.h"
 
 
 Projectile::Projectile(osg::Vec3 startingPosition, osg::Vec3 heading)
 {
 	position = startingPosition;
+	heading.normalize();
 	this->heading = heading;
-	sprite = new Sprite(DEFAULT_PROJECTILE_IMAGE);
+	width = .5;
+	height = .5;
+	sprite = new Sprite(DEFAULT_PROJECTILE_IMAGE, width, height);
 	transformNode = new osg::PositionAttitudeTransform();
 	transformNode->setPosition(position);
 	transformNode->addChild(sprite);
 	root->addChild(transformNode);
-	transformNode->setUpdateCallback(new ProjectileNodeCallback(this));
+
+	box2DToOsgAdjustment = osg::Vec3(-width/2, -height/2, 0.0);
 
 	b2BodyDef bodyDef;
 	bodyDef.type = b2_dynamicBody;
-	bodyDef.position.Set(position.x(), position.y());
+	bodyDef.position.Set(position.x() + .5, position.y() +.5);
 	physicsBody = getCurrentLevel()->getPhysicsWorld()->CreateBody(&bodyDef);
 	b2PolygonShape collisionBox;
-	collisionBox.SetAsBox(1.0f, 1.0f);
-	physicsBody->CreateFixture(&collisionBox, 0.0f);
+	collisionBox.SetAsBox(width/2, height/2);	// half-extents
+	b2FixtureDef fixtureDef;
+	fixtureDef.shape = &collisionBox;
+	fixtureDef.density = 1.0f;
+	fixtureDef.friction = 0.3f;
+	physicsBody->CreateFixture(&fixtureDef);
+	physicsBody->SetLinearVelocity(toB2Vec2(heading));
+	Box2DUserData *userData = new Box2DUserData;
+	userData->owner = this;
+	userData->ownerType = "Projectile";
+	physicsBody->SetUserData(userData);
+
+
+	transformNode->setUpdateCallback(new PhysicsNodeCallback(transformNode, physicsBody, box2DToOsgAdjustment));
+
 }
 
 Projectile::~Projectile()
 {
-	//dtor
+	getCurrentLevel()->getPhysicsWorld()->DestroyBody(physicsBody);
+}
+
+void Projectile::onCollision()
+{
+	markForRemoval(this, "Projectile");
 }
 
 void Projectile::setPosition(osg::Vec3 position)
 {
 	this->position = position;
-}
-
-void Projectile::advance()
-{
-	//position += heading *.01;
-	transformNode->setPosition(osg::Vec3(physicsBody->GetPosition().x, physicsBody->GetPosition().y, transformNode->getPosition().z()));
-}
-
-
-void ProjectileNodeCallback::operator()(osg::Node* node, osg::NodeVisitor* nv)
-{
-	projectile->advance();
-
-	traverse(node, nv);	// need to call this so scene graph traversal continues.
+	this->transformNode->setPosition(position);
 }

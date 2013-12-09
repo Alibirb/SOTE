@@ -2,13 +2,31 @@
 #define DEBUGDRAWER_H
 
 #include "Box2D/Common/b2Draw.h"
+#include "Box2DIntegration.h"
+#include "osg/Geometry"
 
 
 class DebugDrawer : public b2Draw
 {
+private:
+	//osg::ref_ptr<osg::Group> _group;
+	//osg::ref_ptr<osg::Geode> _geode;
+	//osg::ref_ptr<osg::Geometry> _lineGeometry;
+	osg::Group* _group;
+	osg::Geode* _geode;
+	osg::Geometry* _lineGeometry;
+	osg::Vec3Array* _lineVertices;
+	osg::Vec4Array* _lineColors;
+
+	float drawZCoordinate = 1.0;	// The z-coordinate to place the debug drawing.
+	bool active;
+
 public:
 	DebugDrawer();
 	virtual ~DebugDrawer();
+
+	void beginDraw();
+	void endDraw();
 
 	/// Draw a closed polygon provided in CCW order.
 	void DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color);
