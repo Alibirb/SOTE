@@ -2,20 +2,22 @@ Basics:
 	Action-adventure game. Also developing a core system that can be reused in other games.
 
 Plot: (this is long-winded right now)
-	An alien ship crashed on Earth (or the alien landed safely, and something happened to them later.) The alien's body was destroyed, but they survived inside a backup device. The device is intended solely for transferring to a new body, and isn't a suitable long-term solution. Someone eventually discovered the alien, though, and managed to establish communications with them. The alien's species has discovered methods to combine magic and electronics/computers, but insists on a suitable replacement body before sharing anything. The ideal body is one of a living child. Dead bodies are tough to reanimate (and tend to be of bad quality), and adult bodies have finished growing, so they're harder to adapt. So, the guy that found the alien kidnaps some kids and offers them up("How can we pass up this opportunity? Surely one child is an acceptable sacrifice for this kind of knowledge"). The alien picks one, begins the transfer process... and then nothing. The child wakes up again, no trace of the alien's mind. Nobody's sure whether they can safely remove the transfer device, and the kid runs away before they can do anything, anyway.
+	An alien ship crashed on Earth (or the alien landed safely, and something happened to them later.) The alien's body was destroyed, but they survived inside a backup device. The device is intended solely for transferring to a new body, and isn't a suitable long-term solution. Someone eventually discovered the alien, though, and managed to establish communications with them. The alien's species has discovered methods to combine magic and electronics/computers, but insists on a suitable replacement body before sharing anything. The ideal body is one of a living child. Dead bodies are tough to reanimate (and tend to be of bad quality), and adult bodies have finished growing, so they're harder to adapt. So, the guy that found the alien kidnaps some kids and offers them up("How can we pass up this opportunity? Surely one child is an acceptable sacrifice for this kind of knowledge"). The alien picks one, begins the transfer process, and then... nothing. The child wakes up again, no trace of the alien's mind. Nobody's sure whether they can safely remove the transfer device, and the kid runs away before they can do anything, anyway.
 	As it turns out, the process failed because the body was already occupied. The alien failed to realize that the people of Earth lack the ability to grow uninhabited bodies. So the two minds merged, creating a new one. Half alien, half human (or some other species). This new mind is Zack.
-	Zack isn't exactly human, or alien. His mind is a blending of the two, and his body--though originally human (or whatever species)--soon changes, adapts to become what he wants. And he has the knowledge of the alien, the secret to combining magic and conventional technology.
+	Zack isn't exactly human, or alien. His mind is a blending of the two, and his body--though originally human (or whatever species)--soon changes, adapts to become what he wants. And he has the knowledge of the alien, the secret to combining magic and conventional technology. And people want it. Badly.
 
 TODO:
-	Next Step: add scripting console. Currently trying to figure out how to rotate weapons properly, and being able to try out different rotations would be very useful.
+	Next Steps:
+		Clean up. Compilation is taking too long.
+		Use scripting (startup scripts and such).
+		Fix weapon aiming.
+
 
 
 	Physics:
-		Improve integration with OSG.
 		Character controller
+		Environment
 	Stuff for first playable
-	Add AngelScript scripting--		NOW!! So I can set up a startup script to run for testing purposes.
-		AngelScript seems like the best solution. For one thing, it's strongly typed and has a C-like syntax, so there's familiarity. Should also be easier. It was designed to integrate well with C++, and you don't need to do much extra work to expose C++ functions to AngelScript, which is pretty essential if I want the flexibility to code with either language. Can use C++ for core functionality, and run scripts where necessary for anything that's likely to change (eg AI).
 	Cleanup:
 		Header files should only contain the declarations.
 	Input:
@@ -28,8 +30,11 @@ TODO:
 BUGS:
 	input handler does not respond to releasing a key if Ctrl is pressed. Most likely due to the way OSG reports the button. I think it's a different value if a modkey is pressed.
 	Seg faults upon closing. See the two forum threads in Firefox.
-	Seg faults if too many physcis objects are created
+	Seg faults if too many physics objects are created
 	Seg faults if the debug drawer sets the data variance to "dynamic"
+	Weapons do not aim properly
+	Console does not appear until window is resized
+	getWorldCoordinates does not account for rotation or MatrixTransform nodes.
 
 
 Useful notes:
@@ -41,7 +46,7 @@ Scripting Uses:
 	AI?
 	Weapons/attacks/enemies
 	Main usage is for me, but there may be some things that players will want to customize. Granted, using AngelScript makes it a bit more difficult for non-programmers, but honestly, nobody's gonna get this game, anyway.
-	"you want to expose capable, but soulless actors to your scripting code. The scripting code describes what the actors should do, but the C++ code takes care of the how."	-- http://stackoverflow.com/questions/609076/the-role-of-scripting-languages-in-game-programming
+	"You want to expose capable, but soulless actors to your scripting code. The scripting code describes what the actors should do, but the C++ code takes care of the how."	-- http://stackoverflow.com/questions/609076/the-role-of-scripting-languages-in-game-programming
 
 Expose to scripting:
 	Camera control?--For cutscenes
@@ -62,7 +67,7 @@ Goals:
 			Weapon system
 			Basic enemy AI-- look for the player, and try to kill him.
 			Tilemap rendering-- DONE!!!
-			Scripting?-- Eventually, enemies are probably going to use scripting, so depending on how advanced I make the first playable enemies, I may want to implement scripting as part of this phase.
+			Scripting
 			Physics
 		Assets:
 			Enemies-- at least two types, killed in different ways

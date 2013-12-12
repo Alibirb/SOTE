@@ -5,6 +5,10 @@
 #include "Player.h"
 #include "Enemy.h"
 #include "TwoDimensionalCameraManipulator.h"
+#include "AngelScriptEngine.h"
+#include "AngelScriptConsole.h"
+
+
 #include <osgViewer/config/SingleWindow>
 
 
@@ -14,7 +18,6 @@ using namespace std;
 /// Variables declared extern in globals.h
 osg::Group* root;
 osg::Group* lightGroup;
-keyboardEventHandler* keh;
 osgViewer::Viewer viewer;
 int windowWidth, windowHeight;
 double deltaTime;
@@ -22,6 +25,10 @@ double deltaTime;
 void logError(std::string errorMessage)
 {
 	std::cout << errorMessage;
+}
+void logWarning(std::string warning)
+{
+	std::cout << warning;
 }
 
 double getDeltaTime()
@@ -76,8 +83,6 @@ int main()
 	windowWidth = 1600;
 	windowHeight = 900;
 
-	keh = new keyboardEventHandler();
-
 	Level2D *level;
 	level = new Level2D("media/smallTestMap(base64).tmx");
 	addNewPlayer("thePlayer", osg::Vec3(0.0f, 0.0f, 0.0f));
@@ -97,7 +102,7 @@ int main()
 
 
 	viewer.setSceneData(root);
-	viewer.addEventHandler(keh);
+	viewer.addEventHandler(getMainEventHandler());
 	viewer.apply(new osgViewer::SingleWindow(0, 0, windowWidth, windowHeight, 0));
 	viewer.setCameraManipulator(new TwoDimensionalCameraManipulator());
 	//viewer.getCamera()->setProjectionMatrixAsOrtho2D(-10, 0, 0, 10 * windowHeight/windowWidth);
@@ -106,6 +111,10 @@ int main()
 	viewer.realize();
 
 
+	getScriptEngine()->initialize();
+	getScriptEngine()->runFile("script.as");
+
+	AngelScriptConsole* console = new AngelScriptConsole();
 
 
 	osg::Timer_t frame_tick = osg::Timer::instance()->tick();

@@ -29,24 +29,34 @@
 			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-std=c++11" />
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 			<Add directory="/usr/local/include" />
 			<Add directory="../Box2D_v2.3.0/Box2D" />
+			<Add directory="/home/daniel/Downloads/AngelScript/sdk" />
 		</Compiler>
 		<Linker>
+			<Add option="-pthread" />
 			<Add library="osg" />
 			<Add library="osgDB" />
 			<Add library="osgGA" />
 			<Add library="osgText" />
 			<Add library="osgViewer" />
+			<Add library="osgWidget" />
 			<Add library="Box2D" />
+			<Add library="/usr/local/lib/libangelscript.a" />
+			<Add library="/usr/lib/x86_64-linux-gnu/libpthread.so" />
 			<Add directory="/usr/local/lib" />
 			<Add directory="/usr/local/lib64" />
 			<Add directory="../ScumOfTheEarth" />
 			<Add directory="../Box2D_v2.3.0/Box2D/Box2D" />
 		</Linker>
 		<Unit filename="AngelScript.notes" />
+		<Unit filename="AngelScriptConsole.cpp" />
+		<Unit filename="AngelScriptConsole.h" />
+		<Unit filename="AngelScriptEngine.cpp" />
+		<Unit filename="AngelScriptEngine.h" />
 		<Unit filename="BaseCameraManipulator.cpp" />
 		<Unit filename="BaseCameraManipulator.h" />
 		<Unit filename="Box2DIntegration.cpp" />
@@ -179,6 +189,16 @@
 		<Unit filename="globals.h" />
 		<Unit filename="input.cpp" />
 		<Unit filename="main.cpp" />
+		<Unit filename="script.as" />
+		<Unit filename="scriptarray/scriptarray.cpp" />
+		<Unit filename="scriptarray/scriptarray.h" />
+		<Unit filename="scriptbuilder/scriptbuilder.cpp" />
+		<Unit filename="scriptbuilder/scriptbuilder.h" />
+		<Unit filename="scripthelper/scripthelper.cpp" />
+		<Unit filename="scripthelper/scripthelper.h" />
+		<Unit filename="scriptstdstring/scriptstdstring.cpp" />
+		<Unit filename="scriptstdstring/scriptstdstring.h" />
+		<Unit filename="scriptstdstring/scriptstdstring_utils.cpp" />
 		<Extensions>
 			<code_completion />
 			<debugger />

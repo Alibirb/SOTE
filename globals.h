@@ -27,20 +27,14 @@
 #include "RandomGenerator.h"
 #include "ExpiredObjectRemoval.h"
 
+#include "input.h"
 
 
-class keyboardEventHandler : public osgGA::GUIEventHandler
-{
-public:
-	std::map<int, bool> keyState;	// OSG uses an enum for keys. Values for 0-9 and a-z are set equal to the character (KEY_A = 'a')
 
-	bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
-};
 
 extern osg::Group* root;
 extern osg::Group* lightGroup;
-extern keyboardEventHandler* keh;
 extern osgViewer::Viewer viewer;
 const double pi = 3.14159265358979323846;
 extern int windowWidth;
@@ -48,6 +42,7 @@ extern int windowHeight;
 extern double deltaTime;
 
 void logError(std::string errorMessage);
+void logWarning(std::string warning);
 
 double sind(double x);
 double cosd(double x);

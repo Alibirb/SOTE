@@ -56,18 +56,7 @@ void Player::processMovementControls(osg::Vec3 controlVector)
 
 void Player::checkForInput()
 {
-	static int moveUpKey = 'w';
-	static int moveDownKey = 's';
-	static int moveLeftKey = 'a';
-	static int moveRightKey = 'd';
 
-	osg::Vec3 movementVector = osg::Vec3(0,0,0);
-	if (keh->keyState[moveUpKey]) movementVector += osg::Vec3(0, 1, 0);
-	if (keh->keyState[moveDownKey]) movementVector += osg::Vec3(0, -1, 0);
-	if (keh->keyState[moveLeftKey]) movementVector += osg::Vec3(-1, 0, 0);
-	if (keh->keyState[moveRightKey]) movementVector += osg::Vec3(1, 0, 0);
-	movementVector.normalize();
-	processMovementControls(movementVector);
 }
 
 void PlayerNodeCallback::operator()(osg::Node* node, osg::NodeVisitor* nv)

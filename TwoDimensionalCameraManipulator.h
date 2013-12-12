@@ -112,7 +112,7 @@ public:
 	{
 		osgGA::GUIEventAdapter::ScrollingMotion sm = ea.getScrollingMotion();
 
-		if (keh->keyState[osgGA::GUIEventAdapter::KEY_Control_L] == true)	// If ctrl is held down, scrolling adjusts zoom
+		if (getMainEventHandler()->keyState[osgGA::GUIEventAdapter::KEY_Control_L] == true)	// If ctrl is held down, scrolling adjusts zoom
 		{
 			switch (sm)
 			{
@@ -182,7 +182,7 @@ public:
 
 	bool handleMouseDrag(const GUIEventAdapter& ea, GUIActionAdapter& aa)
 	{
-		if (ea.getButtonMask() == GUIEventAdapter::MIDDLE_MOUSE_BUTTON)
+		if (ea.getButtonMask() == GUIEventAdapter::MIDDLE_MOUSE_BUTTON)	// If the middle mouse button is held down, we're in free-rotate mode.
 		{
 			int windowCenterX = (ea.getXmin() + ea.getXmax()) / 2.0f;
 			int windowCenterY = (ea.getYmin() + ea.getYmax()) / 2.0f;
