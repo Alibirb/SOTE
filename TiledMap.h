@@ -4,12 +4,9 @@
 #include "TmxParser/Tmx.h"
 #include "globals.h"
 #include "osg/Geometry"
+#include <osg/PositionAttitudeTransform>
 
 
-/*
-Bugs:
-	Code does not account for maps with multiple tilesets
-*/
 
 /// Class for a Tiled map. Essentially a wrapper between OSG and TmxParser.
 class TiledMap
@@ -19,13 +16,19 @@ private:
 	osg::Geode *geode;
 	osg::StateSet* state;
 	osg::PositionAttitudeTransform *transformNode;
+
+	/// Creates a Geometry for a tile with the given position, size, and gid.
 	osg::Geometry* createTile(const osg::Vec3& corner, float width, float height, int gid);
+
+	/// Returns the texture coordinates for the given gid
 	osg::Vec2Array* getTextureCoordinates(int gid);
 public:
 	TiledMap(std::string mapFilename);
 	virtual ~TiledMap();
 	void setPosition(osg::Vec3 position);
 	osg::Vec3 getPosition();
+
+
 protected:
 private:
 };

@@ -8,16 +8,15 @@
 #ifndef ENTITY_H_
 #define ENTITY_H_
 
-#include <osg/MatrixTransform>
 #include <osg/PositionAttitudeTransform>
 
 #include "globals.h"
-#include "Sprite.h"
-#include "Box2D/Box2D.h"
 #include "Box2DIntegration.h"
 
 
 #define DEFAULT_ENTITY_IMAGE "test.png"
+
+
 
 class Entity
 {

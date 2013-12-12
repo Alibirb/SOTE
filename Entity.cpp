@@ -8,6 +8,7 @@
 #include "Entity.h"
 #include "PhysicsNodeCallback.h"
 #include "Level2D.h"
+#include "Sprite.h"
 
 #include <osgDB/ReadFile>
 #include <osgDB/FileUtils>

@@ -7,7 +7,13 @@
 
 #include "input.h"
 #include "globals.h"
+
+
 #include "Player.h"
+#include "Enemy.h"
+
+
+
 
 bool MainEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa)
 {
@@ -40,11 +46,13 @@ bool MainEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIAction
 	{
 		keyState[ea.getKey()] = true;
 
+
 		if(_inputMode != InputMode::Standard)
 			return false;	// In non-standard input mode, we track keystate, but don't act on anything.
 
 		if (ea.getKey() == 'r')
 		{
+			viewer.getCameraManipulator()->home(ea, aa);
 			getActivePlayer()->resetPosition();
 			Enemy *enemy = new Enemy("theEnemy", osg::Vec3(5.0, 5.0, 0.0));
 		}

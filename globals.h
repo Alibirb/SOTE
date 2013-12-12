@@ -10,24 +10,17 @@
 
 #include <osg/Node>
 #include <osg/Group>
-#include <osgGA/GUIEventHandler>
-#include <osgGA/TrackballManipulator>
 #include <osgViewer/Viewer>
-#include <osgViewer/View>
-#include <osgText/Text>
-#include <osg/PositionAttitudeTransform>
-#include <osg/MatrixTransform>
-#include <osgDB/ReadFile>
-#include <osgDB/FileUtils>
 
 #include <math.h>
 #include <iostream>
 
+
+// NOTE: Anything included here needs to have minimal dependencies, so it won't affect compilation time too much.
 #include "TextDisplay.h"
 #include "RandomGenerator.h"
 #include "ExpiredObjectRemoval.h"
 
-#include "input.h"
 
 
 

@@ -2,14 +2,14 @@
 #define PLAYER_H
 
 #include "Entity.h"
-#include "Enemy.h"
-#include "Weapon.h"
 
+class Weapon;
 
-#define MULTIPLE_PLAYERS
 
 #define DEFAULT_PLAYER_IMAGE "player.png"
 
+
+class Enemy;
 
 class Player : public Entity
 {
@@ -24,35 +24,20 @@ public:
 	/// Handles keyboard input that doesn't map precisely to a single action (e.g. if the action is context-sensitive or varies by character.) Should not be used for standard input (eg WASD movement keys, jump button, etc.). If there's a standard Player function that could be called instead of this, call it.
 	virtual void processButton(int key){};
 
-	/// Checks for input so the player can respond accordingly.
-	virtual void checkForInput();
-#ifdef MULTIPLE_PLAYERS
 	bool isActivePlayer();
-#endif
 
 	virtual void setPosition(osg::Vec3 newPosition);
 
 	/// Returns the coordinates that the camera should focus on.
-	virtual osg::Vec3 getCameraTarget() {
-		return this->getPosition();
-	}
+	virtual osg::Vec3 getCameraTarget();
 
-	void attack(Enemy *theOneWhoMustDie) {
-		//theOneWhoMustDie->takeDamage(1.0);
-		equipedWeapon->fire();
-	}
+	void attack(Enemy *theOneWhoMustDie);
 
-	void equipWeapon(Weapon *theWeapon) {
-		equipedWeapon = theWeapon;
-	}
+	void equipWeapon(Weapon *theWeapon);
 
-	void aimWeapon(Enemy *theOneWhoMustDie) {
-		equipedWeapon->aimAt(theOneWhoMustDie->getPosition());
-	}
+	void aimWeapon(Enemy *theOneWhoMustDie);
 
-	Weapon* getWeapon() {
-		return equipedWeapon;
-	}
+	Weapon* getWeapon();
 
 	virtual ~Player(){};
 protected:
@@ -65,19 +50,19 @@ private:
 class PlayerNodeCallback : public osg::NodeCallback
 {
 public:
-	Player* player;
+	Player* _player;
 
 	PlayerNodeCallback(Player * player) {
-		this->player = player;
+		this->_player = player;
 	}
 
 	virtual void operator()(osg::Node* node, osg::NodeVisitor* nv);
 };
 
-#ifdef MULTIPLE_PLAYERS
+
 Player * getActivePlayer();
 void setActivePlayer(std::string newActivePlayer);
 void addNewPlayer(std::string playerName, osg::Vec3 position = osg::Vec3(0,0,5.0f));
-#endif
+
 
 #endif // PLAYER_H

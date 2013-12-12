@@ -10,7 +10,8 @@
 
 
 #include <osgViewer/config/SingleWindow>
-
+#include <osgDB/ReadFile>
+#include <osgDB/FileUtils>
 
 using namespace std;
 

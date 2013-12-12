@@ -1,16 +1,16 @@
 #ifndef ANGELSCRIPTCONSOLE_H
 #define ANGELSCRIPTCONSOLE_H
 
-#include <osgViewer/ViewerEventHandlers>
-#include <osgWidget/WindowManager>
-#include <osgWidget/Box>
 #include <osgWidget/Input>
-#include <osgWidget/ViewerEventHandlers>
 
 #include "globals.h"
 
 #include "AngelScriptEngine.h"
 #include "input.h"
+
+namespace osgWidget {
+	class WindowManager;
+}
 
 using namespace osgWidget;
 
@@ -18,8 +18,6 @@ using namespace osgWidget;
 class AngelScriptConsole : public osgWidget::Input
 {
 protected:
-	osgWidget::Box* box;
-	osgWidget::WindowManager* wm;
 	bool active;
 
 public:
@@ -32,28 +30,10 @@ public:
 	bool isActive() {
 		return active;
 	}
-	void setActive(bool active) {
-		this->active = active;
-		if(active)
-		{
-			getMainEventHandler()->setInputMode(MainEventHandler::InputMode::Console);
-		}
-		else
-		{
-			getMainEventHandler()->setInputMode(MainEventHandler::InputMode::Standard);
-		}
-	}
+	void setActive(bool active);
 
-	bool mouseEnter(double, double, const WindowManager*)
-	{
-		setActive(true);
-		return true;
-	}
-	bool mouseLeave(double, double, const WindowManager*)
-	{
-		setActive(false);
-		return true;
-	}
+	bool mouseEnter(double, double, const WindowManager*);
+	bool mouseLeave(double, double, const WindowManager*);
 
 protected:
 	void enterCommand(std::string code);

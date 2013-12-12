@@ -4,6 +4,8 @@
 #include "Sprite.h"
 #include "globals.h"
 
+#include <osg/PositionAttitudeTransform>
+
 #define DEFAULT_ITEM_IMAGE "test.png"
 
 /// Class for items.

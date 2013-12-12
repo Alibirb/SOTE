@@ -1,18 +1,18 @@
+
 #include "AngelScriptConsole.h"
+
+#include <osgWidget/WindowManager>
+#include <osgWidget/Box>
+#include <osgWidget/ViewerEventHandlers>
+
 
 const unsigned int MASK_2D = 0xF0000000;
 
 AngelScriptConsole::AngelScriptConsole() : osgWidget::Input("console", "", 50)
 {
-	osgWidget::WindowManager* wm = new osgWidget::WindowManager(
-		&viewer,
-		1280.0f,
-		1024.0f,
-		MASK_2D,
-		osgWidget::WindowManager::WM_PICK_DEBUG
-	);
+	osgWidget::WindowManager* wm = new osgWidget::WindowManager(&viewer, 1280.0f, 1024.0f, MASK_2D, osgWidget::WindowManager::WM_PICK_DEBUG);
 
-	osgWidget::Box*   box   = new osgWidget::Box("vbox", osgWidget::Box::VERTICAL);
+	osgWidget::Box* box = new osgWidget::Box("vbox", osgWidget::Box::VERTICAL);
 
 	this->setFont("fonts/VeraMono.ttf");
 	this->setFontColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -31,8 +31,6 @@ AngelScriptConsole::AngelScriptConsole() : osgWidget::Input("console", "", 50)
 	viewer.addEventHandler(new osgWidget::MouseHandler(wm));
 	viewer.addEventHandler(new osgWidget::KeyboardHandler(wm));
 	viewer.addEventHandler(new osgWidget::ResizeHandler(wm, camera));
-	viewer.addEventHandler(new osgWidget::CameraSwitchHandler(wm, camera));
-	viewer.addEventHandler(new osgViewer::WindowSizeHandler());
 
 	wm->resizeAllWindows();
 
@@ -222,100 +220,100 @@ bool AngelScriptConsole::keyDown(int key, int mask, const osgWidget::WindowManag
 
 	default:
 		if(key > 255 || _index >= _maxSize) return false;
-/*
-		if (((key=='v' || key=='V') && (mask & osgGA::GUIEventAdapter::MODKEY_CTRL)) || (key==22))
-		{
-			std::string data;
-// Data from clipboard
-#ifdef WIN32
-			if (::OpenClipboard(NULL))
-			{
-				HANDLE hData = ::GetClipboardData( CF_TEXT );
-				char* buff = (char*)::GlobalLock( hData );
-				if (buff) data = buff;
-				::GlobalUnlock( hData );
-				::CloseClipboard();
-			}
-#endif
-			if (!data.empty())
-			{
-				unsigned int deleteMin = osg::minimum(_selectionStartIndex,_selectionEndIndex);
-				unsigned int deleteMax = osg::maximum(_selectionStartIndex,_selectionEndIndex);
-
-				if (deleteMax - deleteMin > 0)
+		/*
+				if (((key=='v' || key=='V') && (mask & osgGA::GUIEventAdapter::MODKEY_CTRL)) || (key==22))
 				{
-					data = data.substr(0, _maxSize-s.size()-(deleteMax - deleteMin));
+					std::string data;
+		// Data from clipboard
+		#ifdef WIN32
+					if (::OpenClipboard(NULL))
+					{
+						HANDLE hData = ::GetClipboardData( CF_TEXT );
+						char* buff = (char*)::GlobalLock( hData );
+						if (buff) data = buff;
+						::GlobalUnlock( hData );
+						::CloseClipboard();
+					}
+		#endif
+					if (!data.empty())
+					{
+						unsigned int deleteMin = osg::minimum(_selectionStartIndex,_selectionEndIndex);
+						unsigned int deleteMax = osg::maximum(_selectionStartIndex,_selectionEndIndex);
 
-					s.erase(s.begin() + deleteMin, s.begin() + deleteMax);
-					std::copy(data.begin(), data.end(), std::inserter(s, s.begin() + deleteMin));
+						if (deleteMax - deleteMin > 0)
+						{
+							data = data.substr(0, _maxSize-s.size()-(deleteMax - deleteMin));
 
-					_index = deleteMin + data.size();
+							s.erase(s.begin() + deleteMin, s.begin() + deleteMax);
+							std::copy(data.begin(), data.end(), std::inserter(s, s.begin() + deleteMin));
+
+							_index = deleteMin + data.size();
+						}
+						else
+						{
+							data = data.substr(0, _maxSize-s.size());
+
+							std::copy(data.begin(), data.end(), std::inserter(s, s.begin() + _index));
+							_index += data.length();
+						}
+
+						_selectionStartIndex = _selectionEndIndex = _index;
+
+						_text->update();
+
+						_calculateCursorOffsets();
+
+						_calculateSize(getTextSize());
+
+						getParent()->resize();
+
+						return false;
+					}
 				}
-				else
+				else if (((key=='c' || key=='C' || key=='x' || key=='X') && (mask & osgGA::GUIEventAdapter::MODKEY_CTRL)) || (key==3) || (key==24))
 				{
-					data = data.substr(0, _maxSize-s.size());
+					unsigned int selectionMin = osg::minimum(_selectionStartIndex,_selectionEndIndex);
+					unsigned int selectionMax = osg::maximum(_selectionStartIndex,_selectionEndIndex);
 
-					std::copy(data.begin(), data.end(), std::inserter(s, s.begin() + _index));
-					_index += data.length();
+					if (selectionMax - selectionMin > 0)
+					{
+						std::string data;
+						std::copy(s.begin() + selectionMin, s.begin() + selectionMax, std::inserter(data, data.begin()));
+
+		// Data to clipboard
+		#ifdef WIN32
+						if(::OpenClipboard(NULL))
+						{
+							::EmptyClipboard();
+							HGLOBAL clipbuffer = ::GlobalAlloc(GMEM_DDESHARE, data.length()+1);
+							char* buffer = (char*)::GlobalLock(clipbuffer);
+							strcpy(buffer, data.c_str());
+							::GlobalUnlock(clipbuffer);
+							::SetClipboardData(CF_TEXT,clipbuffer);
+							::CloseClipboard();
+						}
+		#endif
+
+						if (key=='x' || key=='X' || key == 24)
+						{
+							s.erase(s.begin() + selectionMin, s.begin() + selectionMax);
+
+							_index = selectionMin;
+
+							_selectionStartIndex = _selectionEndIndex = _index;
+
+							_text->update();
+
+							_calculateCursorOffsets();
+
+							_calculateSize(getTextSize());
+
+							getParent()->resize();
+						}
+					}
+					return false;
 				}
-
-				_selectionStartIndex = _selectionEndIndex = _index;
-
-				_text->update();
-
-				_calculateCursorOffsets();
-
-				_calculateSize(getTextSize());
-
-				getParent()->resize();
-
-				return false;
-			}
-		}
-		else if (((key=='c' || key=='C' || key=='x' || key=='X') && (mask & osgGA::GUIEventAdapter::MODKEY_CTRL)) || (key==3) || (key==24))
-		{
-			unsigned int selectionMin = osg::minimum(_selectionStartIndex,_selectionEndIndex);
-			unsigned int selectionMax = osg::maximum(_selectionStartIndex,_selectionEndIndex);
-
-			if (selectionMax - selectionMin > 0)
-			{
-				std::string data;
-				std::copy(s.begin() + selectionMin, s.begin() + selectionMax, std::inserter(data, data.begin()));
-
-// Data to clipboard
-#ifdef WIN32
-				if(::OpenClipboard(NULL))
-				{
-					::EmptyClipboard();
-					HGLOBAL clipbuffer = ::GlobalAlloc(GMEM_DDESHARE, data.length()+1);
-					char* buffer = (char*)::GlobalLock(clipbuffer);
-					strcpy(buffer, data.c_str());
-					::GlobalUnlock(clipbuffer);
-					::SetClipboardData(CF_TEXT,clipbuffer);
-					::CloseClipboard();
-				}
-#endif
-
-				if (key=='x' || key=='X' || key == 24)
-				{
-					s.erase(s.begin() + selectionMin, s.begin() + selectionMax);
-
-					_index = selectionMin;
-
-					_selectionStartIndex = _selectionEndIndex = _index;
-
-					_text->update();
-
-					_calculateCursorOffsets();
-
-					_calculateSize(getTextSize());
-
-					getParent()->resize();
-				}
-			}
-			return false;
-		}
-*/
+		*/
 		{
 			// If something is selected, we need to delete it and insert the character there.
 			unsigned int deleteMin = osg::minimum(_selectionStartIndex,_selectionEndIndex);
@@ -360,5 +358,27 @@ bool AngelScriptConsole::keyDown(int key, int mask, const osgWidget::WindowManag
 	return true;
 }
 
+void AngelScriptConsole::setActive(bool active)
+{
+	this->active = active;
+	if(active)
+	{
+		getMainEventHandler()->setInputMode(MainEventHandler::InputMode::Console);
+	}
+	else
+	{
+		getMainEventHandler()->setInputMode(MainEventHandler::InputMode::Standard);
+	}
+}
 
+bool AngelScriptConsole::mouseEnter(double, double, const WindowManager*)
+{
+	setActive(true);
+	return true;
+}
+bool AngelScriptConsole::mouseLeave(double, double, const WindowManager*)
+{
+	setActive(false);
+	return true;
+}
 

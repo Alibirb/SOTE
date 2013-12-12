@@ -8,7 +8,6 @@ Plot: (this is long-winded right now)
 
 TODO:
 	Next Steps:
-		Clean up. Compilation is taking too long.
 		Use scripting (startup scripts and such).
 		Fix weapon aiming.
 
@@ -35,6 +34,7 @@ BUGS:
 	Weapons do not aim properly
 	Console does not appear until window is resized
 	getWorldCoordinates does not account for rotation or MatrixTransform nodes.
+	TiledMap does not account for maps with multiple tilesets.
 
 
 Useful notes:

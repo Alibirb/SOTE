@@ -6,8 +6,27 @@
  */
 
 #include "TextDisplay.h"
-#include "osg/Projection"
+
+#include <osgText/Text>
+#include <osg/Projection>
+#include <osg/MatrixTransform>
+
+
 #include "globals.h"
+
+
+class TextGeodeCallback : public osg::NodeCallback
+{
+public:
+	TextDisplay* _display;
+
+	TextGeodeCallback(TextDisplay* display)
+	{
+		this->_display = display;
+	}
+
+	virtual void operator()(osg::Node* node, osg::NodeVisitor* nv);
+};
 
 TextDisplay::TextDisplay()
 {
@@ -48,12 +67,40 @@ void TextDisplay::setDefaultText()
 {
 	stream.str(std::string() );	// set to a blank string
 	stream.clear();	// clears error state flag
+}
 
-	//NOTE: camManipulator is actually global right now. Should figure out what exactly I want to do with it.
-	//stream << "camAzimuth: " << ((ThirdPersonCameraManipulator*)viewer.getCameraManipulator())->getHeading() << std::endl;
-	//stream << "camZenith: " << camManipulator->getZenith() << std::endl;
-	//stream << "Player Pos: " << getActivePlayer()->getPosition().x() << "," << getActivePlayer()->getPosition().y() << "," << getActivePlayer()->getPosition().z() << std::endl;
+void TextDisplay::addText(std::string newText)
+{
+	stream << newText;
+}
+void TextDisplay::addText(std::ostringstream& newText)
+{
+	stream << newText.str();
+}
+void TextDisplay::addText(int newText)
+{
+	stream << newText;
+}
+void TextDisplay::addText(float newText)
+{
+	stream << newText;
+}
+void TextDisplay::addText(osg::Vec3 coordinates)
+{
+	stream << coordinates.x() << ", " << coordinates.y() << ", " << coordinates.z();
+}
 
+
+
+
+
+
+void TextGeodeCallback::operator()(osg::Node* node, osg::NodeVisitor* nv)
+{
+	_display->text->setText(_display->stream.str());
+	_display->setDefaultText();
+
+	traverse(node, nv);	// need to call this so scene graph traversal continues.
 }
 
 

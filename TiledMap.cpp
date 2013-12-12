@@ -1,5 +1,12 @@
 #include "TiledMap.h"
 
+#include <osgDB/ReadFile>
+#include <osgDB/FileUtils>
+#include <osg/Texture2D>
+
+
+
+
 TiledMap::TiledMap(std::string mapFilename)
 {
 	mapData = new Tmx::Map();
@@ -43,7 +50,7 @@ TiledMap::TiledMap(std::string mapFilename)
 	root->addChild(transformNode);
 }
 
-/// Returns the texture coordinates for the given gid
+
 osg::Vec2Array* TiledMap::getTextureCoordinates(int gid)
 {
 	float imageHeight = mapData->GetTileset(0)->GetImage()->GetHeight();
@@ -67,7 +74,7 @@ osg::Vec2Array* TiledMap::getTextureCoordinates(int gid)
 	return tcoords;
 }
 
-/// Creates a Geometry for a tile with the given position, size, and gid.
+
 osg::Geometry* TiledMap::createTile(const osg::Vec3& corner, float width, float height, int gid)
 {
     osg::Geometry* tile = new osg::Geometry;

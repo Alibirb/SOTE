@@ -8,9 +8,21 @@
 #ifndef TEXTDISPLAY_H_
 #define TEXTDISPLAY_H_
 
-#include <osgText/Text>
+//#include <osgText/Text>
 #include <iostream>
 #include <sstream>
+
+namespace osgText {
+	class Text;
+}
+
+namespace osg {
+	class Projection;
+	class MatrixTransform;
+	class Geode;
+	class Vec3f;
+	typedef Vec3f Vec3;
+}
 
 class TextDisplay
 {
@@ -27,49 +39,14 @@ public:
 
 	void setDefaultText();
 
-	void addText(std::string newText)
-	{
-		stream << newText;
-	}
-	void addText(std::ostringstream& newText)
-	{
-		stream << newText.str();
-	}
-	void addText(int newText)
-	{
-		stream << newText;
-	}
-	void addText(float newText)
-	{
-		stream << newText;
-	}
-	void addText(osg::Vec3 coordinates)
-	{
-		stream << coordinates.x() << ", " << coordinates.y() << ", " << coordinates.z();
-	}
+	void addText(std::string newText);
+	void addText(std::ostringstream& newText);
+	void addText(int newText);
+	void addText(float newText);
+	void addText(osg::Vec3 coordinates);
 };
 
-class TextGeodeCallback : public osg::NodeCallback
-{
-public:
-	TextDisplay* display;
 
-	TextGeodeCallback(TextDisplay* display)
-	{
-		this->display = display;
-	}
-
-	virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
-	{
-		//display->setDefaultText();
-		display->text->setText(display->stream.str());
-	//	display->stream.str(std::string() );	// set to a blank string
-	//	display->stream.clear();
-		display->setDefaultText();
-
-		traverse(node, nv);	// need to call this so scene graph traversal continues.
-	}
-};
 
 TextDisplay* getDebugDisplayer();
 
