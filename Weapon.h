@@ -24,6 +24,7 @@ public:
 	void setPosition(osg::Vec3 position);
 	osg::Vec3 getPosition();
 	osg::Vec3 getWorldPosition();
+	void setRotation(double angle);
 
 protected:
 private:

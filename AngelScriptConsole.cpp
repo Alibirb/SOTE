@@ -118,6 +118,18 @@ bool AngelScriptConsole::keyDown(int key, int mask, const osgWidget::WindowManag
 			_selectionStartIndex = _selectionEndIndex = _index;
 		}
 		break;
+	case osgGA::GUIEventAdapter::KEY_Up:	// History, like in the terminal.
+		if(s.createUTF8EncodedString() == "")
+		{
+			if(history.size() > 0)
+			{
+				_text->setText(history.front());
+				_index = 0;	// reset the index
+				_text->update();
+				_calculateCursorOffsets();
+			}
+		}
+		break;
 	case osgGA::GUIEventAdapter::KEY_Home:
 		_index = 0;
 		if (mask & osgGA::GUIEventAdapter::MODKEY_SHIFT)
@@ -211,6 +223,7 @@ bool AngelScriptConsole::keyDown(int key, int mask, const osgWidget::WindowManag
 
 	case osgGA::GUIEventAdapter::KEY_Return:
 		enterCommand(s.createUTF8EncodedString());
+		history.push_front(s.createUTF8EncodedString());
 		_text->setText("");	// Clear the input string
 		_index = 0;	// reset the index
 		_text->update();

@@ -24,6 +24,16 @@ void Weapon::fire()
 }
 
 
+void Weapon::setRotation(double angle)
+{
+osg::Quat rotation;
+
+
+	rotation.makeRotate(angle, osg::Vec3(0,0,1));
+
+	transformNode->setAttitude(rotation);
+	}
+
 void Weapon::aimAt(osg::Vec3 target)
 {
 	osg::Vec3 position = this->getWorldPosition();
@@ -32,12 +42,12 @@ void Weapon::aimAt(osg::Vec3 target)
 
 	//rotation.makeRotate(position, target);
 
-	float angle = atand(diff.y()/diff.x());
+	float angle = atan(diff.y()/diff.x());
 	if (diff.x() < 0)
-		angle = 180 - angle;
+		angle += pi;
 	if (angle < 0)
-		angle += 360;
-	rotation.makeRotate(angle, osg::Vec3(0,0,1));
+		angle += 2*pi;
+	rotation.makeRotate(angle - pi/2, osg::Vec3(0,0,1));
 
 	transformNode->setAttitude(rotation);
 

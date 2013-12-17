@@ -57,10 +57,12 @@
 		<Unit filename="AngelScriptConsole.h" />
 		<Unit filename="AngelScriptEngine.cpp" />
 		<Unit filename="AngelScriptEngine.h" />
+		<Unit filename="ArchitectureNotes" />
 		<Unit filename="BaseCameraManipulator.cpp" />
 		<Unit filename="BaseCameraManipulator.h" />
 		<Unit filename="Box2DIntegration.cpp" />
 		<Unit filename="Box2DIntegration.h" />
+		<Unit filename="C++.notes" />
 		<Unit filename="DebugDrawer.cpp" />
 		<Unit filename="DebugDrawer.h" />
 		<Unit filename="Enemy.cpp" />
@@ -187,7 +189,9 @@
 		<Unit filename="Weapon.cpp" />
 		<Unit filename="Weapon.h" />
 		<Unit filename="globals.h" />
+		<Unit filename="initialize.as" />
 		<Unit filename="input.cpp" />
+		<Unit filename="input.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="script.as" />
 		<Unit filename="scriptarray/scriptarray.cpp" />

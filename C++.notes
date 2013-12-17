@@ -1,0 +1,24 @@
+/// Various C++ concepts
+
+const usage:
+	void something() const	// Means the function will not modify member variables or call any non-const member functions
+	const int * ptrToConst;	// pointer to const value. Cannot modify the value, but the pointer can be made to point to something else.
+	int * const constPtr;	// const pointer. Can modify the value pointed to, but can't make it point to something else
+	const int * const constPtrToConst;	// const pointer to const value. Cannot modify the value, cannot make it point to anything else.
+
+Pointers/references:
+	&	reference operator. "address of"
+	*	dereference operator. "value pointed to by"
+	int *a;		// a pointer
+	int &a;		// a reference
+	References:
+		http://en.wikipedia.org/wiki/Reference_%28C++%29	// For reference. Pun intended
+		Cannot refer directly to a reference object after it's defined; any occurance of its name refers directly to the object it references.
+		Cannot be made to reference another object.
+		Cannot be null. Can't have a container of references.
+		Cannot be uninitialized.
+		address-of operator applied to a reference yields a pointer to the same object.
+		A reference initialized from the dereference of a pointer value will refer to the same object as that pointer.
+		Uses:
+			safer than pointers.
+			for functions, if the parameter is made "const type& var", it gives direct read-only access to whatever's passed in, whereas "type var" requires creating a copy of the parameter. Can be called in the same manner.

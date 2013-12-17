@@ -2,10 +2,21 @@ Registering:
 	engine->RegisterGlobalProperty("CObject @g_object", &g_object);	// to register a global object. Note that the class type must have already been registered.
 	engine->RegisterGlobalProperty("int g_number", &g_number);	// Same method is used for integers and such, too. Note that you must always pass a pointer to whatever you really want to reference in AngelScript.
 	engine->RegisterObjectType("ref", 0, asOBJ_REF);	// To register a reference type class.
-		engine->RegisterObjectBehaviour("ref", asBEHAVE_FACTORY, "ref@ f()", asFUNCTION(Ref_Factory), asCALL_CDECL);	// To register the "factory function", which returns a new object of that type. Function must be a gloabl function (can be a static class method, though)
+		engine->RegisterObjectBehaviour("ref", asBEHAVE_FACTORY, "ref@ f()", asFUNCTION(Ref_Factory), asCALL_CDECL);	// To register the "factory function", which returns a new object of that type. Function must be a global function (can be a static class method, though)
 		engine->RegisterObjectMethod("mytype", "void ClassMethod()", asMETHOD(MyClass, ClassMethod), asCALL_THISCALL);	// To register a class method
 		// Static methods should be registered as global functions
 		// Can register any method as a global function, just need to specify which object to use for it.
-		
+
+Special Notes:
+	To pass a C++ object (like Vec3) from AngelScript to a C++ function, the function needs to ask for a reference to the parameter, eg "Vec3 &theVector".
+
+
 Scripts:
 	Uses object handles. Used very much like pointers, but specified with '@' instead of '*'.
+	If a function takes non-primitive parameters and is meant to be called by C++, the parameters must specify the parameter references:
+		&in		A copy of the value is always taken and the reference to the copy is passed to the function. For script functions this is not useful, but it is maintained for compatibility with application registered functions.
+		const &in	If the life time of the value can be guaranteed to be valid during the execution of the function, the reference to the true object is passed to the function, otherwise a copy is made.
+		&out	A reference to an unitialized value is passed to the function. When the function returns the value is copied to the true reference. The argument expression is evaluated only after the function call. This is the best way to have functions return multiple values.
+		const &out	Useless as the function wouldn't be able to modify the value.
+		&inout	The true reference is always passed to the function. If the life time of the value cannot be guaranteed, a compile time error is generated and the script writer will have to copy the value to a local variable first. Objects that support object handles are best suitable for this type as they can always be guaranteed.
+		const &inout	The reference cannot be changed by the function.

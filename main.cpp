@@ -70,6 +70,7 @@ osg::Vec3 getWorldCoordinates(osg::Node *node)
 }
 
 
+
 int main()
 {
 	root = new osg::Group();
@@ -88,7 +89,6 @@ int main()
 	level = new Level2D("media/smallTestMap(base64).tmx");
 	addNewPlayer("thePlayer", osg::Vec3(0.0f, 0.0f, 0.0f));
 	setActivePlayer("thePlayer");
-	Enemy *enemy = new Enemy("theEnemy", osg::Vec3(5.0, 5.0, 0.0));
 
 
 	osg::Light* sun = new osg::Light;
@@ -113,7 +113,13 @@ int main()
 
 
 	getScriptEngine()->initialize();
-	getScriptEngine()->runFile("script.as");
+
+	//getScriptEngine()->test();
+
+	getScriptEngine()->runFile("initialize.as");
+
+
+
 
 	AngelScriptConsole* console = new AngelScriptConsole();
 
@@ -154,10 +160,6 @@ int main()
 		std::ostringstream playerCoordinatesStream;
 		playerCoordinatesStream << "Player: " << getActivePlayer()->getPosition().x() << ", " << getActivePlayer()->getPosition().y() << ", " << getActivePlayer()->getPosition().z() << std::endl;
 		getDebugDisplayer()->addText(playerCoordinatesStream);
-
-		//std::ostringstream weaponStream;
-		//weaponStream << "Weapon angle: " << getActivePlayer()->getWeapon()->getTransformNode()->getAttitude() << std::endl;
-		//getDebugDisplayer()->addText(weaponStream);
 
 		viewer.frame();
 
