@@ -8,8 +8,8 @@ Projectile::Projectile(osg::Vec3 startingPosition, osg::Vec3 heading)
 	position = startingPosition;
 	heading.normalize();
 	this->heading = heading;
-	width = .5;
-	height = .5;
+	width = .25;
+	height = .25;
 	sprite = new Sprite(DEFAULT_PROJECTILE_IMAGE, width, height);
 	transformNode = new osg::PositionAttitudeTransform();
 
@@ -24,10 +24,14 @@ Projectile::Projectile(osg::Vec3 startingPosition, osg::Vec3 heading)
 	bodyDef.type = b2_dynamicBody;
 	bodyDef.position.Set(position.x() - box2DToOsgAdjustment.x() , position.y() - box2DToOsgAdjustment.y());
 	physicsBody = getCurrentLevel()->getPhysicsWorld()->CreateBody(&bodyDef);
-	b2PolygonShape collisionBox;
-	collisionBox.SetAsBox(width/2, height/2);	// half-extents
+
+	//b2PolygonShape collisionShape;
+	//collisionShape.SetAsBox(width/2, height/2);	// half-extents
+	b2CircleShape collisionShape;
+	collisionShape.m_radius = width/2;
+
 	b2FixtureDef fixtureDef;
-	fixtureDef.shape = &collisionBox;
+	fixtureDef.shape = &collisionShape;
 	fixtureDef.density = 1.0f;
 	fixtureDef.friction = 0.3f;
 	physicsBody->CreateFixture(&fixtureDef);

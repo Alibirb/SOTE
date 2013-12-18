@@ -4,6 +4,9 @@
 #include <osgDB/FileUtils>
 #include <osg/Texture2D>
 
+#include "Box2DIntegration.h"
+#include "Level2D.h"
+
 
 
 
@@ -13,7 +16,10 @@ TiledMap::TiledMap(std::string mapFilename)
 	mapData->ParseFile(mapFilename);
 	int sizeX = mapData->GetWidth();
 	int sizeY = mapData->GetHeight();
+	tileWidth = mapData->GetTileWidth();
+	tileHeight = mapData->GetTileHeight();
 	int numLayers = mapData->GetNumLayers();
+	int numObjectGroups = mapData->GetNumObjectGroups();
 
 	std::string imageFilename = mapData->GetTileset(0)->GetImage()->GetSource();
 	osg::Image* image = osgDB::readImageFile(imageFilename);
@@ -31,20 +37,57 @@ TiledMap::TiledMap(std::string mapFilename)
 	state->setRenderBinDetails(1, "transparent");	// Use a different rendering bin that gets rendered after the default one
 	state->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);	// Tell OpenGL that this is a transparent bin, and thus everything should be rendered back-to-front
 
-	for (int i = 0; i < numLayers; ++i)
+	for(int i = 0; i < numLayers; ++i)
 	{
-		for (int y = 0; y < sizeY; ++y)
+		for(int y = 0; y < sizeY; ++y)
 		{
-			for (int x = 0; x < sizeX; ++x)
+			for(int x = 0; x < sizeX; ++x)
 			{
 				int gid = mapData->GetLayer(i)->GetTileId(x, y);
-				if (gid > 0)	// Don't create a tile for blank ones (gid 0).
+				if(gid > 0)	// Don't create a tile for blank ones (gid 0).
 				{
-					geode->addDrawable( createTile(osg::Vec3(x, -y, i), 1.0f, 1.0f, gid));
+					geode->addDrawable( createTile(osg::Vec3(x, -y - 1, i), 1.0f, 1.0f, gid));
 				}
 			}
 		}
 	}
+
+	for(int i = 0; i < numObjectGroups; ++i)
+	{
+		const Tmx::ObjectGroup *objectGroup = mapData->GetObjectGroup(i);
+		for(int j = 0; j < objectGroup->GetNumObjects(); ++j)
+		{
+			physicsBodies.resize(j+1);
+			const Tmx::Object* object = objectGroup->GetObject(j);
+			const Tmx::Polygon* polygon = object->GetPolygon();
+			b2Vec2 *vertices;
+			vertices = new b2Vec2[100];		/// Will crash if the polygon has too many points. Find better solution.
+			for(int k = 0; k < polygon->GetNumPoints(); ++k)
+			{
+				vertices[k] = b2Vec2((polygon->GetPoint(k).x + object->GetX())/ tileWidth, - (polygon->GetPoint(k).y + object->GetY()) / tileHeight);	// TMX file reports positions in pixels, y-down coordinate system.
+			}
+			b2ChainShape shape;
+			shape.CreateLoop(vertices, polygon->GetNumPoints());
+
+			//b2Body *physicsBody;
+			b2BodyDef bodyDef;
+			bodyDef.type = b2_staticBody;
+			//bodyDef.position.Set(object->GetX() / tileWidth, - object->GetY() / tileHeight);
+			bodyDef.position.Set(0,0);
+			physicsBodies[j] = getCurrentLevel()->getPhysicsWorld()->CreateBody(&bodyDef);
+
+			b2FixtureDef fixtureDef;
+			fixtureDef.shape = &shape;
+			fixtureDef.density = 1.0f;
+			fixtureDef.friction = 0.3f;
+			physicsBodies[j]->CreateFixture(&fixtureDef);
+			Box2DUserData *userData = new Box2DUserData;
+			userData->owner = this;
+			userData->ownerType = "Tilemap";
+			physicsBodies[j]->SetUserData(userData);
+		}
+	}
+
 	transformNode = new osg::PositionAttitudeTransform();
 	transformNode->addChild(geode);
 	root->addChild(transformNode);
@@ -104,6 +147,9 @@ osg::Geometry* TiledMap::createTile(const osg::Vec3& corner, float width, float 
 void TiledMap::setPosition(osg::Vec3 position)
 {
 	transformNode->setPosition(position);
+	for(int i = 0; i < physicsBodies.size(); ++i)
+		physicsBodies[i]->SetTransform(toB2Vec2(position), physicsBodies[i]->GetAngle());
+
 }
 osg::Vec3 TiledMap::getPosition()
 {

@@ -7,7 +7,7 @@
 Weapon::Weapon() : Item(DEFAULT_WEAPON_IMAGE)
 {
 	projectileStartingTransform = new osg::PositionAttitudeTransform();
-	projectileStartingTransform->setPosition(osg::Vec3(1.0,0,0));
+	projectileStartingTransform->setPosition(osg::Vec3(.5,0,0));
 	transformNode->addChild(projectileStartingTransform);
 }
 

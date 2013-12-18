@@ -34,7 +34,7 @@ Entity::Entity(std::string name, osg::Vec3 position, std::string imageFilename)
 	bodyDef.position.Set(position.x() - box2DToOsgAdjustment.x() , position.y() - box2DToOsgAdjustment.y());
 	physicsBody = getCurrentLevel()->getPhysicsWorld()->CreateBody(&bodyDef);
 	b2PolygonShape collisionBox;
-	collisionBox.SetAsBox(.5f, .5f);	// HALF-extents, remember.
+	collisionBox.SetAsBox(.125f, .5f);	// HALF-extents, remember.
 	physicsBody->CreateFixture(&collisionBox, 0.0f);
 	Box2DUserData *userData = new Box2DUserData;
 	userData->owner = this;

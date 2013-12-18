@@ -12,24 +12,22 @@ Plot: (this is long-winded right now)
 
 TODO:
 	Next Steps:
-		Add physics to the tilemap.
-		Add ability to load (not run) an AngelScript file, adding all the functions to the context, without destroying what's already there.
+		Player should collide with objects (not go through them).
 
-
+	Add ability to load (not run) an AngelScript file, adding all the functions to the context, without destroying what's already there.
+	Animation
+	AI:
+		Enemies should attack, run, et cetera.
 	Physics:
 		Character controller
-		Environment
 	Stuff for first playable
-	Cleanup:
-		Header files should only contain the declarations.
 	Input:
 		Should be able to register a function to be executed on key press/release. Function will likely be in AngelScript.
 	Use a game clock that's separate from the real-time clock. For debugging purposes. Allows to run the game in slow/fast motion.
 	Development cheats and features:
 		Teleportation
 		Changing game speed
-	Misc:
-		Level2D should contain lighting, enemies?, and other things that would be in the scene.
+	Level2D should contain lighting, enemies?, and other things that would be in the scene.
 
 BUGS:
 	input handler does not respond to releasing a key if Ctrl is pressed. Most likely due to the way OSG reports the button. I think it's a different value if a modkey is pressed.

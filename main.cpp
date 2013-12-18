@@ -25,11 +25,11 @@ double deltaTime;
 
 void logError(std::string errorMessage)
 {
-	std::cout << errorMessage;
+	std::cout << errorMessage << std::endl;
 }
 void logWarning(std::string warning)
 {
-	std::cout << warning;
+	std::cout << warning << std::endl;
 }
 
 double getDeltaTime()

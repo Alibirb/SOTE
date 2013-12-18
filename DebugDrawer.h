@@ -14,9 +14,14 @@ private:
 	//osg::ref_ptr<osg::Geometry> _lineGeometry;
 	osg::Group* _group;
 	osg::Geode* _geode;
+
 	osg::Geometry* _lineGeometry;
 	osg::Vec3Array* _lineVertices;
 	osg::Vec4Array* _lineColors;
+
+	osg::Geometry* _filledPolygonGeometry;
+	osg::Vec3Array* _filledPolygonVertices;
+	osg::Vec4Array* _filledPolygonColors;
 
 	float drawZCoordinate = 1.0;	// The z-coordinate to place the debug drawing.
 	bool active;

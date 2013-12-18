@@ -3,8 +3,7 @@
 
 Level2D::Level2D(std::string mapFilename)
 {
-	tiledMap = new TiledMap(mapFilename);
-	tiledMap->setPosition(osg::Vec3(0.0, 0.0, -5.0));
+	setCurrentLevel(this);
 
 	//gravity = b2Vec2(0.0, -10.0);
 	gravity = b2Vec2(0.0, 0.0);
@@ -19,7 +18,10 @@ Level2D::Level2D(std::string mapFilename)
 	physicsWorld->SetDebugDraw(debugDrawer);
 	physicsWorld->SetContactListener(new PhysicsContactListener());
 
-	setCurrentLevel(this);
+	tiledMap = new TiledMap(mapFilename);
+	tiledMap->setPosition(osg::Vec3(0.0, 0.0, -5.0));
+
+
 }
 
 

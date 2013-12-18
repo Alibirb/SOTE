@@ -7,6 +7,7 @@
 #include <osg/PositionAttitudeTransform>
 
 
+class b2Body;
 
 /// Class for a Tiled map. Essentially a wrapper between OSG and TmxParser.
 class TiledMap
@@ -16,6 +17,10 @@ private:
 	osg::Geode *geode;
 	osg::StateSet* state;
 	osg::PositionAttitudeTransform *transformNode;
+	std::vector<b2Body*> physicsBodies;
+	float tileWidth;
+	float tileHeight;
+	//std::vector<Tmx::Object*> objects;
 
 	/// Creates a Geometry for a tile with the given position, size, and gid.
 	osg::Geometry* createTile(const osg::Vec3& corner, float width, float height, int gid);
