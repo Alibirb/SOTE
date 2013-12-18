@@ -45,7 +45,8 @@ double acosd(double x);
 double atand(double x);
 
 
-osg::Vec3 getWorldCoordinates(osg::Node *node);
+//osg::Vec3 getWorldCoordinates(osg::Node *node);
+osg::Matrixd* getWorldCoordinates( osg::Node* node);
 
 double getDeltaTime();
 

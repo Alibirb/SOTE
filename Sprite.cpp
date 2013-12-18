@@ -52,7 +52,8 @@ osg::Geometry* Sprite::createSquare(const osg::Vec3& corner, double width, doubl
 
 Sprite::Sprite(std::string imageName, float width, float height)
 {
-	osg::Vec3 position = osg::Vec3(0, 0, 0);
+	//osg::Vec3 position = osg::Vec3(0, 0, 0);
+	osg::Vec3 position = osg::Vec3(-.5*width, -.5*height, 0);
 	this->width = width;
 	this->height = height;
 	this->addDrawable(createSquare(position, width, height, osgDB::readImageFile(imageName)));
@@ -61,7 +62,15 @@ Sprite::Sprite(std::string imageName, float width, float height)
 
 void Sprite::setOffset(osg::Vec3 offset)
 {
-	//TODO
+	osg::Vec3 corner = offset;
+
+	osg::Vec3Array* coords = new osg::Vec3Array(4);
+	(*coords)[0] = corner;
+	(*coords)[1] = corner+osg::Vec3(width, 0, 0);
+	(*coords)[2] = corner+osg::Vec3(width, height, 0);
+	(*coords)[3] = corner+osg::Vec3(0, height, 0);
+
+	((osg::Geometry*)this->getDrawable(0))->setVertexArray(coords);
 }
 
 void Sprite::setImage(std::string imageFilename)

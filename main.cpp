@@ -56,9 +56,10 @@ double atand(double x) {
 	return atan(x) * 180/pi;
 }
 
-
+/*
 osg::Vec3 getWorldCoordinates(osg::Node *node)
 {
+
 	osg::Vec3 localPosition;
 	if(node->asTransform() != 0)
 		if(node->asTransform()->asPositionAttitudeTransform() != 0)
@@ -67,7 +68,68 @@ osg::Vec3 getWorldCoordinates(osg::Node *node)
 		return localPosition;	// No parents, which means this is the root node. Or it's not attached to the scene graph. In either case, this is the last node we look at.
 	else
 		return localPosition + getWorldCoordinates(node->getParent(0));	// Add on the position of the parent node.
+
+
 }
+*/
+
+
+
+// Visitor to return the world coordinates of a node.
+// It traverses from the starting node to the parent.
+// The first time it reaches a root node, it stores the world coordinates of
+// the node it started from.  The world coordinates are found by concatenating all
+// the matrix transforms found on the path from the start node to the root node.
+
+class getWorldCoordOfNodeVisitor : public osg::NodeVisitor
+{
+public:
+   getWorldCoordOfNodeVisitor():
+      osg::NodeVisitor(NodeVisitor::TRAVERSE_PARENTS), done(false)
+      {
+         wcMatrix= new osg::Matrixd();
+      }
+      virtual void apply(osg::Node &node)
+      {
+         if (!done)
+         {
+            if ( 0 == node.getNumParents() ) // no parents
+            {
+               wcMatrix->set( osg::computeLocalToWorld(this->getNodePath()) );
+               done = true;
+            }
+            traverse(node);
+         }
+      }
+      osg::Matrixd* giveUpDaMat()
+      {
+         return wcMatrix;
+      }
+private:
+   bool done;
+   osg::Matrix* wcMatrix;
+};
+
+// Given a valid node placed in a scene under a transform, return the
+// world coordinates in an osg::Matrix.
+// Creates a visitor that will update a matrix representing world coordinates
+// of the node, return this matrix.
+// (This could be a class member for something derived from node also.
+
+osg::Matrixd* getWorldCoordinates( osg::Node* node)
+{
+   getWorldCoordOfNodeVisitor* ncv = new getWorldCoordOfNodeVisitor();
+   if (node && ncv)
+   {
+      node->accept(*ncv);
+      return ncv->giveUpDaMat();
+   }
+   else
+   {
+      return NULL;
+   }
+}
+
 
 
 

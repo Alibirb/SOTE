@@ -5,7 +5,6 @@ Item::Item(std::string imageFilename)
 	sprite = new Sprite(imageFilename);
 	transformNode = new osg::PositionAttitudeTransform();
 	transformNode->addChild(sprite);
-	//root->addChild(transformNode);
 }
 
 Item::~Item()

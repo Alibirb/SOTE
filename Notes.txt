@@ -15,9 +15,6 @@ TODO:
 		Add physics to the tilemap.
 		Add ability to load (not run) an AngelScript file, adding all the functions to the context, without destroying what's already there.
 
-	Misc:
-		Level2D should contain lighting, enemies?, and other things that would be in the scene.
-
 
 	Physics:
 		Character controller
@@ -31,6 +28,8 @@ TODO:
 	Development cheats and features:
 		Teleportation
 		Changing game speed
+	Misc:
+		Level2D should contain lighting, enemies?, and other things that would be in the scene.
 
 BUGS:
 	input handler does not respond to releasing a key if Ctrl is pressed. Most likely due to the way OSG reports the button. I think it's a different value if a modkey is pressed.
@@ -38,7 +37,6 @@ BUGS:
 	Seg faults if too many physics objects are created
 	Seg faults if the debug drawer sets the data variance to "dynamic"
 	Console does not appear until window is resized
-	getWorldCoordinates does not account for rotation or MatrixTransform nodes.
 	TiledMap does not account for maps with multiple tilesets.
 
 

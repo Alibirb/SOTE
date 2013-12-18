@@ -12,15 +12,17 @@ Projectile::Projectile(osg::Vec3 startingPosition, osg::Vec3 heading)
 	height = .5;
 	sprite = new Sprite(DEFAULT_PROJECTILE_IMAGE, width, height);
 	transformNode = new osg::PositionAttitudeTransform();
+
 	transformNode->setPosition(position);
 	transformNode->addChild(sprite);
 	root->addChild(transformNode);
 
-	box2DToOsgAdjustment = osg::Vec3(-width/2, -height/2, 0.0);
+	//box2DToOsgAdjustment = osg::Vec3(-width/2, -height/2, 0.0);
+	box2DToOsgAdjustment = osg::Vec3(0.0, 0.0, 0.0);
 
 	b2BodyDef bodyDef;
 	bodyDef.type = b2_dynamicBody;
-	bodyDef.position.Set(position.x() + .5, position.y() +.5);
+	bodyDef.position.Set(position.x() - box2DToOsgAdjustment.x() , position.y() - box2DToOsgAdjustment.y());
 	physicsBody = getCurrentLevel()->getPhysicsWorld()->CreateBody(&bodyDef);
 	b2PolygonShape collisionBox;
 	collisionBox.SetAsBox(width/2, height/2);	// half-extents

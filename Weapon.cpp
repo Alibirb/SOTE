@@ -7,7 +7,7 @@
 Weapon::Weapon() : Item(DEFAULT_WEAPON_IMAGE)
 {
 	projectileStartingTransform = new osg::PositionAttitudeTransform();
-	projectileStartingTransform->setPosition(osg::Vec3(0,.5,0));
+	projectileStartingTransform->setPosition(osg::Vec3(1.0,0,0));
 	transformNode->addChild(projectileStartingTransform);
 }
 
@@ -20,19 +20,19 @@ Weapon::~Weapon()
 void Weapon::fire()
 {
 	//new Projectile(this->getWorldPosition(), target - getWorldPosition());
-	new Projectile(getWorldCoordinates(projectileStartingTransform), target - getWorldCoordinates(projectileStartingTransform));
+	//osg::Vec3 projCoordinates = getWorldCoordinates(projectileStartingTransform)->getTrans();
+	new Projectile(getWorldCoordinates(projectileStartingTransform)->getTrans(), target - getWorldCoordinates(projectileStartingTransform)->getTrans());
 }
 
 
 void Weapon::setRotation(double angle)
 {
-osg::Quat rotation;
-
+	osg::Quat rotation;
 
 	rotation.makeRotate(angle, osg::Vec3(0,0,1));
 
 	transformNode->setAttitude(rotation);
-	}
+}
 
 void Weapon::aimAt(osg::Vec3 target)
 {
@@ -47,7 +47,9 @@ void Weapon::aimAt(osg::Vec3 target)
 		angle += pi;
 	if (angle < 0)
 		angle += 2*pi;
-	rotation.makeRotate(angle - pi/2, osg::Vec3(0,0,1));
+	//rotation.makeRotate(angle - pi/2, osg::Vec3(0,0,1));
+	rotation.makeRotate(angle, osg::Vec3(0,0,1));
+
 
 	transformNode->setAttitude(rotation);
 
@@ -65,5 +67,5 @@ osg::Vec3 Weapon::getPosition()
 osg::Vec3 Weapon::getWorldPosition()
 {
 	//return transformNode->getPosition() + ( (osg::PositionAttitudeTransform*) (transformNode->getParent(0)))->getPosition();
-	return getWorldCoordinates(transformNode);
+	return getWorldCoordinates(transformNode)->getTrans();
 }

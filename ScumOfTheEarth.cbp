@@ -203,6 +203,7 @@
 		<Unit filename="scriptstdstring/scriptstdstring.cpp" />
 		<Unit filename="scriptstdstring/scriptstdstring.h" />
 		<Unit filename="scriptstdstring/scriptstdstring_utils.cpp" />
+		<Unit filename="tests.as" />
 		<Extensions>
 			<code_completion />
 			<debugger />

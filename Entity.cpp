@@ -26,11 +26,12 @@ Entity::Entity(std::string name, osg::Vec3 position, std::string imageFilename)
 	root->addChild(transformNode);
 	transformNode->addChild(modelNode);
 
-	box2DToOsgAdjustment = osg::Vec3(-0.5, -0.5, 0.0);
+	//box2DToOsgAdjustment = osg::Vec3(-0.5, -0.5, 0.0);
+	box2DToOsgAdjustment = osg::Vec3(0.0, 0.0, 0.0);
 
 	b2BodyDef bodyDef;
 	bodyDef.type = b2_kinematicBody;
-	bodyDef.position.Set(position.x() + .5, position.y() +.5);
+	bodyDef.position.Set(position.x() - box2DToOsgAdjustment.x() , position.y() - box2DToOsgAdjustment.y());
 	physicsBody = getCurrentLevel()->getPhysicsWorld()->CreateBody(&bodyDef);
 	b2PolygonShape collisionBox;
 	collisionBox.SetAsBox(.5f, .5f);	// HALF-extents, remember.

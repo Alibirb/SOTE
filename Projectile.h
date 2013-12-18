@@ -8,6 +8,7 @@
 
 #define DEFAULT_PROJECTILE_IMAGE "circle.png"
 
+
 class Projectile : public Item
 {
 protected:
