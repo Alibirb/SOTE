@@ -7,7 +7,8 @@
 #include "Box2DIntegration.h"
 #include "Level2D.h"
 
-
+#include "Enemy.h"
+#include "Player.h"
 
 
 TiledMap::TiledMap(std::string mapFilename)
@@ -24,7 +25,7 @@ TiledMap::TiledMap(std::string mapFilename)
 	std::string imageFilename = mapData->GetTileset(0)->GetImage()->GetSource();
 	osg::Image* image = osgDB::readImageFile(imageFilename);
 	if (!image)
-		std::cout << "could not load image";
+		logError("Could not load tileset image.");
 	geode = new osg::Geode();
 
 	// Set up the StateSet for this map.
@@ -38,59 +39,96 @@ TiledMap::TiledMap(std::string mapFilename)
 	state->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);	// Tell OpenGL that this is a transparent bin, and thus everything should be rendered back-to-front
 
 	for(int i = 0; i < numLayers; ++i)
-	{
 		for(int y = 0; y < sizeY; ++y)
-		{
 			for(int x = 0; x < sizeX; ++x)
 			{
 				int gid = mapData->GetLayer(i)->GetTileId(x, y);
 				if(gid > 0)	// Don't create a tile for blank ones (gid 0).
-				{
 					geode->addDrawable( createTile(osg::Vec3(x, -y - 1, i), 1.0f, 1.0f, gid));
-				}
 			}
-		}
-	}
 
 	for(int i = 0; i < numObjectGroups; ++i)
 	{
-		const Tmx::ObjectGroup *objectGroup = mapData->GetObjectGroup(i);
-		for(int j = 0; j < objectGroup->GetNumObjects(); ++j)
+		if(mapData->GetObjectGroup(i)->GetName() == "Collision")
+			loadCollisionLayer(mapData->GetObjectGroup(i));
+		else if(mapData->GetObjectGroup(i)->GetName() == "Entities")
+			loadEntityLayer(mapData->GetObjectGroup(i));
+		else
 		{
-			physicsBodies.resize(j+1);
-			const Tmx::Object* object = objectGroup->GetObject(j);
-			const Tmx::Polygon* polygon = object->GetPolygon();
-			b2Vec2 *vertices;
-			vertices = new b2Vec2[100];		/// Will crash if the polygon has too many points. Find better solution.
-			for(int k = 0; k < polygon->GetNumPoints(); ++k)
-			{
-				vertices[k] = b2Vec2((polygon->GetPoint(k).x + object->GetX())/ tileWidth, - (polygon->GetPoint(k).y + object->GetY()) / tileHeight);	// TMX file reports positions in pixels, y-down coordinate system.
-			}
-			b2ChainShape shape;
-			shape.CreateLoop(vertices, polygon->GetNumPoints());
-
-			//b2Body *physicsBody;
-			b2BodyDef bodyDef;
-			bodyDef.type = b2_staticBody;
-			//bodyDef.position.Set(object->GetX() / tileWidth, - object->GetY() / tileHeight);
-			bodyDef.position.Set(0,0);
-			physicsBodies[j] = getCurrentLevel()->getPhysicsWorld()->CreateBody(&bodyDef);
-
-			b2FixtureDef fixtureDef;
-			fixtureDef.shape = &shape;
-			fixtureDef.density = 1.0f;
-			fixtureDef.friction = 0.3f;
-			physicsBodies[j]->CreateFixture(&fixtureDef);
-			Box2DUserData *userData = new Box2DUserData;
-			userData->owner = this;
-			userData->ownerType = "Tilemap";
-			physicsBodies[j]->SetUserData(userData);
+			std::ostringstream stream;
+			stream << "Unable to determine function of object layer \"" << mapData->GetObjectGroup(i)->GetName() << "\".";
+			logWarning(stream.str());
 		}
 	}
 
 	transformNode = new osg::PositionAttitudeTransform();
 	transformNode->addChild(geode);
 	root->addChild(transformNode);
+}
+
+void TiledMap::loadCollisionLayer(const Tmx::ObjectGroup *objectGroup)
+{
+	for(int j = 0; j < objectGroup->GetNumObjects(); ++j)
+	{
+		physicsBodies.resize(physicsBodies.size()+1);
+		const Tmx::Object* object = objectGroup->GetObject(j);
+		const Tmx::Polygon* polygon = object->GetPolygon();
+		if(!polygon)
+		{
+			logWarning("Found non-polygon object in collision layer. Ignoring it.");
+			continue;
+		}
+		b2Vec2 *vertices;
+		vertices = new b2Vec2[100];		/// Will crash if the polygon has too many points. Find better solution.
+		for(int k = 0; k < polygon->GetNumPoints(); ++k)
+		{
+			vertices[k] = b2Vec2((polygon->GetPoint(k).x + object->GetX())/ tileWidth, - (polygon->GetPoint(k).y + object->GetY()) / tileHeight);	// TMX file reports positions in pixels, y-down coordinate system.
+		}
+		b2ChainShape shape;
+		shape.CreateLoop(vertices, polygon->GetNumPoints());
+
+		//b2Body *physicsBody;
+		b2BodyDef bodyDef;
+		bodyDef.type = b2_staticBody;
+		//bodyDef.position.Set(object->GetX() / tileWidth, - object->GetY() / tileHeight);
+		bodyDef.position.Set(0,0);
+		physicsBodies[j] = getCurrentLevel()->getPhysicsWorld()->CreateBody(&bodyDef);
+
+		b2FixtureDef fixtureDef;
+		fixtureDef.shape = &shape;
+		fixtureDef.density = 1.0f;
+		fixtureDef.friction = 0.3f;
+		fixtureDef.filter.categoryBits = CollisionCategories::OBSTACLE;
+		fixtureDef.filter.maskBits = CollisionCategories::ALL;
+		physicsBodies[j]->CreateFixture(&fixtureDef);
+		Box2DUserData *userData = new Box2DUserData;
+		userData->owner = this;
+		userData->ownerType = "Tilemap";
+		physicsBodies[j]->SetUserData(userData);
+	}
+}
+
+void TiledMap::loadEntityLayer(const Tmx::ObjectGroup *objectGroup)
+{
+	for(int i = 0; i < objectGroup->GetNumObjects(); ++i)
+	{
+		const Tmx::Object* object = objectGroup->GetObject(i);
+		if(object->GetType() == "Enemy")
+		{
+			new Enemy(object->GetName(), osg::Vec3(object->GetX() / tileWidth, - object->GetY() / tileHeight, 0));
+		}
+		else if(object->GetType() == "Player")
+		{
+			addNewPlayer(object->GetName(), osg::Vec3(object->GetX() / tileWidth, - object->GetY() / tileHeight, 0));
+			setActivePlayer(object->GetName());
+		}
+		else
+		{
+			std::ostringstream stream;
+			stream << "Unable to determine function of object type \"" << object->GetType() << "\" in entity layer.";
+			logWarning(stream.str());
+		}
+	}
 }
 
 

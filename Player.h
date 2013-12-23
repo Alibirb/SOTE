@@ -1,7 +1,8 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "Entity.h"
+#include "Fighter.h"
+#include <unordered_map>
 
 class Weapon;
 
@@ -11,10 +12,10 @@ class Weapon;
 
 class Enemy;
 
-class Player : public Entity
+class Player : public Fighter
 {
 protected:
-	Weapon *equipedWeapon;
+
 public:
 	Player(std::string name, osg::Vec3 position);
 
@@ -33,36 +34,21 @@ public:
 
 	void attack(Enemy *theOneWhoMustDie);
 
-	void equipWeapon(Weapon *theWeapon);
+	void die();
 
-	void aimWeapon(Enemy *theOneWhoMustDie);
+	void onUpdate(float deltaTime);
 
-	Weapon* getWeapon();
-
-	virtual ~Player(){};
+	virtual ~Player();
 protected:
 private:
 };
 
-/**
- * Callback for the player, used to check for input and perform other actions that must be performed once per frame.
- */
-class PlayerNodeCallback : public osg::NodeCallback
-{
-public:
-	Player* _player;
-
-	PlayerNodeCallback(Player * player) {
-		this->_player = player;
-	}
-
-	virtual void operator()(osg::Node* node, osg::NodeVisitor* nv);
-};
 
 
-Player * getActivePlayer();
+Player* getClosestPlayer(osg::Vec3 position);
+Player* getActivePlayer();
 void setActivePlayer(std::string newActivePlayer);
-void addNewPlayer(std::string playerName, osg::Vec3 position = osg::Vec3(0,0,5.0f));
-
+void addNewPlayer(std::string playerName, osg::Vec3 position = osg::Vec3(0,0,0));
+std::unordered_map<std::string, Player*> getPlayers();
 
 #endif // PLAYER_H

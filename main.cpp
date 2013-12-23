@@ -17,7 +17,7 @@ using namespace std;
 
 
 /// Variables declared extern in globals.h
-osg::Group* root;
+osg::ref_ptr<osg::Group> root;
 osg::Group* lightGroup;
 osgViewer::Viewer viewer;
 int windowWidth, windowHeight;
@@ -56,31 +56,16 @@ double atand(double x) {
 	return atan(x) * 180/pi;
 }
 
-/*
-osg::Vec3 getWorldCoordinates(osg::Node *node)
+float getDistance(osg::Vec3 a, osg::Vec3 b)
 {
-
-	osg::Vec3 localPosition;
-	if(node->asTransform() != 0)
-		if(node->asTransform()->asPositionAttitudeTransform() != 0)
-			localPosition = node->asTransform()->asPositionAttitudeTransform()->getPosition();
-	if (node->getNumParents() == 0)
-		return localPosition;	// No parents, which means this is the root node. Or it's not attached to the scene graph. In either case, this is the last node we look at.
-	else
-		return localPosition + getWorldCoordinates(node->getParent(0));	// Add on the position of the parent node.
-
-
+	return sqrt(pow(a.x() - b.x(), 2) + pow(a.y() - b.y(), 2) + pow(a.z() - b.z(), 2));
 }
-*/
 
 
 
-// Visitor to return the world coordinates of a node.
-// It traverses from the starting node to the parent.
-// The first time it reaches a root node, it stores the world coordinates of
-// the node it started from.  The world coordinates are found by concatenating all
-// the matrix transforms found on the path from the start node to the root node.
-
+/// Visitor to return the world coordinates of a node.
+/// It traverses from the starting node to the parent.
+/// The first time it reaches a root node, it stores the world coordinates of the node it started from.  The world coordinates are found by concatenating all the matrix transforms found on the path from the start node to the root node.
 class getWorldCoordOfNodeVisitor : public osg::NodeVisitor
 {
 public:
@@ -110,12 +95,9 @@ private:
    osg::Matrix* wcMatrix;
 };
 
-// Given a valid node placed in a scene under a transform, return the
-// world coordinates in an osg::Matrix.
-// Creates a visitor that will update a matrix representing world coordinates
-// of the node, return this matrix.
-// (This could be a class member for something derived from node also.
-
+/// Given a valid node placed in a scene under a transform, return the world coordinates in an osg::Matrix.
+/// Creates a visitor that will update a matrix representing world coordinates of the node, return this matrix.
+/// (This could be a class member for something derived from node also.)
 osg::Matrixd* getWorldCoordinates( osg::Node* node)
 {
    getWorldCoordOfNodeVisitor* ncv = new getWorldCoordOfNodeVisitor();
@@ -127,10 +109,38 @@ osg::Matrixd* getWorldCoordinates( osg::Node* node)
    else
    {
       return NULL;
+      logWarning("Got NULL world coordinates");
    }
 }
 
 
+void GameOverYouLose()
+{
+	std::cout << "You Lose." << std::endl;
+	// TODO: should actually end the game.
+}
+
+bool safeToAddRemoveNodes;
+std::deque<std::pair<Node*,Group*>> nodesToAdd;
+
+void addToSceneGraph(Node* node, Group* parent)
+{
+	if(safeToAddRemoveNodes)
+		parent->addChild(node);
+	else
+	{
+		nodesToAdd.push_back(std::pair<Node*,Group*>(node, parent));
+	}
+}
+void addNodesToGraph()
+{
+	while(!nodesToAdd.empty())
+	{
+		std::pair<Node*,Group*> nodeAndParent = nodesToAdd.front();
+		nodeAndParent.second->addChild(nodeAndParent.first);
+		nodesToAdd.pop_front();
+	}
+}
 
 
 int main()
@@ -138,6 +148,7 @@ int main()
 	root = new osg::Group();
 	lightGroup = new osg::Group();
 	root->addChild(lightGroup);
+	safeToAddRemoveNodes = true;
 
 	//  Set up asset search paths
 	osgDB::FilePathList pathList = osgDB::getDataFilePathList();
@@ -149,8 +160,6 @@ int main()
 
 	Level2D *level;
 	level = new Level2D("media/smallTestMap(base64).tmx");
-	addNewPlayer("thePlayer", osg::Vec3(0.0f, 0.0f, 0.0f));
-	setActivePlayer("thePlayer");
 
 
 	osg::Light* sun = new osg::Light;
@@ -179,8 +188,6 @@ int main()
 	//getScriptEngine()->test();
 
 	getScriptEngine()->runFile("initialize.as");
-
-
 
 
 	AngelScriptConsole* console = new AngelScriptConsole();
@@ -223,9 +230,17 @@ int main()
 		playerCoordinatesStream << "Player: " << getActivePlayer()->getPosition().x() << ", " << getActivePlayer()->getPosition().y() << ", " << getActivePlayer()->getPosition().z() << std::endl;
 		getDebugDisplayer()->addText(playerCoordinatesStream);
 
-		viewer.frame();
 
 		removeExpiredObjects();
+
+		safeToAddRemoveNodes = false;
+		viewer.frame(deltaTime);
+		safeToAddRemoveNodes = true;
+		addNodesToGraph();
+
+		//std::cout << "Frame" << std::endl;
+
+
 
 	}
 	return 0;

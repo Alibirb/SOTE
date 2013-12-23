@@ -24,11 +24,15 @@ private:
 	osg::Vec4Array* _filledPolygonColors;
 
 	float drawZCoordinate = 1.0;	// The z-coordinate to place the debug drawing.
-	bool active;
+	bool _enabled;
+	bool _drawing;
 
 public:
 	DebugDrawer();
 	virtual ~DebugDrawer();
+
+	void setEnabled(bool enable);
+	bool isEnabled();
 
 	void beginDraw();
 	void endDraw();

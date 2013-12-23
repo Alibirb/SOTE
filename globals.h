@@ -22,11 +22,9 @@
 #include "ExpiredObjectRemoval.h"
 
 
+using namespace osg;
 
-
-
-
-extern osg::Group* root;
+extern osg::ref_ptr<osg::Group> root;
 extern osg::Group* lightGroup;
 extern osgViewer::Viewer viewer;
 const double pi = 3.14159265358979323846;
@@ -45,10 +43,18 @@ double acosd(double x);
 double atand(double x);
 
 
-//osg::Vec3 getWorldCoordinates(osg::Node *node);
 osg::Matrixd* getWorldCoordinates( osg::Node* node);
 
+float getDistance(osg::Vec3 a, osg::Vec3 b);
+
 double getDeltaTime();
+
+/// Called when the game is lost.
+void GameOverYouLose();
+
+/// Adds a node to the graph as a child of the specified parent, if it's safe to do so (not during a scene graph traversal).
+/// If it's not safe, puts the node on a list of additions, and adds it once it's safe.
+void addToSceneGraph(Node* node, Group* parent=root);
 
 
 

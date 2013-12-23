@@ -26,5 +26,14 @@ struct Box2DUserData
 	void* owner;
 };
 
+enum CollisionCategories {
+	HIT_BOX = 0x0002,
+	PAIN_SOURCE = 0x0004,
+	OBSTACLE = 0x0008,
+
+
+	ALL = 0xFFFF
+};
+
 
 #endif // BOX2DINTEGRATION_H_

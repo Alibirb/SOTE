@@ -25,14 +25,14 @@ void PhysicsContactListener::BeginContact(b2Contact* contact)
 		return;
 	}
 
-	if(dataA->ownerType == "Projectile" && dataB->ownerType == "Enemy")
+	if(dataA->ownerType == "Projectile" && (dataB->ownerType == "Enemy" || dataB->ownerType == "Player") )
 	{
-		((Enemy*)dataB->owner)->takeDamage(10.0);
+		((Fighter*)dataB->owner)->takeDamage(((Projectile*)dataA->owner)->getDamage());
 		((Projectile*)dataA->owner)->onCollision();
 	}
-	else if(dataA->ownerType == "Enemy" && dataB->ownerType == "Projectile")
+	else if((dataA->ownerType == "Enemy" || dataA->ownerType == "Player") && dataB->ownerType == "Projectile")
 	{
-		((Enemy*)dataA->owner)->takeDamage(10.0);
+		((Fighter*)dataA->owner)->takeDamage(((Projectile*)dataB->owner)->getDamage());
 		((Projectile*)dataB->owner)->onCollision();
 	}
 }

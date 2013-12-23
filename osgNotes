@@ -1,0 +1,2 @@
+
+Data variance-- set to dynamic if you plan to dynamically update the object, so it knows not to overlap the draw and event/update traversals (multi-threading)

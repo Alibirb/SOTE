@@ -4,14 +4,15 @@
 
 
 std::string activePlayerName;
-std::map<std::string, Player*> playerList;
+std::unordered_map<std::string, Player*> players;	/// List of all Players, identified by their name.
 
 
-Player::Player(std::string name, osg::Vec3 position) : Entity(name, position, DEFAULT_PLAYER_IMAGE)
+Player::Player(std::string name, osg::Vec3 position) : Fighter(name, position, DEFAULT_PLAYER_IMAGE)
 {
-	modelNode->setUpdateCallback(new PlayerNodeCallback(this));
-	equipWeapon(new Weapon());
-	transformNode->addChild(equipedWeapon->getTransformNode());
+	Box2DUserData *userData = new Box2DUserData;
+	userData->owner = this;
+	userData->ownerType = "Player";
+	physicsBody->SetUserData(userData);
 }
 
 void Player::setPosition(osg::Vec3 newPosition)
@@ -39,44 +40,57 @@ void Player::attack(Enemy *theOneWhoMustDie)
 	equipedWeapon->fire();
 }
 
-void Player::equipWeapon(Weapon *theWeapon)
-{
-	equipedWeapon = theWeapon;
-}
-
-void Player::aimWeapon(Enemy *theOneWhoMustDie)
-{
-	equipedWeapon->aimAt(theOneWhoMustDie->getPosition());
-}
-
-Weapon* Player::getWeapon()
-{
-	return equipedWeapon;
-}
-
 bool Player::isActivePlayer()
 {
 	return ( activePlayerName == this->name);
 }
 
-
-
-void PlayerNodeCallback::operator()(osg::Node* node, osg::NodeVisitor* nv)
+void Player::die()
 {
-	if (_player->isActivePlayer())
+	this->state = dead;
+	if(getPlayers().size() == 1)
 	{
-
+		// Last Player. Game Over
+		GameOverYouLose();
 	}
+	else
+		logError("Not implemented.");
+}
 
-	traverse(node, nv);	// need to call this so scene graph traversal continues.
+void Player::onUpdate(float deltaTime)
+{
+
+}
+
+Player::~Player()
+{
+	std::cout << "Player destructor called" << std::endl;
 }
 
 
 
 
+Player* getClosestPlayer(osg::Vec3 position)
+{
+	Player* closest;
+	float shortestDistance = 9999999999999999999;
+
+	for(auto kv : players)
+	{
+		Player* p = kv.second;	// Get the Player from the key-value pair.
+		if(getDistance(position, p->getPosition()) < shortestDistance)
+		{
+			closest = p;
+			shortestDistance = getDistance(position, p->getPosition());
+		}
+	}
+
+	return closest;
+}
+
 Player* getActivePlayer()
 {
-	return playerList[activePlayerName];
+	return players[activePlayerName];
 }
 
 void setActivePlayer(std::string newActivePlayerName)
@@ -86,5 +100,10 @@ void setActivePlayer(std::string newActivePlayerName)
 
 void addNewPlayer(std::string playerName, osg::Vec3 position)
 {
-	playerList[playerName] = new Player(playerName, position);
+	players[playerName] = new Player(playerName, position);
+}
+
+std::unordered_map<std::string, Player*> getPlayers()
+{
+	return players;
 }

@@ -9,6 +9,7 @@
 #include "PhysicsNodeCallback.h"
 #include "Level2D.h"
 #include "Sprite.h"
+#include "Weapon.h"
 
 #include <osgDB/ReadFile>
 #include <osgDB/FileUtils>
@@ -23,23 +24,42 @@ Entity::Entity(std::string name, osg::Vec3 position, std::string imageFilename)
 	transformNode->setPosition(position);
 
 	modelNode = new Sprite(imageFilename);
+	modelNode->setUpdateCallback(new EntityUpdateNodeCallback(this));
 	root->addChild(transformNode);
 	transformNode->addChild(modelNode);
 
-	//box2DToOsgAdjustment = osg::Vec3(-0.5, -0.5, 0.0);
+
 	box2DToOsgAdjustment = osg::Vec3(0.0, 0.0, 0.0);
 
 	b2BodyDef bodyDef;
-	bodyDef.type = b2_kinematicBody;
+	bodyDef.type = b2_dynamicBody;
 	bodyDef.position.Set(position.x() - box2DToOsgAdjustment.x() , position.y() - box2DToOsgAdjustment.y());
 	physicsBody = getCurrentLevel()->getPhysicsWorld()->CreateBody(&bodyDef);
-	b2PolygonShape collisionBox;
-	collisionBox.SetAsBox(.125f, .5f);	// HALF-extents, remember.
-	physicsBody->CreateFixture(&collisionBox, 0.0f);
+
+	// Create fixture for obstacle collision (around the feet)
+	b2FixtureDef bodyFixtureDef;
+	b2CircleShape bodyShape;
+	bodyShape.m_radius = .125f;
+	bodyShape.m_p = b2Vec2(0, -.4);
+	bodyFixtureDef.shape = &bodyShape;
+	bodyFixtureDef.filter.categoryBits = CollisionCategories::OBSTACLE;
+	bodyFixtureDef.filter.maskBits = CollisionCategories::ALL;
+	physicsBody->CreateFixture(&bodyFixtureDef);
+
+	// Create hit box
+	b2FixtureDef hitBoxFixtureDef;
+	b2PolygonShape hitBoxShape;
+	hitBoxShape.SetAsBox(.125f, .5f, b2Vec2(0, 0), 0.0);
+	hitBoxFixtureDef.shape = &hitBoxShape;
+	hitBoxFixtureDef.filter.categoryBits = CollisionCategories::HIT_BOX;
+	hitBoxFixtureDef.filter.maskBits = CollisionCategories::PAIN_SOURCE;
+	b2Fixture *hitBoxFixture = physicsBody->CreateFixture(&hitBoxFixtureDef);
+
 	Box2DUserData *userData = new Box2DUserData;
 	userData->owner = this;
 	userData->ownerType = "Entity";
 	physicsBody->SetUserData(userData);
+
 
 	transformNode->setUpdateCallback(new PhysicsNodeCallback(transformNode, physicsBody, box2DToOsgAdjustment));
 
@@ -57,3 +77,14 @@ void Entity::jump()
 {
 
 }
+
+
+
+
+void EntityUpdateNodeCallback::operator()(osg::Node* node, osg::NodeVisitor* nv)
+{
+	_owner->onUpdate(getDeltaTime());
+	traverse(node, nv);	// need to call this so scene graph traversal continues.
+}
+
+

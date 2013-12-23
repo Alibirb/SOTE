@@ -34,16 +34,30 @@ DebugDrawer::DebugDrawer()
 	_filledPolygonGeometry->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
 	_geode->addDrawable(_filledPolygonGeometry);
 
-
 	root->addChild(_geode);
+	setEnabled(true);
 
-	active = false;
+	_drawing = false;
 }
 
 DebugDrawer::~DebugDrawer()
 {
 	//dtor
 }
+
+void DebugDrawer::setEnabled(bool enable)
+{
+	if(!enable)
+	{
+		beginDraw();
+	}
+	_enabled = enable;
+}
+bool DebugDrawer::isEnabled()
+{
+	return _enabled;
+}
+
 
 void DebugDrawer::beginDraw()
 {
@@ -61,7 +75,7 @@ void DebugDrawer::beginDraw()
 		_filledPolygonColors->clear();
 	}
 
-	active = true;
+	_drawing = true;
 }
 
 void DebugDrawer::endDraw()
@@ -73,12 +87,15 @@ void DebugDrawer::endDraw()
 		//_filledPolygonGeometry->addPrimitiveSet(new osg::DrawArrays(GL_POLYGON, 0, _filledPolygonVertices->size()));
 		_filledPolygonGeometry->addPrimitiveSet(new osg::DrawArrays(GL_QUADS, 0, _filledPolygonVertices->size()));
 
-	active = false;
+	_drawing = false;
 }
 
 /// Draw a closed polygon provided in CCW order.
 void DebugDrawer::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
 {
+	if(!_enabled)
+		return;
+
 	for (int i = 0; i < vertexCount; ++i)
 	{
 		if (i == vertexCount - 1)
@@ -92,6 +109,8 @@ void DebugDrawer::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b
 /// BUG: Current implementation (when set to draw solid) does not work for non-quads.
 void DebugDrawer::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
 {
+	if(!_enabled)
+		return;
 #ifdef DO_SOLID_DRAWING
 	for (int i = 0; i < vertexCount; ++i)
 	{
@@ -106,6 +125,9 @@ void DebugDrawer::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, co
 /// Draw a circle.
 void DebugDrawer::DrawCircle(const b2Vec2& center, float32 radius, const b2Color& color)
 {
+	if(!_enabled)
+		return;
+
 	static int numSegments = 16;
 	b2Vec2 vertices[numSegments];
 
@@ -131,6 +153,9 @@ void DebugDrawer::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2
 /// Draw a line segment.
 void DebugDrawer::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color)
 {
+	if(!_enabled)
+		return;
+
 	_lineVertices->push_back(b2Vec2ToOsgVec3(p1, drawZCoordinate));
 	_lineVertices->push_back(b2Vec2ToOsgVec3(p2, drawZCoordinate));
 
@@ -143,6 +168,9 @@ void DebugDrawer::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color&
 /// @param xf a transform.
 void DebugDrawer::DrawTransform(const b2Transform& xf)
 {
+	if(!_enabled)
+		return;
+
 	//TODO:
 	getDebugDisplayer()->addText("DebugDrawer DrawTransform not implemented\n");
 }

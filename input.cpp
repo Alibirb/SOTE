@@ -11,6 +11,7 @@
 
 #include "Player.h"
 #include "Enemy.h"
+#include "Level2D.h"
 
 
 
@@ -48,7 +49,7 @@ bool MainEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIAction
 
 
 		if(_inputMode != InputMode::Standard)
-			return false;	// In non-standard input mode, we track keystate, but don't act on anything.
+			return false;	// In non-standard input mode, we still track keystate, but nothing gets triggered.
 
 		if (ea.getKey() == 'r')
 		{
@@ -56,12 +57,16 @@ bool MainEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIAction
 			getActivePlayer()->resetPosition();
 			Enemy *enemy = new Enemy("theEnemy", osg::Vec3(5.0, 5.0, 0.0));
 		}
+		else if (ea.getKey() == 'p')
+		{
+			getCurrentLevel()->getDebugDrawer()->setEnabled(!getCurrentLevel()->getDebugDrawer()->isEnabled());
+		}
 		if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Return)
 			if (getEnemies().size() > 0)
-				getActivePlayer()->attack(getEnemies().front());
+				getActivePlayer()->attack(getClosestEnemy(getActivePlayer()->getPosition(), getEnemies()));
 		if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Space)
 			if (getEnemies().size() > 0)
-				getActivePlayer()->aimWeapon(getEnemies().front());
+				getActivePlayer()->aimWeapon(getClosestEnemy(getActivePlayer()->getPosition(), getEnemies()));
 		return false;
 	}
 	case(osgGA::GUIEventAdapter::KEYUP):

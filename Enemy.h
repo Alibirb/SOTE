@@ -1,19 +1,20 @@
 #ifndef ENEMY_H
 #define ENEMY_H
 
-#include "Entity.h"
+#include "Fighter.h"
 
 #define DEFAULT_ENEMY_IMAGE "enemy.png"
 
-class Enemy : public Entity
+class Enemy : public Fighter
 {
 protected:
-	float health = 10.0;
+
 public:
 	Enemy(std::string name, osg::Vec3 position);
 	void attack();
-	void takeDamage(float amount);
+	void die();
 	virtual ~Enemy();
+	virtual void onUpdate(float deltaTime);
 
 protected:
 private:
@@ -22,6 +23,9 @@ private:
 
 std::list<Enemy*> getEnemies();
 void addEnemy(Enemy* newEnemy);
+
+/// Returns the closest Enemy to the specified position
+Enemy* getClosestEnemy(osg::Vec3 position, std::list<Enemy*> possibilities = getEnemies());
 
 
 #endif // ENEMY_H

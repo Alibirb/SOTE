@@ -27,6 +27,13 @@ private:
 
 	/// Returns the texture coordinates for the given gid
 	osg::Vec2Array* getTextureCoordinates(int gid);
+
+	/// Loads a collision layer
+	void loadCollisionLayer(const Tmx::ObjectGroup *objectGroup);
+
+	/// Loads an entity placement layer
+	void loadEntityLayer(const Tmx::ObjectGroup *objectGroup);
+
 public:
 	TiledMap(std::string mapFilename);
 	virtual ~TiledMap();

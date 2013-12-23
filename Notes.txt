@@ -11,15 +11,16 @@ Plot: (this is long-winded right now)
 		It has to be more than "someone is chasing him"; he needs to be trying to STOP something.
 
 TODO:
+	Current Task:
 	Next Steps:
-		Player should collide with objects (not go through them).
 
+	Weapon system
 	Add ability to load (not run) an AngelScript file, adding all the functions to the context, without destroying what's already there.
 	Animation
 	AI:
-		Enemies should attack, run, et cetera.
+		Enemies need more intelligent behavior (e.g. dodge)
 	Physics:
-		Character controller
+		Should have two collision categories for obstacles: ground-level and body-level. Projectiles will be stopped by body-level obstacles (e.g. trees), but not ground-level (e.g. water).
 	Stuff for first playable
 	Input:
 		Should be able to register a function to be executed on key press/release. Function will likely be in AngelScript.
@@ -27,7 +28,8 @@ TODO:
 	Development cheats and features:
 		Teleportation
 		Changing game speed
-	Level2D should contain lighting, enemies?, and other things that would be in the scene.
+	Level2D should contain lighting, enemies, and other things that would be in the scene.
+	Make sure it all works on Windows (with the exception of the extra mouse button support I added)
 
 BUGS:
 	input handler does not respond to releasing a key if Ctrl is pressed. Most likely due to the way OSG reports the button. I think it's a different value if a modkey is pressed.
@@ -36,6 +38,9 @@ BUGS:
 	Seg faults if the debug drawer sets the data variance to "dynamic"
 	Console does not appear until window is resized
 	TiledMap does not account for maps with multiple tilesets.
+
+Things to remember to prevent bugs:
+	It is NOT safe to alter the scene graph during a traversal (multi-threaded, multiple traversals happen at the same time). To ensure that doesn't happen, use the addToSceneGraph function for any new nodes, rather than adding them directly.
 
 
 Useful notes:
@@ -46,7 +51,6 @@ Scripting Uses:
 	Input-- so that options can be set more easily. In addition to the standard key bindings, it'll also be possible to define custom controls that depend on more than a single binding.
 	AI?
 	Weapons/attacks/enemies
-	Main usage is for me, but there may be some things that players will want to customize. Granted, using AngelScript makes it a bit more difficult for non-programmers, but honestly, nobody's gonna get this game, anyway.
 	"You want to expose capable, but soulless actors to your scripting code. The scripting code describes what the actors should do, but the C++ code takes care of the how."	-- http://stackoverflow.com/questions/609076/the-role-of-scripting-languages-in-game-programming
 
 Expose to scripting:

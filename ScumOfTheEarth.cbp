@@ -71,6 +71,8 @@
 		<Unit filename="Entity.h" />
 		<Unit filename="ExpiredObjectRemoval.cpp" />
 		<Unit filename="ExpiredObjectRemoval.h" />
+		<Unit filename="Fighter.cpp" />
+		<Unit filename="Fighter.h" />
 		<Unit filename="Item.cpp" />
 		<Unit filename="Item.h" />
 		<Unit filename="Level2D.cpp" />
@@ -193,6 +195,7 @@
 		<Unit filename="input.cpp" />
 		<Unit filename="input.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="osgNotes" />
 		<Unit filename="script.as" />
 		<Unit filename="scriptarray/scriptarray.cpp" />
 		<Unit filename="scriptarray/scriptarray.h" />
