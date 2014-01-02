@@ -14,9 +14,8 @@
 #include "Box2DIntegration.h"
 
 
-#define DEFAULT_ENTITY_IMAGE "test.png"
 
-class Weapon;
+
 
 /// Class for characters
 /// TODO: Should probably be called "Character".
@@ -41,7 +40,9 @@ public:
 
 	State state;
 
-	Entity(std::string name, osg::Vec3 position, std::string imageFilename = DEFAULT_ENTITY_IMAGE);
+	Entity(std::string name, osg::Vec3 position);
+
+	void setSpriteImage(std::string imageFilename);
 
 	virtual void jump();
 

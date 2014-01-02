@@ -18,7 +18,7 @@ using namespace std;
 
 /// Variables declared extern in globals.h
 osg::ref_ptr<osg::Group> root;
-osg::Group* lightGroup;
+osg::ref_ptr<osg::Group> lightGroup;
 osgViewer::Viewer viewer;
 int windowWidth, windowHeight;
 double deltaTime;
@@ -183,10 +183,11 @@ int main()
 	viewer.realize();
 
 
-	getScriptEngine()->initialize();
-
+	//getScriptEngine()->initialize();
 	//getScriptEngine()->test();
-
+	//getScriptEngine()->runFile("script.as");
+	getScriptEngine()->runFile("initialize.as");
+	getScriptEngine()->runFile("script.as");
 	getScriptEngine()->runFile("initialize.as");
 
 
@@ -239,9 +240,9 @@ int main()
 		addNodesToGraph();
 
 		//std::cout << "Frame" << std::endl;
-
-
-
 	}
+	root = NULL;
+	lightGroup = NULL;
+
 	return 0;
 }

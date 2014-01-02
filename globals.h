@@ -25,7 +25,7 @@
 using namespace osg;
 
 extern osg::ref_ptr<osg::Group> root;
-extern osg::Group* lightGroup;
+extern ref_ptr<osg::Group> lightGroup;
 extern osgViewer::Viewer viewer;
 const double pi = 3.14159265358979323846;
 extern int windowWidth;

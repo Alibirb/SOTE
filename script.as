@@ -1,6 +1,7 @@
 void run()
 {
 	print("IT FUCKING WORKS!!\n");
+	print(calc(9,4));
 }
 
 void main()

@@ -5,12 +5,12 @@
 
 PhysicsContactListener::PhysicsContactListener()
 {
-	//ctor
+
 }
 
 PhysicsContactListener::~PhysicsContactListener()
 {
-	//dtor
+
 }
 
 void PhysicsContactListener::BeginContact(b2Contact* contact)
@@ -27,12 +27,12 @@ void PhysicsContactListener::BeginContact(b2Contact* contact)
 
 	if(dataA->ownerType == "Projectile" && (dataB->ownerType == "Enemy" || dataB->ownerType == "Player") )
 	{
-		((Fighter*)dataB->owner)->takeDamage(((Projectile*)dataA->owner)->getDamage());
+		((Fighter*)dataB->owner)->takeDamages(((Projectile*)dataA->owner)->getDamages());
 		((Projectile*)dataA->owner)->onCollision();
 	}
 	else if((dataA->ownerType == "Enemy" || dataA->ownerType == "Player") && dataB->ownerType == "Projectile")
 	{
-		((Fighter*)dataA->owner)->takeDamage(((Projectile*)dataB->owner)->getDamage());
+		((Fighter*)dataA->owner)->takeDamages(((Projectile*)dataB->owner)->getDamages());
 		((Projectile*)dataB->owner)->onCollision();
 	}
 }

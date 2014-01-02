@@ -35,6 +35,8 @@ DWORD timeGetTime();
 
 #include "globals.h"
 
+#include "stdvector.h"
+
 using namespace std;
 
 void print(std::string& msg);
@@ -61,8 +63,8 @@ public:
 
 	virtual bool eval(const std::string& code);
 
-	/// Loads a file and runs the run() function
-	virtual bool runFile(const std::string& filePath);
+	/// Loads a file and runs the specified function
+	virtual bool runFile(const std::string& filePath, const char* functionName="void run()");
 
 	void registerFunction(const char *declaration, const asSFuncPtr &funcPointer, asDWORD callConv = asCALL_CDECL)
 	{
@@ -79,7 +81,7 @@ public:
 			logError("Could not register property.");
 	}
 
-	/// Registers an object type.
+	/// Registers an object type, along with default constructor and destructor.
 	/// See http://www.angelcode.com/angelscript/sdk/docs/manual/doc_register_val_type.html for explanation of how it works.
 	/// Use GetTypeTraits<type>() to automatically determine the appropriate traits. (With C++11 compiler).
 	void registerObjectType(const char *obj, int byteSize, asDWORD flags, const asSFuncPtr &constructorPointer, const asSFuncPtr &destructorPointer)
@@ -91,6 +93,22 @@ public:
 		r = engine->RegisterObjectBehaviour(obj, asBEHAVE_CONSTRUCT, "void f()", constructorPointer, asCALL_CDECL_OBJLAST);
 		assert( r >= 0 );
 		r = engine->RegisterObjectBehaviour(obj, asBEHAVE_DESTRUCT, "void f()", destructorPointer, asCALL_CDECL_OBJLAST);
+		assert( r >= 0 );
+	}
+
+	/// Registers an object type.
+	/// See http://www.angelcode.com/angelscript/sdk/docs/manual/doc_register_val_type.html for explanation of how it works.
+	/// Use GetTypeTraits<type>() to automatically determine the appropriate traits. (With C++11 compiler).
+	void registerObjectType(const char *obj, int byteSize, asDWORD flags)
+	{
+		int r = engine->RegisterObjectType(obj, byteSize, flags);
+		if(r < 0)
+			logError("Could not register object type.");
+	}
+
+	void registerDestructor(const char *obj, const asSFuncPtr &funcPointer)
+	{
+		int r = engine->RegisterObjectBehaviour(obj, asBEHAVE_DESTRUCT, "void f()", funcPointer, asCALL_CDECL_OBJLAST);
 		assert( r >= 0 );
 	}
 
@@ -146,7 +164,39 @@ public:
 			}
 	}
 
+	template<typename T>
+	void registerVector(std::string vectorName, std::string typeName)
+	{
+		RegisterVector<T>(vectorName, typeName, engine);
+	}
 
+
+
+	void registerEnumValues(const char* enumType)
+	{
+		// Base condition. Out of values
+	}
+
+
+	template<typename... Targs>
+	void registerEnumValues(const char* enumType, const char * valueName, int value, Targs... Fargs)
+	{
+		int r = engine->RegisterEnumValue(enumType, valueName, value);
+		assert(r >= 0);
+		registerEnumValues(enumType, Fargs...);
+	}
+
+
+	template<typename... Targs>
+	void registerEnum(const char * type, Targs... Fargs)
+	{
+		int r = engine->RegisterEnum(type);
+		assert(r >= 0);
+		registerEnumValues(type, Fargs...);
+	}
+
+	/// Registers a typedef. Currently only works for built-in primitive types.
+	void registerTypedef(const char * type, const char * decl);
 
 	void setArguments(int index)
 	{
@@ -238,6 +288,7 @@ public:
 				return;
 			}
 		}
+		//func->Release();
 	}
 
 	int getReturnInt()
@@ -263,6 +314,12 @@ public:
 	}
 
 	void test();
+
+	/// DO NOT USE. For debugging purposes only.
+	asIScriptEngine* getInternalEngine()
+	{
+		return engine;
+	}
 
 
 protected:

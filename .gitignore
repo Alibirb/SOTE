@@ -2,4 +2,5 @@ bin/
 obj/
 *.depend
 *.layout
+*.cbTemp
 *~

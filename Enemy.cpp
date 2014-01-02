@@ -5,7 +5,7 @@
 std::list<Enemy*> enemyList;
 
 
-Enemy::Enemy(std::string name, osg::Vec3 position) : Fighter(name, position, DEFAULT_ENEMY_IMAGE)
+Enemy::Enemy(std::string name, osg::Vec3 position) : Fighter(name, position)
 {
 	addEnemy(this);	// put this Enemy in the enemyList.
 	Box2DUserData *userData = new Box2DUserData;

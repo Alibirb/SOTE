@@ -136,19 +136,19 @@
   <object name="Player" type="Player" x="57" y="39" width="42" height="35">
    <ellipse/>
   </object>
-  <object name="Enemy" type="Enemy" x="144" y="309" width="43" height="37">
+  <object name="Human" type="Enemy" x="144" y="309" width="43" height="37">
    <ellipse/>
   </object>
-  <object name="Enemy" type="Enemy" x="368" y="527" width="43" height="37">
+  <object name="Human" type="Enemy" x="368" y="527" width="43" height="37">
    <ellipse/>
   </object>
-  <object name="Enemy" type="Enemy" x="229" y="792" width="43" height="37">
+  <object name="Human" type="Enemy" x="229" y="792" width="43" height="37">
    <ellipse/>
   </object>
-  <object name="Enemy" type="Enemy" x="883" y="555" width="43" height="37">
+  <object name="Human" type="Enemy" x="883" y="555" width="43" height="37">
    <ellipse/>
   </object>
-  <object name="Enemy" type="Enemy" x="889" y="72" width="43" height="37">
+  <object name="Human" type="Enemy" x="889" y="72" width="43" height="37">
    <ellipse/>
   </object>
  </objectgroup>

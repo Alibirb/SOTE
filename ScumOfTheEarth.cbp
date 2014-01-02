@@ -63,6 +63,8 @@
 		<Unit filename="Box2DIntegration.cpp" />
 		<Unit filename="Box2DIntegration.h" />
 		<Unit filename="C++.notes" />
+		<Unit filename="Damage.cpp" />
+		<Unit filename="Damage.h" />
 		<Unit filename="DebugDrawer.cpp" />
 		<Unit filename="DebugDrawer.h" />
 		<Unit filename="Enemy.cpp" />
@@ -195,6 +197,10 @@
 		<Unit filename="input.cpp" />
 		<Unit filename="input.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="media/Entities/Human.as" />
+		<Unit filename="media/Entities/Player.as" />
+		<Unit filename="media/Projectiles/DefaultProjectile.as" />
+		<Unit filename="media/Weapons/Staff.as" />
 		<Unit filename="osgNotes" />
 		<Unit filename="script.as" />
 		<Unit filename="scriptarray/scriptarray.cpp" />
@@ -206,6 +212,7 @@
 		<Unit filename="scriptstdstring/scriptstdstring.cpp" />
 		<Unit filename="scriptstdstring/scriptstdstring.h" />
 		<Unit filename="scriptstdstring/scriptstdstring_utils.cpp" />
+		<Unit filename="stdvector.h" />
 		<Unit filename="tests.as" />
 		<Extensions>
 			<code_completion />

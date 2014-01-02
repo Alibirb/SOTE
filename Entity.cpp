@@ -15,7 +15,7 @@
 #include <osgDB/FileUtils>
 
 
-Entity::Entity(std::string name, osg::Vec3 position, std::string imageFilename)
+Entity::Entity(std::string name, osg::Vec3 position)
 {
 	initialPosition = position;
 
@@ -23,7 +23,7 @@ Entity::Entity(std::string name, osg::Vec3 position, std::string imageFilename)
 	transformNode = new osg::PositionAttitudeTransform();
 	transformNode->setPosition(position);
 
-	modelNode = new Sprite(imageFilename);
+	modelNode = new Sprite();
 	modelNode->setUpdateCallback(new EntityUpdateNodeCallback(this));
 	root->addChild(transformNode);
 	transformNode->addChild(modelNode);
@@ -71,6 +71,12 @@ Entity::~Entity()
 {
 	transformNode->getParent(0)->removeChild(transformNode);	// remove the node from the scenegraph.
 	getCurrentLevel()->getPhysicsWorld()->DestroyBody(physicsBody);
+}
+
+void Entity::setSpriteImage(std::string imageFilename)
+{
+	//dynamic_cast<Sprite*>(modelNode)->setImage(imageFilename);
+	dynamic_pointer_cast<Sprite>(modelNode)->setImage(imageFilename);
 }
 
 void Entity::jump()

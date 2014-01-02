@@ -12,10 +12,15 @@ Plot: (this is long-winded right now)
 
 TODO:
 	Current Task:
-	Next Steps:
 
-	Weapon system
-	Add ability to load (not run) an AngelScript file, adding all the functions to the context, without destroying what's already there.
+	Next Steps:
+		Add text in particular place when an event occurs (e.g. -damageAmount when an entity takes damage)
+		Add more enemies and weapons.
+
+	Scripting:
+		Add ability to load (not run) an AngelScript file, adding functions, variabels, object types, etc to the current context/module.
+			Can use the CompileFunction and CompileGlobalVar functions to add functions and variables.
+
 	Animation
 	AI:
 		Enemies need more intelligent behavior (e.g. dodge)
@@ -68,12 +73,12 @@ Innovative combat system:
 Goals:
 	First playable-- demo level with basic functionality.
 		Functionality:
-			Combat
+			Combat-- GOT IT!!
 			Weapon system
 			Basic enemy AI-- look for the player, and try to kill him.
 			Tilemap rendering-- DONE!!!
-			Scripting
-			Physics
+			Scripting--DONE!! (or close enough)
+			Physics--DONE!!
 		Assets:
 			Enemies-- at least two types, killed in different ways
 			Weapons-- at least one body, at least two power sources.

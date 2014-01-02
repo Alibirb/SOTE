@@ -7,7 +7,7 @@ std::string activePlayerName;
 std::unordered_map<std::string, Player*> players;	/// List of all Players, identified by their name.
 
 
-Player::Player(std::string name, osg::Vec3 position) : Fighter(name, position, DEFAULT_PLAYER_IMAGE)
+Player::Player(std::string name, osg::Vec3 position) : Fighter(name, position)
 {
 	Box2DUserData *userData = new Box2DUserData;
 	userData->owner = this;

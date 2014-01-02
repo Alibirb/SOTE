@@ -2,6 +2,8 @@
 #include "add_on/scriptstdstring/scriptstdstring.h"
 #include "add_on/scriptarray/scriptarray.h"
 
+#include "stdvector.h"
+
 #include <osg/Vec3>
 
 #include "Enemy.h"
@@ -14,13 +16,8 @@ namespace AngelScriptWrapperFunctions
 {
 	void Vec3Constructor(Vec3 *memory)
 	{
-		// Initialize the pre-allocated memory by calling the
-		// object constructor with the placement-new operator
+		// Initialize the pre-allocated memory by calling the object constructor with the placement-new operator
 		new(memory) Vec3();
-	}
-	void Vec3ListConstructor(float *list, Vec3 *self)
-	{
-		new(self) Vec3(list[0], list[1], list[2]);
 	}
 	void Vec3InitConstructor(float x, float y, float z, Vec3 *self)
 	{
@@ -35,8 +32,6 @@ namespace AngelScriptWrapperFunctions
 		// Uninitialize the memory by calling the object destructor
 		((osg::Vec3*)memory)->~Vec3();
 	}
-
-
 }
 
 using namespace AngelScriptWrapperFunctions;
@@ -61,8 +56,6 @@ void printFloat(float value)
 
 void createEnemy(std::string& name, osg::Vec3& position)
 {
-	//std::cout << "createEnemy called. No enemy created, but I'm still testing out AngelScript." << std::endl;
-	//std::cout << vec.x() << " " << vec.y() << " " << vec.z() << std::endl;
 	new Enemy(name, position);
 }
 
@@ -81,12 +74,12 @@ void MessageCallback(const asSMessageInfo *msg, void *param)
 
 AngelScriptEngine::AngelScriptEngine()
 {
-	//ctor
+	initialize();
 }
 
 AngelScriptEngine::~AngelScriptEngine()
 {
-	//dtor
+	close();
 }
 
 void AngelScriptEngine::registerDefaultStuff()
@@ -103,7 +96,6 @@ void AngelScriptEngine::registerDefaultStuff()
 	assert(r >= 0);
 
 	registerObjectType("Vec3", sizeof(osg::Vec3), asOBJ_VALUE | GetTypeTraits<osg::Vec3>() | asOBJ_APP_CLASS_ALLFLOATS, asFUNCTION(Vec3Constructor), asFUNCTION(Vec3Destructor));
-	//registerListConstructor("Vec3", "void f(const float &in){float, float, float}", asFUNCTION(Vec3ListConstructor));
 	registerConstructor("Vec3", "void f(float, float, float)", asFUNCTION(Vec3InitConstructor));
 	registerConstructor("Vec3", "void f(const Vec3 &in)", asFUNCTION(Vec3CopyConstructor));
 	registerObjectProperty("Vec3", "float x", asOFFSET(Vec3, _v[0]));
@@ -112,10 +104,7 @@ void AngelScriptEngine::registerDefaultStuff()
 	registerObjectMethod("Vec3", "Vec3 opAdd(const Vec3 &in) const", asMETHODPR(Vec3, operator+, (const Vec3 &) const, const Vec3), asCALL_THISCALL);
 	registerObjectMethod("Vec3", "Vec3 opSub(const Vec3 &in) const", asMETHODPR(Vec3, operator-, (const Vec3 &) const, const Vec3), asCALL_THISCALL);
 
-
 	registerFunction("void createEnemy(string &in, Vec3 &in)", asFUNCTION(createEnemy));
-
-
 }
 
 void setWeaponAngle(float angle)
@@ -174,6 +163,8 @@ bool AngelScriptEngine::initialize()
 		std::cout << "Please correct the errors in the script and try again." << std::endl;
 	}
 
+	ctx = engine->CreateContext();
+
 	// Find the function that is to be called.
 	mod = engine->GetModule("MyModule");
 
@@ -195,7 +186,8 @@ bool AngelScriptEngine::close()
 
 bool AngelScriptEngine::eval(const std::string& code)
 {
-	int r = ExecuteString(engine, code.c_str(), mod, ctx);
+	//int r = ExecuteString(engine, code.c_str(), mod, ctx);
+	int r = ExecuteString(engine, code.c_str(), mod);
 	if(r != asEXECUTION_FINISHED)
 	{
 		if(r == asEXECUTION_EXCEPTION)
@@ -212,16 +204,16 @@ bool AngelScriptEngine::eval(const std::string& code)
 }
 
 
-bool AngelScriptEngine::runFile(const std::string& filePath)
+bool AngelScriptEngine::runFile(const std::string& filePath, const char* functionName)
 {
-	/*int r = builder.StartNewModule(engine, "MyModule");
+	int r = builder.StartNewModule(engine, "MyModule");
 	if (r < 0 )
 	{
 		// If the code fails here it is usually because there is more memory to allocate the module.
 		std::cout << "Unrecoverable error while starting a new module." << std::endl;
 		return false;
-	}*/
-	int
+	}
+	//int
 	r = builder.AddSectionFromFile(filePath.c_str());
 	if (r < 0)
 	{
@@ -235,14 +227,15 @@ bool AngelScriptEngine::runFile(const std::string& filePath)
 		// An error occured. Instruct the script writer to fix the compilation errors that listed in the output stream.
 		std::cout << "Please correct the errors in the script and try again." << std::endl;
 	}
-
+/*
 	// Find the function that is to be called.
-	mod = engine->GetModule("MyModule");
-	asIScriptFunction *func = mod->GetFunctionByDecl("void run()");
+	//mod = engine->GetModule("MyModule");
+	//mod = builder.GetModule();
+	asIScriptFunction *func = mod->GetFunctionByDecl(functionName);
 	if (func == 0)
 	{
 		// The function couldn't be found. Instruct the script writer to include the expected function in the script.
-		std::cout << "The script \"" << filePath << "\" must have the function 'void run()'." << std::endl;
+		std::cout << "The script \"" << filePath << "\" must have the function \"" << functionName << "\"." << std::endl;
 		return false;
 	}
 
@@ -263,9 +256,25 @@ bool AngelScriptEngine::runFile(const std::string& filePath)
 			return false;
 		}
 	}
-
+	func->Release();
+*/
+	runFunction(functionName);
 	return true;
 }
+/*
+template<typename T>
+void AngelScriptEngine::registerVector(std::string vectorName, std::string typeName)
+{
+	RegisterVector<T>(vectorName, typeName, engine);
+}
+*/
+
+void AngelScriptEngine::registerTypedef(const char * type, const char * decl)
+{
+	int r = engine->RegisterTypedef(type, decl);
+	assert(r >= 0);
+}
+
 
 
 AngelScriptEngine* getScriptEngine()
