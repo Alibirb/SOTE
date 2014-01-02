@@ -54,7 +54,7 @@ protected:
 private:
 };
 
-
+void addDamageIndicator(Fighter* entityHurt, float damageDealt, DamageType& damageType);
 void registerFighterStats();
 
 #endif // FIGHTER_H

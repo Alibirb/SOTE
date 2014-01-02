@@ -55,6 +55,10 @@ public:
 	virtual osg::Vec3 getPosition() {
 		return transformNode->getPosition();
 	}
+	virtual osg::Vec3 getWorldPosition()
+	{
+		return getWorldCoordinates(transformNode)->getTrans();
+	}
 	virtual void setPosition(osg::Vec3 newPosition) {
 		transformNode->setPosition(newPosition);
 		physicsBody->SetTransform(toB2Vec2(newPosition - box2DToOsgAdjustment), physicsBody->GetAngle());
@@ -62,23 +66,6 @@ public:
 
 	virtual void onUpdate(float deltaTime)=0;
 };
-
-/**
- * Callback for the entity, used to perform actions that must be performed once per frame.
- */
-class EntityUpdateNodeCallback : public osg::NodeCallback
-{
-private:
-	Entity* _owner;
-public:
-
-	EntityUpdateNodeCallback(Entity * owner) {
-		this->_owner = owner;
-	}
-
-	virtual void operator()(osg::Node* node, osg::NodeVisitor* nv);
-};
-
 
 
 

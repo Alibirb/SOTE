@@ -6,6 +6,8 @@
 #include "Enemy.h"
 #include "Projectile.h"
 
+#include "TemporaryText.h"
+
 
 
 
@@ -33,6 +35,8 @@ void removeExpiredObjects()
 			delete ((Item*) expiredObjects.front().object);
 		else if (objectType == "Projectile")
 			delete ((Projectile*) expiredObjects.front().object);
+		else if (objectType == "TemporaryText")
+			delete ((TemporaryText*) expiredObjects.front().object);
 		else
 			logError("Object of unfamiliar type \"" + objectType + "\" marked for deletion");	// cannot properly delete the object unless we know what type it is.
 

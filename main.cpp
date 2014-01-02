@@ -7,6 +7,7 @@
 #include "TwoDimensionalCameraManipulator.h"
 #include "AngelScriptEngine.h"
 #include "AngelScriptConsole.h"
+#include "TemporaryText.h"
 
 
 #include <osgViewer/config/SingleWindow>
@@ -117,6 +118,7 @@ osg::Matrixd* getWorldCoordinates( osg::Node* node)
 void GameOverYouLose()
 {
 	std::cout << "You Lose." << std::endl;
+	new TemporaryText("You Lose", getActivePlayer()->getWorldPosition(), 5.0);
 	// TODO: should actually end the game.
 }
 

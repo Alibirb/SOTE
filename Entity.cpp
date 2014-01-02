@@ -14,6 +14,8 @@
 #include <osgDB/ReadFile>
 #include <osgDB/FileUtils>
 
+#include "OwnerUpdateCallback.h"
+
 
 Entity::Entity(std::string name, osg::Vec3 position)
 {
@@ -24,7 +26,8 @@ Entity::Entity(std::string name, osg::Vec3 position)
 	transformNode->setPosition(position);
 
 	modelNode = new Sprite();
-	modelNode->setUpdateCallback(new EntityUpdateNodeCallback(this));
+	//modelNode->setUpdateCallback(new EntityUpdateNodeCallback(this));
+	modelNode->setUpdateCallback(new OwnerUpdateCallback<Entity>(this));
 	root->addChild(transformNode);
 	transformNode->addChild(modelNode);
 
@@ -84,13 +87,5 @@ void Entity::jump()
 
 }
 
-
-
-
-void EntityUpdateNodeCallback::operator()(osg::Node* node, osg::NodeVisitor* nv)
-{
-	_owner->onUpdate(getDeltaTime());
-	traverse(node, nv);	// need to call this so scene graph traversal continues.
-}
 
 

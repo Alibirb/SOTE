@@ -2,6 +2,8 @@
 #include "Weapon.h"
 #include "AngelScriptEngine.h"
 
+#include "TemporaryText.h"
+
 FighterStats::FighterStats()
 {
 }
@@ -65,6 +67,8 @@ void Fighter::takeDamages(Damages dams)
 		return;
 	for(Damage dam : dams)
 	{
+		if(dam.amount * (1.0 - this->getResistance(dam.type) ) > 0)
+			addDamageIndicator(this, dam.amount * (1.0 - this->getResistance(dam.type) ), dam.type);
 		this->health -= dam.amount * (1.0 - this->getResistance(dam.type) );
 		if (health <= 0.0)
 		{
@@ -78,6 +82,13 @@ float Fighter::getResistance(DamageType& type)
 	return _stats.resistances[type];
 }
 
+
+void addDamageIndicator(Fighter* entityHurt, float damageDealt, DamageType& damageType)
+{
+	std::ostringstream stream;
+	stream << "-" << damageDealt;
+	new TemporaryText(stream.str(), entityHurt->getWorldPosition(), 2.5);
+}
 
 
 namespace AngelScriptWrapperFunctions

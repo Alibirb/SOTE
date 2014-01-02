@@ -12,9 +12,7 @@ Plot: (this is long-winded right now)
 
 TODO:
 	Current Task:
-
 	Next Steps:
-		Add text in particular place when an event occurs (e.g. -damageAmount when an entity takes damage)
 		Add more enemies and weapons.
 
 	Scripting:

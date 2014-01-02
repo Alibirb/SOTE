@@ -8,7 +8,7 @@
 #ifndef TEXTDISPLAY_H_
 #define TEXTDISPLAY_H_
 
-//#include <osgText/Text>
+
 #include <iostream>
 #include <sstream>
 
@@ -24,7 +24,7 @@ namespace osg {
 	typedef Vec3f Vec3;
 }
 
-class TextDisplay
+class TextDisplay	/// TODO: Change name to HudText?
 {
 public:
 	std::ostringstream stream;

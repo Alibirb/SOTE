@@ -80,6 +80,8 @@
 		<Unit filename="Level2D.cpp" />
 		<Unit filename="Level2D.h" />
 		<Unit filename="Notes.txt" />
+		<Unit filename="OwnerUpdateCallback.cpp" />
+		<Unit filename="OwnerUpdateCallback.h" />
 		<Unit filename="PhysicsContactListener.cpp" />
 		<Unit filename="PhysicsContactListener.h" />
 		<Unit filename="PhysicsNodeCallback.cpp" />
@@ -91,6 +93,8 @@
 		<Unit filename="RandomGenerator.h" />
 		<Unit filename="Sprite.cpp" />
 		<Unit filename="Sprite.h" />
+		<Unit filename="TemporaryText.cpp" />
+		<Unit filename="TemporaryText.h" />
 		<Unit filename="TextDisplay.cpp" />
 		<Unit filename="TextDisplay.h" />
 		<Unit filename="TiledMap.cpp" />
