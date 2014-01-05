@@ -13,12 +13,11 @@ Plot: (this is long-winded right now)
 TODO:
 	Current Task:
 	Next Steps:
-		Add more enemies and weapons.
 
 	Scripting:
 		Add ability to load (not run) an AngelScript file, adding functions, variabels, object types, etc to the current context/module.
 			Can use the CompileFunction and CompileGlobalVar functions to add functions and variables.
-
+	Should probably define stats with XML, not AngelScript. Much neater.
 	Animation
 	AI:
 		Enemies need more intelligent behavior (e.g. dodge)
@@ -66,6 +65,23 @@ Innovative combat system:
 	Not sure how far to go with this. Could just have body + magic = weapon, or could provide a more flexible system that allows people to experiment and design new weapons, controlling not just element and weapon type, but properties like fire rate, power, etc. For example, you might be able to alter the component that interacts with the magic power source, and overclock it to get more power or faster firing. I think it could be a pretty awesome system.
 	Power sources:
 		Phoenix feather-- Fire. Also good for healing.
+
+
+Multiple playable characters?
+	I'll likely be working on this thing for a long time, so I'd like to be able to put all my main characters in it. Show off my best character-creation and dialog skills. And just enjoy it more.
+	Each character is unique. They all have their own powers, and even different play experiences.
+		Luce:
+			After doing something really awful, everyone insists he gets a morality meter. Which he does. It ranges from blue to orange.
+			Sees extended information on enemies.
+			Has hallucinations.
+			Can drive people insane by showing them The Truth.
+			Entertaining dialog options.
+		Alex:
+			Breathes fire.
+		Tanner:
+			Adorable.
+			Can nap to recover energy.
+	Probably a good idea. Even if it doesn't work for the final game, it will allow me to experiment with all the characters, and see who people like playing as.
 
 
 Goals:

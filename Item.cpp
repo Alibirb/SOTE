@@ -1,11 +1,14 @@
 #include "Item.h"
 
+#include "OwnerUpdateCallback.h"
+
 Item::Item(std::string imageFilename)
 {
+
 	sprite = new Sprite(imageFilename);
 	transformNode = new osg::PositionAttitudeTransform();
 	transformNode->addChild(sprite);
-	sprite->setUpdateCallback(new ItemUpdateNodeCallback(this));
+	sprite->setUpdateCallback(new OwnerUpdateCallback<Item>(this));
 }
 
 Item::~Item()
@@ -32,10 +35,3 @@ void Item::onUpdate(float deltaTime)
 
 }
 
-
-
-void ItemUpdateNodeCallback::operator()(osg::Node* node, osg::NodeVisitor* nv)
-{
-	_owner->onUpdate(getDeltaTime());
-	traverse(node, nv);	// need to call this so scene graph traversal continues.
-}

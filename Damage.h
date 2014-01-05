@@ -5,7 +5,7 @@
 
 enum DamageType
 {
-	HOT, COLD, SHARP, IMPACT, ACID
+	HOT, COLD, SHARP, IMPACT, ACID, PURE_MAGIC, NAP, POISON
 };
 
 
@@ -13,8 +13,6 @@ enum DamageType
 class Damage
 {
 public:
-//	Damage();
-//	Damage(DamageType type, float amount);
 	DamageType type;
 	float amount;
 };

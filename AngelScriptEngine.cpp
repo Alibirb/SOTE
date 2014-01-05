@@ -107,14 +107,10 @@ void AngelScriptEngine::registerDefaultStuff()
 	registerFunction("void createEnemy(string &in, Vec3 &in)", asFUNCTION(createEnemy));
 }
 
-void setWeaponAngle(float angle)
-{
-	getActivePlayer()->getWeapon()->setRotation(angle);
-}
 
 void AngelScriptEngine::registerTestingStuff()
 {
-	registerFunction("void setWeaponAngle(float)", asFUNCTION(setWeaponAngle));
+
 }
 
 /// Function to run tests of the scripting system.
@@ -163,7 +159,7 @@ bool AngelScriptEngine::initialize()
 		std::cout << "Please correct the errors in the script and try again." << std::endl;
 	}
 
-	ctx = engine->CreateContext();
+	//ctx = engine->CreateContext();
 
 	// Find the function that is to be called.
 	mod = engine->GetModule("MyModule");
@@ -178,7 +174,7 @@ bool AngelScriptEngine::initialize()
 bool AngelScriptEngine::close()
 {
 	// Clean up
-	ctx->Release();
+	//ctx->Release();
 	engine->Release();
 	return true;
 }
@@ -187,7 +183,26 @@ bool AngelScriptEngine::close()
 bool AngelScriptEngine::eval(const std::string& code)
 {
 	//int r = ExecuteString(engine, code.c_str(), mod, ctx);
-	int r = ExecuteString(engine, code.c_str(), mod);
+
+	bool nestedCall = executing;
+	asIScriptContext* ctx;
+#ifdef REUSE_ACTIVE_CONTEXT_FOR_NESTED_CALLS
+	if(nestedCall)
+	{
+		ctx = asGetCurrentContext();
+		int r = ctx->PushState();	/// For nested calls (script function called c++ function that called another script function), must save and restore our state.
+		assert(r >= 0);
+	}
+	else
+#endif
+		ctx = getContextFromPool();
+
+	executing = true;
+	int r = ExecuteString(engine, code.c_str(), mod, ctx);
+
+	_returnObject = ctx->GetReturnObject();	/// Save the return object (which may not exist)
+	_returnValue = ctx->GetReturnQWord();
+
 	if(r != asEXECUTION_FINISHED)
 	{
 		if(r == asEXECUTION_EXCEPTION)
@@ -200,64 +215,50 @@ bool AngelScriptEngine::eval(const std::string& code)
 		}
 	}
 
+#ifdef REUSE_ACTIVE_CONTEXT_FOR_NESTED_CALLS
+	if(nestedCall)
+	{
+		int r = ctx->PopState();
+		assert(r >= 0);
+	else
+#endif
+	{
+		returnContextToPool(ctx);
+		executing = false;
+	}
+
 	return true;
 }
 
 
 bool AngelScriptEngine::runFile(const std::string& filePath, const char* functionName)
 {
-	int r = builder.StartNewModule(engine, "MyModule");
-	if (r < 0 )
+	if(!engine->GetModule(filePath.c_str()))	/// Only build the module if it doesn't already exist.
 	{
-		// If the code fails here it is usually because there is more memory to allocate the module.
-		std::cout << "Unrecoverable error while starting a new module." << std::endl;
-		return false;
-	}
-	//int
-	r = builder.AddSectionFromFile(filePath.c_str());
-	if (r < 0)
-	{
-		// The builder wasn't able to load the file. Maybe the file has been removed, or the wrong name was given, or some preprocessing commands are incorrectly written.
-		std::cout << "Please correct the errors in the script and try again." << std::endl;
-		return false;
-	}
-	r = builder.BuildModule();
-	if (r < 0)
-	{
-		// An error occured. Instruct the script writer to fix the compilation errors that listed in the output stream.
-		std::cout << "Please correct the errors in the script and try again." << std::endl;
-	}
-/*
-	// Find the function that is to be called.
-	//mod = engine->GetModule("MyModule");
-	//mod = builder.GetModule();
-	asIScriptFunction *func = mod->GetFunctionByDecl(functionName);
-	if (func == 0)
-	{
-		// The function couldn't be found. Instruct the script writer to include the expected function in the script.
-		std::cout << "The script \"" << filePath << "\" must have the function \"" << functionName << "\"." << std::endl;
-		return false;
-	}
-
-	// Create our context, prepare it, and then execute.
-	ctx = engine->CreateContext();
-	ctx->Prepare(func);
-	r = ctx->Execute();
-	if (r != asEXECUTION_FINISHED)
-	{
-		// The execution didn't complete as expected. Determine what happened.
-		if (r == asEXECUTION_EXCEPTION)
+		int r = builder.StartNewModule(engine, filePath.c_str());
+		if (r < 0 )
 		{
-			// An exception occured, let the script writer know what happened so it can be corrected.
-			string warning = "AngelScript engine says \"";
-			warning += ctx->GetExceptionString();
-			warning += "\".";
-			logWarning(warning);
+			// If the code fails here it is usually because there is more memory to allocate the module.
+			std::cout << "Unrecoverable error while starting a new module." << std::endl;
 			return false;
 		}
+		//int
+		r = builder.AddSectionFromFile(filePath.c_str());
+		if (r < 0)
+		{
+			// The builder wasn't able to load the file. Maybe the file has been removed, or the wrong name was given, or some preprocessing commands are incorrectly written.
+			std::cout << "Please correct the errors in the script and try again." << std::endl;
+			return false;
+		}
+		r = builder.BuildModule();
+		if (r < 0)
+		{
+			// An error occured. Instruct the script writer to fix the compilation errors that listed in the output stream.
+			std::cout << "Please correct the errors in the script and try again." << std::endl;
+		}
 	}
-	func->Release();
-*/
+	mod = engine->GetModule(filePath.c_str());
+
 	runFunction(functionName);
 	return true;
 }
@@ -269,11 +270,130 @@ void AngelScriptEngine::registerVector(std::string vectorName, std::string typeN
 }
 */
 
+void AngelScriptEngine::registerObjectMethod(const char *obj, const char *declaration, const asSFuncPtr &funcPointer, asDWORD callConv )
+{
+	int r = engine->RegisterObjectMethod(obj, declaration, funcPointer, callConv);
+	if(r < 0)
+		switch(r)
+		{
+		case asWRONG_CONFIG_GROUP:
+			cout << "Wrong config group" << std::endl;
+			break;
+		case asNOT_SUPPORTED:
+			cout << "Not supported" << std::endl;
+			break;
+		case asINVALID_TYPE:
+			cout << "Invalid type" << std::endl;
+			break;
+		case asINVALID_DECLARATION:
+			cout << "Invalid declaration" << std::endl;
+			break;
+		case asNAME_TAKEN:
+			cout << "Name taken" << std::endl;
+			break;
+		case asWRONG_CALLING_CONV:
+			cout << "Wrong calling convention" << std::endl;
+			break;
+		case asALREADY_REGISTERED:
+			cout << "Already registered" << std::endl;
+			break;
+		}
+}
+
 void AngelScriptEngine::registerTypedef(const char * type, const char * decl)
 {
 	int r = engine->RegisterTypedef(type, decl);
 	assert(r >= 0);
 }
+
+
+void AngelScriptEngine::runFunction(const char * declaration)
+{
+	bool nestedCall = executing;	/// If another call is in progress, this is a nested call.
+
+	asIScriptFunction *func = mod->GetFunctionByDecl(declaration);
+	if (func == 0)
+	{
+		// The function couldn't be found. Instruct the script writer to include the expected function in the script.
+		std::cout << "Could not find function \"" << declaration << "\"." << std::endl;
+		return;
+	}
+
+	asIScriptContext* ctx = 0;
+
+#ifdef REUSE_ACTIVE_CONTEXT_FOR_NESTED_CALLS
+	if(nestedCall)
+	{
+		ctx = asGetCurrentContext();
+		int r = ctx->PushState();	/// For nested calls (script function called c++ function that called another script function), must save and restore our state.
+		assert(r >= 0);
+	}
+	else
+#endif
+		ctx = getContextFromPool();
+
+	ctx->Prepare(func);
+	executing = true;
+	int r = ctx->Execute();
+
+
+	if(r != asEXECUTION_FINISHED)
+	{
+		if(r == asEXECUTION_EXCEPTION)
+		{
+			string warning = "AngelScript engine says \"";
+			warning += ctx->GetExceptionString();
+			warning += "\".";
+			logWarning(warning);
+			return;
+		}
+	}
+	//func->Release();
+
+	_returnObject = ctx->GetReturnObject();	/// Save the return object (which may not exist)
+	//memcpy(_returnObject, const_cast<const void*>(ctx->GetReturnObject()), sizeof(ctx->GetReturnObject()));
+
+	_returnValue = ctx->GetReturnQWord();
+#ifdef REUSE_ACTIVE_CONTEXT_FOR_NESTED_CALLS
+	if(nestedCall)
+	{
+		int r = ctx->PopState();
+		assert(r >= 0);
+	else
+#endif
+	{
+		returnContextToPool(ctx);
+		executing = false;
+	}
+}
+
+int AngelScriptEngine::getReturnInt()
+{
+	//return ctx->GetReturnQWord();
+	return _returnValue;
+}
+float AngelScriptEngine::getReturnFloat()
+{
+	//return ctx->GetReturnFloat();
+	return *(float*)&_returnValue;
+}
+double AngelScriptEngine::getReturnDouble()
+{
+	//return ctx->GetReturnDouble();
+	return *(double*)&_returnValue;
+}
+bool AngelScriptEngine::getReturnBool()
+{
+	//return (ctx->GetReturnByte() != 0);
+	return (_returnValue != 0);
+}
+/// NOTE: Must make a new pointer to the object, because the one held by the context will be invalidated.
+void* AngelScriptEngine::getReturnObject()
+{
+	//return ctx->GetReturnObject();
+	return _returnObject;
+}
+
 
 
 

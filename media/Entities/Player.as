@@ -8,5 +8,7 @@ FighterStats loadStats()
 	stats.setResistance(ACID, 0.0);
 	stats.maxHealth = 25.0;
 	stats.weaponType = "Staff";
+	stats.setWeaponStats(loadWeaponPrototype(stats.weaponType));
+	stats.weaponStats.setProjectileStats(loadProjectilePrototype("Fireball"));
 	return stats;
 }

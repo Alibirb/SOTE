@@ -23,7 +23,7 @@ Fighter::Fighter(std::string name, osg::Vec3 position) : Entity(name, position)
 {
 	loadStats("media/Entities/" + name + ".as");
 	//loadStats("media/Enemies/Human.as");
-	equipWeapon(new Weapon(_stats.weaponType));
+	equipWeapon(new Weapon(_stats.weaponStats));
 	transformNode->addChild(equipedWeapon->getTransformNode());
 }
 
@@ -105,6 +105,7 @@ namespace AngelScriptWrapperFunctions
 		self->imageFilename = other.imageFilename;
 		self->maxHealth = other.maxHealth;
 		self->weaponType = other.weaponType;
+		self->weaponStats = other.weaponStats;
 	}
 	void FighterStatsDestructor(void *memory)
 	{
@@ -123,6 +124,7 @@ void registerFighterStats()
 		return;
 
 	registerDamages();
+	registerWeaponStats();
 
 	getScriptEngine()->registerObjectType("FighterStats", sizeof(FighterStats), asOBJ_VALUE | GetTypeTraits<FighterStats>() );
 	getScriptEngine()->registerConstructor("FighterStats", "void f()", asFUNCTION(FighterStatsConstructor));
@@ -131,7 +133,10 @@ void registerFighterStats()
 	getScriptEngine()->registerObjectProperty("FighterStats", "float maxHealth", asOFFSET(FighterStats, maxHealth));
 	getScriptEngine()->registerObjectProperty("FighterStats", "string imageFilename", asOFFSET(FighterStats, imageFilename));
 	getScriptEngine()->registerObjectProperty("FighterStats", "string weaponType", asOFFSET(FighterStats, weaponType));
+	getScriptEngine()->registerObjectProperty("FighterStats", "WeaponStats weaponStats", asOFFSET(FighterStats, weaponStats));
+
 	getScriptEngine()->registerObjectMethod("FighterStats", "void setResistance(DamageType &in, float value)", asMETHODPR(FighterStats, setResistance, (DamageType&, float), void), asCALL_THISCALL);
+	getScriptEngine()->registerObjectMethod("FighterStats", "void setWeaponStats(WeaponStats &in)", asMETHOD(FighterStats, setWeaponStats), asCALL_THISCALL);
 
 	registered = true;
 }

@@ -201,10 +201,14 @@
 		<Unit filename="input.cpp" />
 		<Unit filename="input.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="media/Entities/Golem.as" />
 		<Unit filename="media/Entities/Human.as" />
 		<Unit filename="media/Entities/Player.as" />
-		<Unit filename="media/Projectiles/DefaultProjectile.as" />
+		<Unit filename="media/Projectiles/Fireball.as" />
+		<Unit filename="media/Projectiles/Magic.as" />
+		<Unit filename="media/Projectiles/Rock.as" />
 		<Unit filename="media/Weapons/Staff.as" />
+		<Unit filename="media/Weapons/Throwing.as" />
 		<Unit filename="osgNotes" />
 		<Unit filename="script.as" />
 		<Unit filename="scriptarray/scriptarray.cpp" />

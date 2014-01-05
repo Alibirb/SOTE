@@ -5,8 +5,7 @@
 #include "Damage.h"
 
 
-class Weapon;
-
+#include "Weapon.h"
 
 
 class FighterStats
@@ -17,10 +16,16 @@ public:
 	std::map<DamageType, float> resistances;
 	std::string imageFilename;
 	std::string weaponType;
+	WeaponStats weaponStats;
 
-	/// For scripting use
+	/// For scripting use (std::map is not exposed)
 	float getResistance(DamageType& damType);
 	void setResistance(DamageType& type, float value);
+
+	void setWeaponStats(WeaponStats& stats)
+	{
+		this->weaponStats = stats;
+	}
 };
 
 

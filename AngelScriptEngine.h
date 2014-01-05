@@ -49,9 +49,36 @@ class AngelScriptEngine : public osgWidget::ScriptEngine
 {
 protected:
 	asIScriptEngine* engine;
-	asIScriptContext* ctx;
+	//asIScriptContext* ctx;
 	asIScriptModule* mod;
 	CScriptBuilder builder;
+	bool executing = false;	/// used to detect nested calls
+	long long int _returnValue;
+	void *_returnObject;
+
+	std::vector<asIScriptContext *> pool;
+
+	asIScriptContext *getContextFromPool()
+	{
+		// Get a context from the pool, or create a new
+		asIScriptContext *ctx = 0;
+		if( pool.size() )
+		{
+			ctx = *pool.rbegin();
+			pool.pop_back();
+		}
+		else
+			ctx = engine->CreateContext();
+		return ctx;
+	}
+
+	void returnContextToPool(asIScriptContext *ctx)
+	{
+		pool.push_back(ctx);
+		// Unprepare the context to free non-reusable resources
+		//ctx->Unprepare();
+	}
+
 
 public:
 	AngelScriptEngine();
@@ -134,35 +161,7 @@ public:
 	}
 
 	/// Register a method of an object
-	void registerObjectMethod(const char *obj, const char *declaration, const asSFuncPtr &funcPointer, asDWORD callConv )
-	{
-		int r = engine->RegisterObjectMethod(obj, declaration, funcPointer, callConv);
-		if(r < 0)
-			switch(r)
-			{
-			case asWRONG_CONFIG_GROUP:
-				cout << "Wrong config group" << std::endl;
-				break;
-			case asNOT_SUPPORTED:
-				cout << "Not supported" << std::endl;
-				break;
-			case asINVALID_TYPE:
-				cout << "Invalid type" << std::endl;
-				break;
-			case asINVALID_DECLARATION:
-				cout << "Invalid declaration" << std::endl;
-				break;
-			case asNAME_TAKEN:
-				cout << "Name taken" << std::endl;
-				break;
-			case asWRONG_CALLING_CONV:
-				cout << "Wrong calling convention" << std::endl;
-				break;
-			case asALREADY_REGISTERED:
-				cout << "Already registered" << std::endl;
-				break;
-			}
-	}
+	void registerObjectMethod(const char *obj, const char *declaration, const asSFuncPtr &funcPointer, asDWORD callConv );
 
 	template<typename T>
 	void registerVector(std::string vectorName, std::string typeName)
@@ -176,7 +175,6 @@ public:
 	{
 		// Base condition. Out of values
 	}
-
 
 	template<typename... Targs>
 	void registerEnumValues(const char* enumType, const char * valueName, int value, Targs... Fargs)
@@ -198,13 +196,13 @@ public:
 	/// Registers a typedef. Currently only works for built-in primitive types.
 	void registerTypedef(const char * type, const char * decl);
 
-	void setArguments(int index)
+	void setArguments(asIScriptContext* ctx, int index)
 	{
 		// base condition, out of arguments.
 	}
 
 	template<typename... Targs>
-	void setArguments(int index, std::string nextArgType, double nextArg, Targs... Fargs)
+	void setArguments(asIScriptContext* ctx, int index, std::string nextArgType, double nextArg, Targs... Fargs)
 	{
 		if(nextArgType == "int")
 			if(nextArg < 0)
@@ -219,11 +217,11 @@ public:
 			ctx->SetArgByte(index, nextArg);
 		else
 			logError("Unrecognized argument type.");
-		setArguments(index+1, Fargs...);
+		setArguments(ctx, index+1, Fargs...);
 	}
 
 	template<typename... Targs>
-	void setArguments(int index, std::string nextArgType, void* nextArg, Targs... Fargs)
+	void setArguments(asIScriptContext* ctx, int index, std::string nextArgType, void* nextArg, Targs... Fargs)
 	{
 		if(nextArgType == "primitiveReference")
 			ctx->SetArgAddress(index, nextArg);
@@ -231,7 +229,7 @@ public:
 			ctx->SetArgObject(index, nextArg);
 		else
 			logError("Unrecognized argument type.");
-		setArguments(index+1, Fargs...);
+		setArguments(ctx, index+1, Fargs...);
 	}
 
 
@@ -245,11 +243,26 @@ public:
 			std::cout << "could not find function \"" << declaration << "\"." << std::endl;
 			return;
 		}
-		ctx->Prepare(func);
+		bool nestedCall = executing;
 
-		// Set arguments
-		setArguments(0, Fargs...);
+		asIScriptContext* ctx = 0;
+
+#ifdef REUSE_ACTIVE_CONTEXT_FOR_NESTED_CALLS
+		if(nestedCall)
+		{
+			ctx = asGetCurrentContext();
+			int r = ctx->PushState();	/// For nested calls (script function called c++ function that called another script function), must save and restore our state.
+			assert(r >= 0);
+		}
+		else
+#endif
+			ctx = getContextFromPool();
+
+		ctx->Prepare(func);
+		executing = true;
+		setArguments(ctx, 0, Fargs...);
 		int r = ctx->Execute();
+
 
 		if(r != asEXECUTION_FINISHED)
 		{
@@ -262,56 +275,31 @@ public:
 				return;
 			}
 		}
-	}
 
-	void runFunction(const char * declaration)
-	{
-		asIScriptFunction *func = mod->GetFunctionByDecl(declaration);
-		if (func == 0)
+		_returnObject = ctx->GetReturnObject();	/// Save the return object (which may not exist)
+		_returnValue = ctx->GetReturnQWord();
+
+#ifdef REUSE_ACTIVE_CONTEXT_FOR_NESTED_CALLS
+		if(nestedCall)
 		{
-			// The function couldn't be found. Instruct the script writer to include the expected function in the script.
-			std::cout << "could not find function \"" << declaration << "\"." << std::endl;
-			return;
-		}
-		ctx->Prepare(func);
-
-		int r = ctx->Execute();
-
-		if(r != asEXECUTION_FINISHED)
+			int r = ctx->PopState();
+			assert(r >= 0);
+		else
+#endif
 		{
-			if(r == asEXECUTION_EXCEPTION)
-			{
-				string warning = "AngelScript engine says \"";
-				warning += ctx->GetExceptionString();
-				warning += "\".";
-				logWarning(warning);
-				return;
-			}
+			returnContextToPool(ctx);
+			executing = false;
 		}
-		//func->Release();
 	}
 
-	int getReturnInt()
-	{
-		return ctx->GetReturnQWord();
-	}
-	float getReturnFloat()
-	{
-		return ctx->GetReturnFloat();
-	}
-	double getReturnDouble()
-	{
-		return ctx->GetReturnDouble();
-	}
-	bool getReturnBool()
-	{
-		return (ctx->GetReturnByte() != 0);
-	}
+	void runFunction(const char * declaration);
+
+	int getReturnInt();
+	float getReturnFloat();
+	double getReturnDouble();
+	bool getReturnBool();
 	/// NOTE: Must make a new pointer to the object, because the one held by the context will be invalidated.
-	void* getReturnObject()
-	{
-		return ctx->GetReturnObject();
-	}
+	void* getReturnObject();
 
 	void test();
 

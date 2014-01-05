@@ -5,14 +5,27 @@
 #define DEFAULT_WEAPON_IMAGE "staff.png"
 #define DEFAULT_WEAPON_TYPE "Staff"
 
+#include "Projectile.h"
+
 class WeaponStats
 {
 public:
 	WeaponStats();
-	WeaponStats(std::string imageFilename, std::string projectileType, float coolDownTime);
+	WeaponStats(std::string imageFilename, std::string projectileType, ProjectileStats& projectileStats, float coolDownTime);
+	static WeaponStats loadPrototype(std::string prototypeName);	/// Loads prototype stats for the specified type
 	std::string projectileType;
+	ProjectileStats projectileStats;
 	std::string imageFilename;
 	float coolDownTime;
+	void setProjectileStats(ProjectileStats& stats)
+	{
+		for(Damage dam : stats.damages)
+		{
+			Damage hi = dam;
+		}
+		projectileStats.imageFilename = stats.imageFilename;
+		projectileStats.damages = stats.damages;
+	}
 };
 
 /// Class for weapons.
@@ -23,11 +36,11 @@ protected:
 	bool firing;
 	bool _ready;
 	osg::PositionAttitudeTransform* projectileStartingTransform;	/// The position where the projectile will start (if this is a gun, this is the end of the barrel).
-	//float _coolDownTime = 2.5;	/// Time it takes to cool down between firing.
 	float _coolDownTimeRemaining = 0.0;
 	WeaponStats _stats;
 
 public:
+	Weapon(WeaponStats stats);
 	Weapon(std::string type = DEFAULT_WEAPON_TYPE);
 	virtual ~Weapon();
 
@@ -42,7 +55,6 @@ public:
 	osg::Vec3 getPosition();
 	osg::Vec3 getWorldPosition();
 	void setRotation(double angle);
-	void loadStats(std::string scriptFilename);
 	void setStats(WeaponStats& stats)
 	{
 		this->_stats = stats;

@@ -4,30 +4,56 @@
 
 #include "AngelScriptEngine.h"
 
+#define PROJECTILE_SCRIPT_LOCATION "media/Projectiles/"
 
 ProjectileStats::ProjectileStats(Damages damages, std::string imageFilename)
 {
+	for(Damage dam : damages)
+		Damage hi = dam;
 	this->damages = damages;
 	this->imageFilename = imageFilename;
+	for(Damage dam : this->damages)
+		Damage hi = dam;
+}
+
+ProjectileStats::ProjectileStats(const ProjectileStats& other)
+{
+	for(Damage dam : other.damages)
+		Damage hi = dam;
+	this->damages = other.damages;
+	this->imageFilename = other.imageFilename;
 }
 
 ProjectileStats::ProjectileStats()
 {
-
+	this->imageFilename = "";
 }
 
-
-Projectile::Projectile(osg::Vec3 startingPosition, osg::Vec3 heading, std::string type)
+ProjectileStats ProjectileStats::loadPrototype(std::string& prototypeName)
 {
-	loadStats("media/Projectiles/" + type + ".as");
+	registerProjectileStats();
+	getScriptEngine()->runFile(PROJECTILE_SCRIPT_LOCATION + prototypeName + ".as", "ProjectileStats loadStats()");
+	//return *((ProjectileStats*) getScriptEngine()->getReturnObject());
+	ProjectileStats stats = *( new ProjectileStats(*((ProjectileStats*) getScriptEngine()->getReturnObject())));
+	for(Damage dam : stats.damages)
+		Damage hi = dam;
+	return stats;
+}
 
+Projectile::Projectile(osg::Vec3 startingPosition, osg::Vec3 heading, std::string type) : Projectile(startingPosition, heading, ProjectileStats::loadPrototype(type))
+{
+}
+
+Projectile::Projectile(osg::Vec3 startingPosition, osg::Vec3 heading, ProjectileStats stats)
+{
+	setStats(stats);
 
 	position = startingPosition;
 	heading.normalize();
 	this->heading = heading;
 	width = .25;
 	height = .25;
-	sprite = new Sprite(DEFAULT_PROJECTILE_IMAGE, width, height);
+	sprite = new Sprite(stats.imageFilename, width, height);
 	transformNode = new osg::PositionAttitudeTransform();
 
 	transformNode->setPosition(position);
@@ -84,12 +110,6 @@ Damages Projectile::getDamages()
 	return _stats.damages;
 }
 
-void Projectile::loadStats(std::string scriptFilename)
-{
-	registerProjectileStats();
-	getScriptEngine()->runFile(scriptFilename, "ProjectileStats loadStats()");
-	setStats( *((ProjectileStats*) getScriptEngine()->getReturnObject()));
-}
 
 
 namespace AngelScriptWrapperFunctions
@@ -106,12 +126,15 @@ namespace AngelScriptWrapperFunctions
 	void ProjectileStatsCopyConstructor(ProjectileStats& other, ProjectileStats* self)
 	{
 		new(self) ProjectileStats(other.damages, other.imageFilename);
+		for(Damage dam : self->damages)
+			Damage hi = dam;
 	}
 	void ProjectileStatsDestructor(void *memory)
 	{
 		// Uninitialize the memory by calling the object destructor
 		((ProjectileStats*)memory)->~ProjectileStats();
 	}
+
 }
 
 using namespace AngelScriptWrapperFunctions;
@@ -132,6 +155,10 @@ void registerProjectileStats()
 	getScriptEngine()->registerConstructor("ProjectileStats", "void f(const ProjectileStats &in)", asFUNCTION(ProjectileStatsCopyConstructor));
 	getScriptEngine()->registerObjectProperty("ProjectileStats", "Damages damages", asOFFSET(ProjectileStats, damages));
 	getScriptEngine()->registerObjectProperty("ProjectileStats", "string imageFilename", asOFFSET(ProjectileStats, imageFilename));
+
+	//getScriptEngine()->registerObjectMethod("ProjectileStats", "ProjectileStats opAssign(const ProjectileStats &in) const", asMETHODPR(ProjectileStats, operator=, (const ProjectileStats &), ProjectileStats&), asCALL_THISCALL);
+
+	getScriptEngine()->registerFunction("ProjectileStats loadProjectilePrototype(const string &in)", asFUNCTION(ProjectileStats::loadPrototype));
 
 	registered = true;
 }

@@ -9,7 +9,9 @@ Registering:
 
 Special Notes:
 	To pass a C++ object (like Vec3) from AngelScript to a C++ function, the function needs to ask for a reference to the parameter, eg "Vec3 &theVector".
-
+	Error checklist:
+		If a script is using a C++ object, is the object's copy constructor correct? Is every member copied?
+		If a script returned an object, did you make a copy of it? The pointer returned will be invalidated.
 
 Scripts:
 	Uses object handles. Used very much like pointers, but specified with '@' instead of '*'.
