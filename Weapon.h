@@ -19,10 +19,6 @@ public:
 	float coolDownTime;
 	void setProjectileStats(ProjectileStats& stats)
 	{
-		for(Damage dam : stats.damages)
-		{
-			Damage hi = dam;
-		}
 		projectileStats.imageFilename = stats.imageFilename;
 		projectileStats.damages = stats.damages;
 	}
@@ -38,6 +34,7 @@ protected:
 	osg::PositionAttitudeTransform* projectileStartingTransform;	/// The position where the projectile will start (if this is a gun, this is the end of the barrel).
 	float _coolDownTimeRemaining = 0.0;
 	WeaponStats _stats;
+	std::string _team;	/// The team of the weapon's current owner, used to prevent friendly fire.
 
 public:
 	Weapon(WeaponStats stats);
@@ -58,6 +55,11 @@ public:
 	void setStats(WeaponStats& stats)
 	{
 		this->_stats = stats;
+	}
+
+	void setTeam(std::string team)
+	{
+		this->_team = team;
 	}
 
 protected:

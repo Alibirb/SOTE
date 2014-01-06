@@ -5,7 +5,7 @@
 std::list<Enemy*> enemyList;
 
 
-Enemy::Enemy(std::string name, osg::Vec3 position) : Fighter(name, position)
+Enemy::Enemy(std::string name, osg::Vec3 position) : Fighter(name, position, "Enemy")
 {
 	addEnemy(this);	// put this Enemy in the enemyList.
 	Box2DUserData *userData = new Box2DUserData;
@@ -48,7 +48,7 @@ void Enemy::onUpdate(float deltaTime)
 Enemy* getClosestEnemy(osg::Vec3 position, std::list<Enemy*> possibilities)
 {
 	Enemy* closest;
-	float shortestDistance = 9999999999999999999;
+	float shortestDistance = 9999999999999999999.9;
 	for(Enemy* enemy : possibilities)
 		if(getDistance(position, enemy->getPosition()) < shortestDistance)
 		{

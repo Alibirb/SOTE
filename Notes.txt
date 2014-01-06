@@ -11,13 +11,15 @@ Plot: (this is long-winded right now)
 		It has to be more than "someone is chasing him"; he needs to be trying to STOP something.
 
 TODO:
+	DoneThisCommit:
+		Prevented friendly fire.
 	Current Task:
 	Next Steps:
-
+		Convert to 3D.
 	Scripting:
 		Add ability to load (not run) an AngelScript file, adding functions, variabels, object types, etc to the current context/module.
 			Can use the CompileFunction and CompileGlobalVar functions to add functions and variables.
-	Should probably define stats with XML, not AngelScript. Much neater.
+	Should define stats with XML, not AngelScript.
 	Animation
 	AI:
 		Enemies need more intelligent behavior (e.g. dodge)
@@ -67,7 +69,7 @@ Innovative combat system:
 		Phoenix feather-- Fire. Also good for healing.
 
 
-Multiple playable characters?
+Multiple playable characters:
 	I'll likely be working on this thing for a long time, so I'd like to be able to put all my main characters in it. Show off my best character-creation and dialog skills. And just enjoy it more.
 	Each character is unique. They all have their own powers, and even different play experiences.
 		Luce:
@@ -78,6 +80,7 @@ Multiple playable characters?
 			Entertaining dialog options.
 		Alex:
 			Breathes fire.
+			Healing.
 		Tanner:
 			Adorable.
 			Can nap to recover energy.

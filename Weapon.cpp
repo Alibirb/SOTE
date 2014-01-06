@@ -65,7 +65,7 @@ void Weapon::fire()
 	double angle;
 	Vec3 axis;
 	transformNode->getAttitude().getRotate(angle, axis);
-	new Projectile(getWorldCoordinates(projectileStartingTransform)->getTrans(), Vec3(cos(angle), sin(angle), 0), _stats.projectileStats);
+	new Projectile(getWorldCoordinates(projectileStartingTransform)->getTrans(), Vec3(cos(angle), sin(angle), 0), _stats.projectileStats, this->_team);
 	//new Projectile(getWorldCoordinates(projectileStartingTransform)->getTrans(), Vec3(cos(angle), sin(angle), 0));
 	if(_stats.coolDownTime != 0.0)
 	{

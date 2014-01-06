@@ -31,10 +31,11 @@ protected:
 	osg::Vec3 box2DToOsgAdjustment;	/// adjustment between the visual and physical components
 	ProjectileStats _stats;
 
+	std::string _team;	/// Used to prevent friendly fire.
 
 public:
-	Projectile(osg::Vec3 startingPosition, osg::Vec3 heading, std::string type="Magic");
-	Projectile(osg::Vec3 startingPosition, osg::Vec3 heading, ProjectileStats stats);
+	Projectile(osg::Vec3 startingPosition, osg::Vec3 heading, std::string type, std::string team);
+	Projectile(osg::Vec3 startingPosition, osg::Vec3 heading, ProjectileStats stats, std::string team);
 	virtual ~Projectile();
 	void setPosition(osg::Vec3 position);
 	virtual void onCollision();
@@ -42,6 +43,11 @@ public:
 	void setStats(ProjectileStats& stats)
 	{
 		this->_stats = stats;
+	}
+
+	std::string getTeam()
+	{
+		return _team;
 	}
 
 protected:

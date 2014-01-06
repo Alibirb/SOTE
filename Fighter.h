@@ -18,6 +18,7 @@ public:
 	std::string weaponType;
 	WeaponStats weaponStats;
 
+
 	/// For scripting use (std::map is not exposed)
 	float getResistance(DamageType& damType);
 	void setResistance(DamageType& type, float value);
@@ -26,6 +27,8 @@ public:
 	{
 		this->weaponStats = stats;
 	}
+
+
 };
 
 
@@ -35,9 +38,10 @@ protected:
 	Weapon *equipedWeapon;
 	float health = 10.0;
 	FighterStats _stats;
+	std::string _team;	/// The team of the weapon's current owner, used to prevent friendly fire.
 
 public:
-	Fighter(std::string name, osg::Vec3 position);
+	Fighter(std::string name, osg::Vec3 position, std::string team);
 	virtual ~Fighter();
 	void equipWeapon(Weapon *theWeapon);
 
@@ -55,6 +59,18 @@ public:
 
 	/// Perform any actions to be taken when the Fighter is killed (mark for removal, change state to "dead", etc.)
 	virtual void die()=0;
+
+	bool isHurtByTeam(std::string otherTeam)
+	{
+		return (_team.compare(otherTeam) != 0);
+	}
+
+	void onCollision(Projectile* projectile)
+	{
+		if(isHurtByTeam(projectile->getTeam()))
+			takeDamages(projectile->getDamages());
+	}
+
 protected:
 private:
 };

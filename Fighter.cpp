@@ -19,8 +19,9 @@ void FighterStats::setResistance(DamageType& type, float value)
 
 
 
-Fighter::Fighter(std::string name, osg::Vec3 position) : Entity(name, position)
+Fighter::Fighter(std::string name, osg::Vec3 position, std::string team) : Entity(name, position)
 {
+	this->_team = team;
 	loadStats("media/Entities/" + name + ".as");
 	//loadStats("media/Enemies/Human.as");
 	equipWeapon(new Weapon(_stats.weaponStats));
@@ -35,6 +36,7 @@ Fighter::~Fighter()
 void Fighter::equipWeapon(Weapon *theWeapon)
 {
 	equipedWeapon = theWeapon;
+	equipedWeapon->setTeam(_team);
 }
 
 void Fighter::aimWeapon(Entity *theOneWhoMustDie)

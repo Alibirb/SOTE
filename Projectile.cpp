@@ -8,18 +8,12 @@
 
 ProjectileStats::ProjectileStats(Damages damages, std::string imageFilename)
 {
-	for(Damage dam : damages)
-		Damage hi = dam;
 	this->damages = damages;
 	this->imageFilename = imageFilename;
-	for(Damage dam : this->damages)
-		Damage hi = dam;
 }
 
 ProjectileStats::ProjectileStats(const ProjectileStats& other)
 {
-	for(Damage dam : other.damages)
-		Damage hi = dam;
 	this->damages = other.damages;
 	this->imageFilename = other.imageFilename;
 }
@@ -35,17 +29,17 @@ ProjectileStats ProjectileStats::loadPrototype(std::string& prototypeName)
 	getScriptEngine()->runFile(PROJECTILE_SCRIPT_LOCATION + prototypeName + ".as", "ProjectileStats loadStats()");
 	//return *((ProjectileStats*) getScriptEngine()->getReturnObject());
 	ProjectileStats stats = *( new ProjectileStats(*((ProjectileStats*) getScriptEngine()->getReturnObject())));
-	for(Damage dam : stats.damages)
-		Damage hi = dam;
 	return stats;
 }
 
-Projectile::Projectile(osg::Vec3 startingPosition, osg::Vec3 heading, std::string type) : Projectile(startingPosition, heading, ProjectileStats::loadPrototype(type))
+Projectile::Projectile(osg::Vec3 startingPosition, osg::Vec3 heading, std::string type, std::string team) : Projectile(startingPosition, heading, ProjectileStats::loadPrototype(type), team)
 {
 }
 
-Projectile::Projectile(osg::Vec3 startingPosition, osg::Vec3 heading, ProjectileStats stats)
+Projectile::Projectile(osg::Vec3 startingPosition, osg::Vec3 heading, ProjectileStats stats, std::string team)
 {
+	this->_team = team;
+
 	setStats(stats);
 
 	position = startingPosition;
@@ -126,8 +120,6 @@ namespace AngelScriptWrapperFunctions
 	void ProjectileStatsCopyConstructor(ProjectileStats& other, ProjectileStats* self)
 	{
 		new(self) ProjectileStats(other.damages, other.imageFilename);
-		for(Damage dam : self->damages)
-			Damage hi = dam;
 	}
 	void ProjectileStatsDestructor(void *memory)
 	{
