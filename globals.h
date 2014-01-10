@@ -24,8 +24,10 @@
 
 using namespace osg;
 
-extern osg::ref_ptr<osg::Group> root;
-extern ref_ptr<osg::Group> lightGroup;
+//extern osg::ref_ptr<osg::Group> root;
+//extern ref_ptr<osg::Group> lightGroup;
+extern osg::Group* root;
+extern osg::Group* lightGroup;
 extern osgViewer::Viewer viewer;
 const double pi = 3.14159265358979323846;
 extern int windowWidth;
@@ -42,6 +44,9 @@ double asind(double x);
 double acosd(double x);
 double atand(double x);
 
+osg::Vec3 cameraToWorldTranslation(float x, float y, float z = 0);
+osg::Vec3 cameraToWorldTranslation(osg::Vec3 camTranslation);
+
 
 osg::Matrixd* getWorldCoordinates( osg::Node* node);
 
@@ -51,6 +56,8 @@ double getDeltaTime();
 
 /// Called when the game is lost.
 void GameOverYouLose();
+
+void runCleanup();	/// Cleans up before the program exits.
 
 /// Adds a node to the graph as a child of the specified parent, if it's safe to do so (not during a scene graph traversal).
 /// If it's not safe, puts the node on a list of additions, and adds it once it's safe.

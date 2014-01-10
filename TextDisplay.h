@@ -34,6 +34,7 @@ public:
 	osg::Geode* textGeode;
 
 	TextDisplay();
+	~TextDisplay();
 
 	void updateProjection();
 

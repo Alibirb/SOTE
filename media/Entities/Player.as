@@ -2,7 +2,7 @@
 FighterStats loadStats()
 {
 	FighterStats stats;
-	stats.imageFilename = "player.png";
+	stats.modelFilename = "humanmodelNoBones.osg";
 	stats.setResistance(HOT, 0.0);
 	stats.setResistance(COLD, 0.0);
 	stats.setResistance(ACID, 0.0);

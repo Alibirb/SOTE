@@ -14,7 +14,8 @@ AngelScriptConsole::AngelScriptConsole() : osgWidget::Input("console", "", 50)
 
 	osgWidget::Box* box = new osgWidget::Box("vbox", osgWidget::Box::VERTICAL);
 
-	this->setFont("fonts/VeraMono.ttf");
+	//this->setFont("fonts/VeraMono.ttf");
+	this->setFont("fonts/arial.ttf");
 	this->setFontColor(0.0f, 0.0f, 0.0f, 1.0f);
 	this->setFontSize(15);
 	this->setYOffset(this->calculateBestYOffset("y"));
@@ -25,8 +26,9 @@ AngelScriptConsole::AngelScriptConsole() : osgWidget::Input("console", "", 50)
 
 	wm->addChild(box);
 
-	osg::Camera* camera = wm->createParentOrthoCamera();
-	root->addChild(camera);
+	camera = wm->createParentOrthoCamera();
+//	root->addChild(camera);
+	addToSceneGraph(camera);
 
 	viewer.addEventHandler(new osgWidget::MouseHandler(wm));
 	viewer.addEventHandler(new osgWidget::KeyboardHandler(wm));
@@ -38,7 +40,7 @@ AngelScriptConsole::AngelScriptConsole() : osgWidget::Input("console", "", 50)
 
 AngelScriptConsole::~AngelScriptConsole()
 {
-	//dtor
+	camera->getParent(0)->removeChild(camera);	// remove the node from the scenegraph.
 }
 
 void AngelScriptConsole::enterCommand(std::string code)

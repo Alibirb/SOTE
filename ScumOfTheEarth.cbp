@@ -12,8 +12,12 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-pg" />
 					<Add option="-g" />
 				</Compiler>
+				<Linker>
+					<Add option="-pg" />
+				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option output="bin/Release/ScumOfTheEarth" prefix_auto="1" extension_auto="1" />
@@ -35,6 +39,7 @@
 			<Add directory="/usr/local/include" />
 			<Add directory="../Box2D_v2.3.0/Box2D" />
 			<Add directory="/home/daniel/Downloads/AngelScript/sdk" />
+			<Add directory="/usr/local/Bullet2.81/include/bullet" />
 		</Compiler>
 		<Linker>
 			<Add option="-pthread" />
@@ -47,6 +52,10 @@
 			<Add library="Box2D" />
 			<Add library="/usr/local/lib/libangelscript.a" />
 			<Add library="/usr/lib/x86_64-linux-gnu/libpthread.so" />
+			<Add library="/usr/local/Bullet2.81/lib/libBulletSoftBody.a" />
+			<Add library="/usr/local/Bullet2.81/lib/libBulletDynamics.a" />
+			<Add library="/usr/local/Bullet2.81/lib/libBulletCollision.a" />
+			<Add library="/usr/local/Bullet2.81/lib/libLinearMath.a" />
 			<Add directory="/usr/local/lib" />
 			<Add directory="/usr/local/lib64" />
 			<Add directory="../ScumOfTheEarth" />
@@ -60,13 +69,13 @@
 		<Unit filename="ArchitectureNotes" />
 		<Unit filename="BaseCameraManipulator.cpp" />
 		<Unit filename="BaseCameraManipulator.h" />
+		<Unit filename="Box2DDebugDrawer.cpp" />
+		<Unit filename="Box2DDebugDrawer.h" />
 		<Unit filename="Box2DIntegration.cpp" />
 		<Unit filename="Box2DIntegration.h" />
 		<Unit filename="C++.notes" />
 		<Unit filename="Damage.cpp" />
 		<Unit filename="Damage.h" />
-		<Unit filename="DebugDrawer.cpp" />
-		<Unit filename="DebugDrawer.h" />
 		<Unit filename="Enemy.cpp" />
 		<Unit filename="Enemy.h" />
 		<Unit filename="Entity.cpp" />
@@ -77,13 +86,14 @@
 		<Unit filename="Fighter.h" />
 		<Unit filename="Item.cpp" />
 		<Unit filename="Item.h" />
-		<Unit filename="Level2D.cpp" />
-		<Unit filename="Level2D.h" />
+		<Unit filename="Level.cpp" />
+		<Unit filename="Level.h" />
 		<Unit filename="Notes.txt" />
 		<Unit filename="OwnerUpdateCallback.cpp" />
 		<Unit filename="OwnerUpdateCallback.h" />
 		<Unit filename="PhysicsContactListener.cpp" />
 		<Unit filename="PhysicsContactListener.h" />
+		<Unit filename="PhysicsData.h" />
 		<Unit filename="PhysicsNodeCallback.cpp" />
 		<Unit filename="PhysicsNodeCallback.h" />
 		<Unit filename="Player.cpp" />
@@ -97,6 +107,8 @@
 		<Unit filename="TemporaryText.h" />
 		<Unit filename="TextDisplay.cpp" />
 		<Unit filename="TextDisplay.h" />
+		<Unit filename="ThirdPersonCameraManipulator.cpp" />
+		<Unit filename="ThirdPersonCameraManipulator.h" />
 		<Unit filename="TiledMap.cpp" />
 		<Unit filename="TiledMap.h" />
 		<Unit filename="TmxParser/Tmx.h" />
@@ -173,12 +185,8 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="TmxParser/inftrees.h" />
-		<Unit filename="TmxParser/tinystr.cpp" />
 		<Unit filename="TmxParser/tinystr.h" />
-		<Unit filename="TmxParser/tinyxml.cpp" />
 		<Unit filename="TmxParser/tinyxml.h" />
-		<Unit filename="TmxParser/tinyxmlerror.cpp" />
-		<Unit filename="TmxParser/tinyxmlparser.cpp" />
 		<Unit filename="TmxParser/trees.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -201,6 +209,7 @@
 		<Unit filename="input.cpp" />
 		<Unit filename="input.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="media/DemoLevel.xml" />
 		<Unit filename="media/Entities/Golem.as" />
 		<Unit filename="media/Entities/Human.as" />
 		<Unit filename="media/Entities/Player.as" />
@@ -210,6 +219,17 @@
 		<Unit filename="media/Weapons/Staff.as" />
 		<Unit filename="media/Weapons/Throwing.as" />
 		<Unit filename="osgNotes" />
+		<Unit filename="osgbCollision/Chart.cpp" />
+		<Unit filename="osgbCollision/Chart.h" />
+		<Unit filename="osgbCollision/CollisionShapes.cpp" />
+		<Unit filename="osgbCollision/CollisionShapes.h" />
+		<Unit filename="osgbCollision/ComputeTriMeshVisitor.cpp" />
+		<Unit filename="osgbCollision/ComputeTriMeshVisitor.h" />
+		<Unit filename="osgbCollision/Export.h" />
+		<Unit filename="osgbCollision/GLDebugDrawer.cpp" />
+		<Unit filename="osgbCollision/GLDebugDrawer.h" />
+		<Unit filename="osgbCollision/Utils.cpp" />
+		<Unit filename="osgbCollision/Utils.h" />
 		<Unit filename="script.as" />
 		<Unit filename="scriptarray/scriptarray.cpp" />
 		<Unit filename="scriptarray/scriptarray.h" />
@@ -222,9 +242,25 @@
 		<Unit filename="scriptstdstring/scriptstdstring_utils.cpp" />
 		<Unit filename="stdvector.h" />
 		<Unit filename="tests.as" />
+		<Unit filename="tinyxml/tinystr.cpp" />
+		<Unit filename="tinyxml/tinystr.h" />
+		<Unit filename="tinyxml/tinyxml.cpp" />
+		<Unit filename="tinyxml/tinyxml.h" />
+		<Unit filename="tinyxml/tinyxmlerror.cpp" />
+		<Unit filename="tinyxml/tinyxmlparser.cpp" />
 		<Extensions>
 			<code_completion />
 			<debugger />
+			<DoxyBlocks>
+				<comment_style block="0" line="0" />
+				<doxyfile_project />
+				<doxyfile_build />
+				<doxyfile_warnings />
+				<doxyfile_output />
+				<doxyfile_dot />
+				<general />
+			</DoxyBlocks>
+			<envvars />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

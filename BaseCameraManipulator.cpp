@@ -113,7 +113,6 @@ void BaseCameraManipulator::setTransformation( const osg::Vec3d& eye, const osg:
 		fixVerticalAxis( _center, _rotation, true );
 }
 
-
 void BaseCameraManipulator::getTransformation( osg::Vec3d& eye, osg::Vec3d& center, osg::Vec3d& up ) const
 {
 	center = _center;
@@ -196,9 +195,9 @@ void BaseCameraManipulator::setRotation(double azimuth, double zenith)
 
 void BaseCameraManipulator::centerMousePointer(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa)
 {
-	int windowCenterX = (ea.getXmin() + ea.getXmax()) / 2.0f;
-	int windowCenterY = (ea.getYmin() + ea.getYmax()) / 2.0f;
-	aa.requestWarpPointer( windowCenterX, windowCenterY);
+	_windowCenterX = (ea.getXmin() + ea.getXmax()) / 2.0f;
+	_windowCenterY = (ea.getYmin() + ea.getYmax()) / 2.0f;
+	aa.requestWarpPointer( _windowCenterX, _windowCenterY);
 }
 
 bool BaseCameraManipulator::handleResize(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa)

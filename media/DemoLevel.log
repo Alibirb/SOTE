@@ -1,0 +1,106 @@
+
+Type of SmallRoom.003 is MESH
+exporting object SmallRoom.003
+mesh_object is Plane.008
+mesh SmallRoom.003 with material Grey
+vertexes reduced from 58 to 37
+faces 16
+WARNING update material animation not yet supported
+WARNING the texture <bpy_struct, MaterialTextureSlot("Texture.003")> has no Image, skip it
+-------------------------------------
+vertex groups False False 
+
+Type of Hallway.003 is MESH
+exporting object Hallway.003
+mesh_object is Plane.007
+mesh Hallway.003 with material Grey
+vertexes 12
+faces 3
+-----------------------------------
+vertex groups False False 
+
+Type of HallWay.002 is MESH
+exporting object HallWay.002
+mesh_object is Plane.006
+mesh HallWay.002 with material Grey
+vertexes 12
+faces 3
+-----------------------------------
+vertex groups False False 
+
+Type of SmallRoom.002 is MESH
+exporting object SmallRoom.002
+mesh_object is Plane.005
+mesh SmallRoom.002 with material Grey
+vertexes reduced from 58 to 37
+faces 16
+-------------------------------------
+vertex groups False False 
+
+Type of SmallRoom.001 is MESH
+exporting object SmallRoom.001
+mesh_object is Plane.004
+mesh SmallRoom.001 with material Red
+vertexes reduced from 124 to 66
+faces 34
+WARNING update material animation not yet supported
+WARNING the texture <bpy_struct, MaterialTextureSlot("Texture")> has no Image, skip it
+------------------------------------
+vertex groups False False 
+
+Type of Hallway.001 is MESH
+exporting object Hallway.001
+mesh_object is Plane.003
+mesh Hallway.001 with material Red
+vertexes reduced from 32 to 28
+faces 8
+----------------------------------
+vertex groups False False 
+
+Type of Hallway is MESH
+exporting object Hallway
+mesh_object is Plane
+mesh Hallway with material Grey
+vertexes 12
+faces 3
+-------------------------------
+vertex groups False False 
+
+Type of Plane.001 is MESH
+exporting object Plane.001
+mesh_object is Plane.000
+mesh Plane.001 with material Red
+vertexes reduced from 168 to 72
+faces 44
+--------------------------------
+vertex groups False False 
+
+Type of SmallRoom is MESH
+exporting object SmallRoom
+mesh_object is Plane.001
+mesh SmallRoom with material Grey
+vertexes reduced from 58 to 37
+faces 16
+---------------------------------
+vertex groups False False 
+
+Type of BigRoom is MESH
+exporting object BigRoom
+mesh_object is Plane.002
+mesh BigRoom with material Grey
+vertexes reduced from 296 to 133
+faces 81
+-------------------------------
+vertex groups False False 
+geode GeodePlane.008
+geode GeodePlane.007
+geode GeodePlane.006
+geode GeodePlane.005
+geode GeodePlane.004
+geode GeodePlane.003
+geode GeodePlane
+geode GeodePlane.000
+geode GeodePlane.001
+geode GeodePlane.002
+write file to /home/daniel/Documents/C++/ScumOfTheEarth/media/DemoLevel.osgt
+Check log file /home/daniel/Documents/C++/ScumOfTheEarth/media/DemoLevel.log

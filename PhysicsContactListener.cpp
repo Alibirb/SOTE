@@ -16,8 +16,8 @@ PhysicsContactListener::~PhysicsContactListener()
 void PhysicsContactListener::BeginContact(b2Contact* contact)
 {
 	//handle begin event
-	Box2DUserData *dataA = (Box2DUserData*) contact->GetFixtureA()->GetBody()->GetUserData();
-	Box2DUserData *dataB = (Box2DUserData*) contact->GetFixtureB()->GetBody()->GetUserData();
+	PhysicsUserData *dataA = (PhysicsUserData*) contact->GetFixtureA()->GetBody()->GetUserData();
+	PhysicsUserData *dataB = (PhysicsUserData*) contact->GetFixtureB()->GetBody()->GetUserData();
 
 	if(!dataA || !dataB)
 	{

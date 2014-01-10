@@ -27,8 +27,6 @@ void TwoDimensionalCameraManipulator::updateProjectionMatrix()
 
 void TwoDimensionalCameraManipulator::zoom(float deltaZoom)
 {
-
-	//currentZoom += deltaZoom;
 	currentZoom += currentZoom * deltaZoom;
 
 	if (currentZoom < minZoom)	// Prevent from zooming too far in or out.
@@ -137,8 +135,10 @@ bool TwoDimensionalCameraManipulator::handleMouseScroll( const osgGA::GUIEventAd
 bool TwoDimensionalCameraManipulator::handleMousePush( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa )
 {
 	// Backward and forward buttons are now implemented (on Linux, at least)
+	// Not anymore. Updated OSG, need to redo changes and recompile the library.
 	switch(ea.getButton())
 	{
+#ifdef SUPPORTS_EXTRA_MOUSE_BUTTONS
 	case osgGA::GUIEventAdapter::FORWARD_MOUSE_BUTTON :
 		zoom(zoomFactor);
 		aa.requestRedraw();
@@ -147,6 +147,7 @@ bool TwoDimensionalCameraManipulator::handleMousePush( const osgGA::GUIEventAdap
 		zoom(-zoomFactor);
 		aa.requestRedraw();
 		return true;
+#endif
 	default:
 		return false;
 	}

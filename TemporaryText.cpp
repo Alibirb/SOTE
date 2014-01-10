@@ -6,6 +6,8 @@
 
 #include "OwnerUpdateCallback.h"
 
+std::list<TemporaryText*> tempTexts;
+
 class TemporaryTextGeodeCallback : public osg::NodeCallback
 {
 public:
@@ -42,11 +44,12 @@ TemporaryText::TemporaryText(std::string text, osg::Vec3 position, float duratio
 	_text->setFont("fonts/arial.ttf");
 	_textGeode->setUpdateCallback(new OwnerUpdateCallback<TemporaryText>(this));
 
-
+	tempTexts.push_back(this);
 }
 
 TemporaryText::~TemporaryText()
 {
+	tempTexts.remove(this);
 	_transformNode->getParent(0)->removeChild(_transformNode);	// remove the node from the scenegraph.
 }
 
@@ -55,4 +58,10 @@ void TemporaryText::onUpdate(float deltaTime)
 	this->_timeRemaining -= deltaTime;
 	if(_timeRemaining <= 0)
 		markForRemoval(this, "TemporaryText");
+}
+
+
+std::list<TemporaryText*> getTempTexts()
+{
+	return tempTexts;
 }

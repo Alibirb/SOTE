@@ -11,7 +11,8 @@
 
 #include "Player.h"
 #include "Enemy.h"
-#include "Level2D.h"
+#include "Level.h"
+
 
 
 
@@ -47,6 +48,12 @@ bool MainEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIAction
 	{
 		keyState[ea.getKey()] = true;
 
+		if(ea.getKey() == osgGA::GUIEventAdapter::KEY_Escape)
+		{
+			std::cout << "Detected escape key" << std::endl;
+			runCleanup();
+			std::cout << "Cleanup finished" << std::endl;
+		}
 
 		if(_inputMode != InputMode::Standard)
 			return false;	// In non-standard input mode, we still track keystate, but nothing gets triggered.
@@ -55,16 +62,18 @@ bool MainEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIAction
 		{
 			viewer.getCameraManipulator()->home(ea, aa);
 			getActivePlayer()->resetPosition();
-			Enemy *enemy = new Enemy("theEnemy", osg::Vec3(5.0, 5.0, 0.0));
 		}
 		else if (ea.getKey() == 'p')
 		{
-			getCurrentLevel()->getDebugDrawer()->setEnabled(!getCurrentLevel()->getDebugDrawer()->isEnabled());
+			getCurrentLevel()->getDebugDrawer()->setEnabled(!getCurrentLevel()->getDebugDrawer()->getEnabled());
 		}
 		if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Return)
-			if (getEnemies().size() > 0)
-				getActivePlayer()->attack(getClosestEnemy(getActivePlayer()->getPosition(), getEnemies()));
+			//if (getEnemies().size() > 0)
+				//getActivePlayer()->attack(getClosestEnemy(getActivePlayer()->getPosition(), getEnemies()));
+			getActivePlayer()->getWeapon()->fire();
 		if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Space)
+			getActivePlayer()->jump();
+		if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Shift_L)
 			if (getEnemies().size() > 0)
 				getActivePlayer()->aimWeapon(getClosestEnemy(getActivePlayer()->getPosition(), getEnemies()));
 		return false;

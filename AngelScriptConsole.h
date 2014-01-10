@@ -20,6 +20,7 @@ class AngelScriptConsole : public osgWidget::Input
 protected:
 	bool active;
 	std::deque<std::string> history;
+	osg::Camera* camera;
 
 public:
 	AngelScriptConsole();

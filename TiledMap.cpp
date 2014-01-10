@@ -5,14 +5,16 @@
 #include <osg/Texture2D>
 
 #include "Box2DIntegration.h"
-#include "Level2D.h"
+#include "Level.h"
 
 #include "Enemy.h"
 #include "Player.h"
 
 
-TiledMap::TiledMap(std::string mapFilename)
+
+TiledMap::TiledMap(std::string mapFilename, Level* level)
 {
+	_level = level;
 	mapData = new Tmx::Map();
 	mapData->ParseFile(mapFilename);
 	int sizeX = mapData->GetWidth();
@@ -63,11 +65,12 @@ TiledMap::TiledMap(std::string mapFilename)
 
 	transformNode = new osg::PositionAttitudeTransform();
 	transformNode->addChild(geode);
-	root->addChild(transformNode);
+	addToSceneGraph(transformNode);
 }
 
 void TiledMap::loadCollisionLayer(const Tmx::ObjectGroup *objectGroup)
 {
+#ifdef USE_BOX2D_PHYSICS
 	for(int j = 0; j < objectGroup->GetNumObjects(); ++j)
 	{
 		physicsBodies.resize(physicsBodies.size()+1);
@@ -87,12 +90,10 @@ void TiledMap::loadCollisionLayer(const Tmx::ObjectGroup *objectGroup)
 		b2ChainShape shape;
 		shape.CreateLoop(vertices, polygon->GetNumPoints());
 
-		//b2Body *physicsBody;
 		b2BodyDef bodyDef;
 		bodyDef.type = b2_staticBody;
-		//bodyDef.position.Set(object->GetX() / tileWidth, - object->GetY() / tileHeight);
 		bodyDef.position.Set(0,0);
-		physicsBodies[j] = getCurrentLevel()->getPhysicsWorld()->CreateBody(&bodyDef);
+		physicsBodies[j] = _level->getPhysicsWorld()->CreateBody(&bodyDef);
 
 		b2FixtureDef fixtureDef;
 		fixtureDef.shape = &shape;
@@ -106,6 +107,7 @@ void TiledMap::loadCollisionLayer(const Tmx::ObjectGroup *objectGroup)
 		userData->ownerType = "Tilemap";
 		physicsBodies[j]->SetUserData(userData);
 	}
+#endif	//USE_BOX2D_PHYSICS
 }
 
 void TiledMap::loadEntityLayer(const Tmx::ObjectGroup *objectGroup)

@@ -6,6 +6,8 @@
 #include "osg/Geometry"
 #include <osg/PositionAttitudeTransform>
 
+class Level;
+Level* getCurrentLevel();
 
 class b2Body;
 
@@ -20,7 +22,7 @@ private:
 	std::vector<b2Body*> physicsBodies;
 	float tileWidth;
 	float tileHeight;
-	//std::vector<Tmx::Object*> objects;
+	Level* _level;
 
 	/// Creates a Geometry for a tile with the given position, size, and gid.
 	osg::Geometry* createTile(const osg::Vec3& corner, float width, float height, int gid);
@@ -35,7 +37,7 @@ private:
 	void loadEntityLayer(const Tmx::ObjectGroup *objectGroup);
 
 public:
-	TiledMap(std::string mapFilename);
+	TiledMap(std::string mapFilename, Level* level = getCurrentLevel());
 	virtual ~TiledMap();
 	void setPosition(osg::Vec3 position);
 	osg::Vec3 getPosition();

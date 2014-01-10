@@ -1,7 +1,7 @@
-#include "DebugDrawer.h"
+#include "Box2DDebugDrawer.h"
 #include "globals.h"
 
-DebugDrawer::DebugDrawer()
+Box2DDebugDrawer::Box2DDebugDrawer()
 {
 	_group = new osg::Group();
 	//_group->setName("Box2D Debug Drawing");
@@ -34,18 +34,18 @@ DebugDrawer::DebugDrawer()
 	_filledPolygonGeometry->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
 	_geode->addDrawable(_filledPolygonGeometry);
 
-	root->addChild(_geode);
+	addToSceneGraph(_geode);
 	setEnabled(true);
 
 	_drawing = false;
 }
 
-DebugDrawer::~DebugDrawer()
+Box2DDebugDrawer::~Box2DDebugDrawer()
 {
 	//dtor
 }
 
-void DebugDrawer::setEnabled(bool enable)
+void Box2DDebugDrawer::setEnabled(bool enable)
 {
 	if(!enable)
 	{
@@ -53,13 +53,13 @@ void DebugDrawer::setEnabled(bool enable)
 	}
 	_enabled = enable;
 }
-bool DebugDrawer::isEnabled()
+bool Box2DDebugDrawer::getEnabled()
 {
 	return _enabled;
 }
 
 
-void DebugDrawer::beginDraw()
+void Box2DDebugDrawer::beginDraw()
 {
 	if(_lineVertices->size() > 0)
 	{
@@ -78,7 +78,7 @@ void DebugDrawer::beginDraw()
 	_drawing = true;
 }
 
-void DebugDrawer::endDraw()
+void Box2DDebugDrawer::endDraw()
 {
 	if(_lineVertices->size())
 		_lineGeometry->addPrimitiveSet(new osg::DrawArrays(GL_LINES, 0, _lineVertices->size()));
@@ -91,7 +91,7 @@ void DebugDrawer::endDraw()
 }
 
 /// Draw a closed polygon provided in CCW order.
-void DebugDrawer::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
+void Box2DDebugDrawer::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
 {
 	if(!_enabled)
 		return;
@@ -107,7 +107,7 @@ void DebugDrawer::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b
 
 /// Draw a solid closed polygon provided in CCW order.
 /// BUG: Current implementation (when set to draw solid) does not work for non-quads.
-void DebugDrawer::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
+void Box2DDebugDrawer::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
 {
 	if(!_enabled)
 		return;
@@ -123,7 +123,7 @@ void DebugDrawer::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, co
 }
 
 /// Draw a circle.
-void DebugDrawer::DrawCircle(const b2Vec2& center, float32 radius, const b2Color& color)
+void Box2DDebugDrawer::DrawCircle(const b2Vec2& center, float32 radius, const b2Color& color)
 {
 	if(!_enabled)
 		return;
@@ -141,7 +141,7 @@ void DebugDrawer::DrawCircle(const b2Vec2& center, float32 radius, const b2Color
 }
 
 /// Draw a solid circle.
-void DebugDrawer::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Vec2& axis, const b2Color& color)
+void Box2DDebugDrawer::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Vec2& axis, const b2Color& color)
 {
 #ifdef DO_SOLID_DRAWING
 	getDebugDisplayer()->addText("DebugDrawer DrawSolidCircle not implemented\n");
@@ -151,7 +151,7 @@ void DebugDrawer::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2
 }
 
 /// Draw a line segment.
-void DebugDrawer::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color)
+void Box2DDebugDrawer::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color)
 {
 	if(!_enabled)
 		return;
@@ -166,7 +166,7 @@ void DebugDrawer::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color&
 
 /// Draw a transform. Choose your own length scale.
 /// @param xf a transform.
-void DebugDrawer::DrawTransform(const b2Transform& xf)
+void Box2DDebugDrawer::DrawTransform(const b2Transform& xf)
 {
 	if(!_enabled)
 		return;

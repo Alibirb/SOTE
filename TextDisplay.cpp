@@ -39,7 +39,8 @@ TextDisplay::TextDisplay()
 	viewMatrix = new osg::MatrixTransform;
 	viewMatrix->setMatrix(osg::Matrix::identity());
 	viewMatrix->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
-	root->addChild(projectionMatrix);
+	//root->addChild(projectionMatrix);
+	addToSceneGraph(projectionMatrix);
 	projectionMatrix->addChild(viewMatrix);
 	viewMatrix->addChild(textGeode);
 	textGeode->addDrawable(text);
@@ -53,6 +54,11 @@ TextDisplay::TextDisplay()
 	text->setFont("fonts/arial.ttf");
 	textGeode->setUpdateCallback(new TextGeodeCallback(this));
 	setDefaultText();
+}
+
+TextDisplay::~TextDisplay()
+{
+	projectionMatrix->getParent(0)->removeChild(projectionMatrix);	// remove the node from the scenegraph.
 }
 
 void TextDisplay::updateProjection()

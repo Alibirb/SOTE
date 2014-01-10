@@ -4,3 +4,7 @@ obj/
 *.layout
 *.cbTemp
 *~
+*.blend1
+*.blend2
+gnom.out
+*.cscope_file_list

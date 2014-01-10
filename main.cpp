@@ -1,10 +1,12 @@
 #include <iostream>
 
 #include "globals.h"
-#include "Level2D.h"
+#include "Level.h"
+
 #include "Player.h"
 #include "Enemy.h"
 #include "TwoDimensionalCameraManipulator.h"
+#include "ThirdPersonCameraManipulator.h"
 #include "AngelScriptEngine.h"
 #include "AngelScriptConsole.h"
 #include "TemporaryText.h"
@@ -18,8 +20,10 @@ using namespace std;
 
 
 /// Variables declared extern in globals.h
-osg::ref_ptr<osg::Group> root;
-osg::ref_ptr<osg::Group> lightGroup;
+//osg::ref_ptr<osg::Group> root;
+//osg::ref_ptr<osg::Group> lightGroup;
+osg::Group* root;
+osg::Group* lightGroup;
 osgViewer::Viewer viewer;
 int windowWidth, windowHeight;
 double deltaTime;
@@ -62,6 +66,16 @@ float getDistance(osg::Vec3 a, osg::Vec3 b)
 	return sqrt(pow(a.x() - b.x(), 2) + pow(a.y() - b.y(), 2) + pow(a.z() - b.z(), 2));
 }
 
+
+osg::Vec3 cameraToWorldTranslation(float x, float y, float z)
+{
+	double camangle = ((BaseCameraManipulator*) viewer.getCameraManipulator())->getHeading();
+	return osg::Vec3(x*cos(camangle) + y*cos(camangle+pi/2), x*sin(camangle) + y*sin(camangle+pi/2), z);
+}
+osg::Vec3 cameraToWorldTranslation(osg::Vec3 camTranslation)
+{
+	return cameraToWorldTranslation(camTranslation.x(), camTranslation.y(), camTranslation.z());
+}
 
 
 /// Visitor to return the world coordinates of a node.
@@ -144,6 +158,12 @@ void addNodesToGraph()
 	}
 }
 
+void runCleanup()
+{
+	removeExpiredObjects();
+	//while(!getTempTexts().empty())
+	//	delete getTempTexts().front();
+}
 
 int main()
 {
@@ -155,13 +175,20 @@ int main()
 	//  Set up asset search paths
 	osgDB::FilePathList pathList = osgDB::getDataFilePathList();
 	pathList.push_back("/home/daniel/Documents/C++/ScumOfTheEarth/media/");
+	pathList.push_back("/home/daniel/Documents/C++/ScumOfTheEarth/");
 	osgDB::setDataFilePathList(pathList);
 
 	windowWidth = 1600;
 	windowHeight = 900;
 
-	Level2D *level;
-	level = new Level2D("media/smallTestMap(base64).tmx");
+	//Level2D *level2D;
+	//level2D = new Level2D("media/smallTestMap(base64).tmx");
+	//level2D = new Level2D("media/smallTestMap(noObjectLayer).tmx");
+	Level *level;
+	level = new Level("media/DemoLevel.xml");
+
+	//osg::Node* LevelGeometry = osgDB::readNodeFile("DemoLevel.osgt");
+	//addToSceneGraph(LevelGeometry);
 
 
 	osg::Light* sun = new osg::Light;
@@ -178,18 +205,19 @@ int main()
 	viewer.setSceneData(root);
 	viewer.addEventHandler(getMainEventHandler());
 	viewer.apply(new osgViewer::SingleWindow(0, 0, windowWidth, windowHeight, 0));
+#ifdef TOP_DOWN_2D_VIEW
 	viewer.setCameraManipulator(new TwoDimensionalCameraManipulator());
-	//viewer.getCamera()->setProjectionMatrixAsOrtho2D(-10, 0, 0, 10 * windowHeight/windowWidth);
 	viewer.getCamera()->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
 	viewer.getCamera()->setViewMatrix(osg::Matrix::identity());
+#else
+	viewer.setCameraManipulator(new ThirdPersonCameraManipulator());
+#endif
 	viewer.realize();
 
 
 	//getScriptEngine()->initialize();
 	//getScriptEngine()->test();
 	//getScriptEngine()->runFile("script.as");
-	getScriptEngine()->runFile("initialize.as");
-	getScriptEngine()->runFile("script.as");
 	getScriptEngine()->runFile("initialize.as");
 
 
@@ -204,17 +232,14 @@ int main()
 		fps[i] = 60;
 	float fpsTotal = 60.0 * fpsArrayLength;
 
+	addNodesToGraph();
+
 	while(!viewer.done())
 	{
 		osg::Timer_t now_tick = osg::Timer::instance()->tick();
 		deltaTime = osg::Timer::instance()->delta_s(frame_tick, now_tick);
 		frame_tick = now_tick;
-
-		getCurrentLevel()->getPhysicsWorld()->Step(deltaTime, 6, 2);
-		getCurrentLevel()->getDebugDrawer()->beginDraw();
-		getCurrentLevel()->getPhysicsWorld()->DrawDebugData();
-		getCurrentLevel()->getDebugDrawer()->endDraw();
-
+		getCurrentLevel()->updatePhysics(deltaTime);
 		if (deltaTime > 0)
 		{
 			fpsTotal -= fps[0];

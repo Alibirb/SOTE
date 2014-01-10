@@ -1,6 +1,7 @@
 #include "Enemy.h"
 #include "Weapon.h"
 #include "Player.h"
+#include "PhysicsData.h"
 
 std::list<Enemy*> enemyList;
 
@@ -8,10 +9,15 @@ std::list<Enemy*> enemyList;
 Enemy::Enemy(std::string name, osg::Vec3 position) : Fighter(name, position, "Enemy")
 {
 	addEnemy(this);	// put this Enemy in the enemyList.
-	Box2DUserData *userData = new Box2DUserData;
+
+	PhysicsUserData *userData = new PhysicsUserData;
 	userData->owner = this;
 	userData->ownerType = "Enemy";
+#ifdef USE_BOX2D_PHYSICS
 	physicsBody->SetUserData(userData);
+#else
+	controller->getGhostObject()->setUserPointer(userData);
+#endif
 }
 
 Enemy::~Enemy()

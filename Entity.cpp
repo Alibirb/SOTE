@@ -7,7 +7,8 @@
 
 #include "Entity.h"
 #include "PhysicsNodeCallback.h"
-#include "Level2D.h"
+#include "Level.h"
+
 #include "Sprite.h"
 #include "Weapon.h"
 
@@ -15,6 +16,8 @@
 #include <osgDB/FileUtils>
 
 #include "OwnerUpdateCallback.h"
+
+#define DEFAULT_ENTITY_MODEL_NAME "humanmodelNoBones.osg"
 
 
 Entity::Entity(std::string name, osg::Vec3 position)
@@ -25,13 +28,19 @@ Entity::Entity(std::string name, osg::Vec3 position)
 	transformNode = new osg::PositionAttitudeTransform();
 	transformNode->setPosition(position);
 
-	modelNode = new Sprite();
-	//modelNode->setUpdateCallback(new EntityUpdateNodeCallback(this));
+	if(_useSpriteAsModel)
+		modelNode = new Sprite();
+	else
+	{
+		std::string modelFilename = DEFAULT_ENTITY_MODEL_NAME;
+		modelNode = osgDB::readNodeFile(modelFilename);
+	}
 	modelNode->setUpdateCallback(new OwnerUpdateCallback<Entity>(this));
-	root->addChild(transformNode);
+
+	addToSceneGraph(transformNode);
 	transformNode->addChild(modelNode);
 
-
+#ifdef USE_BOX2D_PHYSICS
 	box2DToOsgAdjustment = osg::Vec3(0.0, 0.0, 0.0);
 
 	b2BodyDef bodyDef;
@@ -65,7 +74,29 @@ Entity::Entity(std::string name, osg::Vec3 position)
 
 
 	transformNode->setUpdateCallback(new PhysicsNodeCallback(transformNode, physicsBody, box2DToOsgAdjustment));
+#else
+	float capsuleHeight = 1.25;
+	float capsuleRadius = .4;
+	physicsToModelAdjustment = osg::Vec3(0, 0, capsuleHeight/2 + capsuleRadius);
+	btCapsuleShapeZ* shape = new btCapsuleShapeZ(capsuleRadius, capsuleHeight);
 
+	btTransform transform = btTransform();
+	transform.setIdentity();
+	transform.setOrigin(osgbCollision::asBtVector3(position + physicsToModelAdjustment));
+	btPairCachingGhostObject * ghostObject = new btPairCachingGhostObject();
+	ghostObject->setWorldTransform(transform);
+	getCurrentLevel()->getBulletWorld()->getBroadphase()->getOverlappingPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
+	ghostObject->setCollisionShape(shape);
+	ghostObject->setCollisionFlags (btCollisionObject::CF_CHARACTER_OBJECT);
+	float stepHeight = .35;
+	controller = new btKinematicCharacterController(ghostObject, shape, stepHeight, 2);
+	controller->setGravity(-getCurrentLevel()->getBulletWorld()->getGravity().z());
+	//getCurrentLevel()->getBulletWorld()->addCollisionObject(ghostObject, btBroadphaseProxy::CharacterFilter, btBroadphaseProxy::StaticFilter|btBroadphaseProxy::DefaultFilter);
+	getCurrentLevel()->getBulletWorld()->addCollisionObject(ghostObject, btBroadphaseProxy::CharacterFilter, btBroadphaseProxy::AllFilter);
+	getCurrentLevel()->getBulletWorld()->addAction(controller);
+
+	transformNode->setUpdateCallback(new BulletPhysicsNodeCallback(ghostObject, -physicsToModelAdjustment));
+#endif
 
 	state = awake;
 }
@@ -73,18 +104,33 @@ Entity::Entity(std::string name, osg::Vec3 position)
 Entity::~Entity()
 {
 	transformNode->getParent(0)->removeChild(transformNode);	// remove the node from the scenegraph.
+#ifdef USE_BOX2D_PHYSICS
 	getCurrentLevel()->getPhysicsWorld()->DestroyBody(physicsBody);
+#else
+	getCurrentLevel()->getBulletWorld()->removeCollisionObject(controller->getGhostObject());
+	getCurrentLevel()->getBulletWorld()->removeAction(controller);
+	delete controller;
+#endif
 }
 
-void Entity::setSpriteImage(std::string imageFilename)
+void Entity::loadModel(std::string modelFilename)
 {
-	//dynamic_cast<Sprite*>(modelNode)->setImage(imageFilename);
-	dynamic_pointer_cast<Sprite>(modelNode)->setImage(imageFilename);
+	if(_useSpriteAsModel)
+		dynamic_pointer_cast<Sprite>(modelNode)->setImage(modelFilename);
+	else
+	{
+		transformNode->removeChild(modelNode);
+		modelNode = osgDB::readNodeFile(modelFilename);
+		modelNode->setUpdateCallback(new OwnerUpdateCallback<Entity>(this));
+		transformNode->addChild(modelNode);
+	}
 }
 
 void Entity::jump()
 {
-
+#ifndef USE_BOX2D_PHYSICS
+	controller->jump();
+#endif // USE_BOX2D_PHYSICS
 }
 
 

@@ -25,7 +25,7 @@ Fighter::Fighter(std::string name, osg::Vec3 position, std::string team) : Entit
 	loadStats("media/Entities/" + name + ".as");
 	//loadStats("media/Enemies/Human.as");
 	equipWeapon(new Weapon(_stats.weaponStats));
-	transformNode->addChild(equipedWeapon->getTransformNode());
+
 }
 
 Fighter::~Fighter()
@@ -35,7 +35,11 @@ Fighter::~Fighter()
 
 void Fighter::equipWeapon(Weapon *theWeapon)
 {
+	//if(equipedWeapon)
+	//	transformNode->removeChild(equipedWeapon->getTransformNode());
 	equipedWeapon = theWeapon;
+	transformNode->addChild(equipedWeapon->getTransformNode());
+	equipedWeapon->setPosition(osg::Vec3(0,0,1));
 	equipedWeapon->setTeam(_team);
 }
 
@@ -60,7 +64,7 @@ void Fighter::loadStats(std::string scriptFilename)
 	getScriptEngine()->runFile(scriptFilename, "FighterStats loadStats()");
 	setStats( *((FighterStats*) getScriptEngine()->getReturnObject()));
 	this->health = _stats.maxHealth;
-	this->setSpriteImage(_stats.imageFilename);
+	this->loadModel(_stats.modelFilename);
 }
 
 void Fighter::takeDamages(Damages dams)
@@ -104,7 +108,7 @@ namespace AngelScriptWrapperFunctions
 	{
 		new(self) FighterStats();
 		self->resistances = other.resistances;
-		self->imageFilename = other.imageFilename;
+		self->modelFilename = other.modelFilename;
 		self->maxHealth = other.maxHealth;
 		self->weaponType = other.weaponType;
 		self->weaponStats = other.weaponStats;
@@ -133,7 +137,7 @@ void registerFighterStats()
 	getScriptEngine()->registerDestructor("FighterStats", asFUNCTION(FighterStatsDestructor));
 	getScriptEngine()->registerConstructor("FighterStats", "void f(const FighterStats &in)", asFUNCTION(FighterStatsCopyConstructor));
 	getScriptEngine()->registerObjectProperty("FighterStats", "float maxHealth", asOFFSET(FighterStats, maxHealth));
-	getScriptEngine()->registerObjectProperty("FighterStats", "string imageFilename", asOFFSET(FighterStats, imageFilename));
+	getScriptEngine()->registerObjectProperty("FighterStats", "string modelFilename", asOFFSET(FighterStats, modelFilename));
 	getScriptEngine()->registerObjectProperty("FighterStats", "string weaponType", asOFFSET(FighterStats, weaponType));
 	getScriptEngine()->registerObjectProperty("FighterStats", "WeaponStats weaponStats", asOFFSET(FighterStats, weaponStats));
 

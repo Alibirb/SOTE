@@ -1,0 +1,45 @@
+[sx, ?, ?, tx]	[x]
+[?, sy, ?, ty]	[y]
+[?, ?, sz, tz]	[z]		= transformed coordinates 
+[?, ?, ?, ?]	[w]
+
+w is usually 1, bottom row of matrix is usually [0,0,0,1].
+when converted to three-element, x, y, and z are all divided by w
+
+osgExport thing does not seem to handle translation. The mesh it writes is misinterpreting the translation components.
+
+
+Translation:
+[1, 0, 0, tx]
+[0, 1, 0, ty]
+[0, 0, 1, tz]
+[0, 0, 0, 1]
+
+Scaling:
+[sx, 0, 0, 0]
+[0, sy, 0, 0]
+[0, 0, sz, 0]
+[0, 0, 0, 1]
+
+Rotation:
+x-axis:
+[1	0		0		0]
+[0	cosϴ	-sinϴ	0]
+[0	sinϴ	cosϴ	0]
+[0	0		0		1]
+
+y-axis:
+[cosϴ	0	sinϴ	0]
+[0		1	0		0]
+[-sinϴ	0	cosϴ	0]
+[0		0	0		1]
+
+z-axis:
+[cosϴ	-sinϴ	0	0]
+[sinϴ	cosϴ	0	0]
+[0		0		1	0]
+[0		0		0	1]
+
+
+
+

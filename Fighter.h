@@ -14,7 +14,7 @@ public:
 	FighterStats();
 	float maxHealth;
 	std::map<DamageType, float> resistances;
-	std::string imageFilename;
+	std::string modelFilename;
 	std::string weaponType;
 	WeaponStats weaponStats;
 

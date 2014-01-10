@@ -6,6 +6,7 @@
 #include "osg/Vec3"
 #include "osg/Vec4"
 #include <iostream>
+#include "PhysicsData.h"
 
 /// Converts a Box2D vector to an OSG Vec2
 osg::Vec2 b2Vec2ToOsgVec2(b2Vec2 b2Vector);
@@ -19,21 +20,7 @@ b2Vec2 toB2Vec2(osg::Vec3 osgVector);
 /// Converts a Box2D Color to an OSG Vec4
 osg::Vec4 b2ColorToOsgVec4(b2Color color, float alpha = 1.0);
 
-/// userdata to attach to physics bodies so the objects that own them can be altered (e.g. enemies get hurt)
-struct Box2DUserData
-{
-	std::string ownerType;
-	void* owner;
-};
 
-enum CollisionCategories {
-	HIT_BOX = 0x0002,
-	PAIN_SOURCE = 0x0004,
-	OBSTACLE = 0x0008,
-
-
-	ALL = 0xFFFF
-};
 
 
 #endif // BOX2DINTEGRATION_H_

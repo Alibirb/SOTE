@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<level3D>
+	<geometry source="DemoLevel.osgt"/>
+	<enemy name="Human" x="5" y="5" z="1"/>
+	<player name="Player" x="5" y="-5" z="1"/>
+</level3D>

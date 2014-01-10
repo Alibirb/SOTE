@@ -2,6 +2,7 @@
 #define TEMPORARYTEXT_H
 
 #include <iostream>
+#include <list>
 
 namespace osgText {
 	class Text;
@@ -31,6 +32,6 @@ protected:
 private:
 };
 
-
+std::list<TemporaryText*> getTempTexts();
 
 #endif // TEMPORARYTEXT_H

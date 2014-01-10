@@ -1,12 +1,12 @@
-#ifndef DEBUGDRAWER_H
-#define DEBUGDRAWER_H
+#ifndef BOX2DDEBUGDRAWER_H
+#define BOX2DDEBUGDRAWER_H
 
 #include "Box2D/Common/b2Draw.h"
 #include "Box2DIntegration.h"
 #include "osg/Geometry"
 
 
-class DebugDrawer : public b2Draw
+class Box2DDebugDrawer : public b2Draw
 {
 private:
 	//osg::ref_ptr<osg::Group> _group;
@@ -28,11 +28,11 @@ private:
 	bool _drawing;
 
 public:
-	DebugDrawer();
-	virtual ~DebugDrawer();
+	Box2DDebugDrawer();
+	virtual ~Box2DDebugDrawer();
 
 	void setEnabled(bool enable);
-	bool isEnabled();
+	bool getEnabled();
 
 	void beginDraw();
 	void endDraw();
@@ -60,4 +60,4 @@ protected:
 private:
 };
 
-#endif // DEBUGDRAWER_H
+#endif // BOX2DDEBUGDRAWER_H

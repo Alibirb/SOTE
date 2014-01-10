@@ -25,6 +25,9 @@ protected:
 	double _azimuth = 0.0;	// heading
 	double _zenith = pi/4;	// inclination angle
 
+	float _windowCenterX;
+	float _windowCenterY;
+
 public:
 	void setCenter(osg::Vec3 newCenter);
 	void translate(float dx, float dy, float dz = 0.0);
@@ -56,9 +59,18 @@ public:
 	void setVerticalAxisFixed( bool value );
 	bool getVerticalAxisFixed();
 
+	float getHeading()
+	{
+		return _azimuth;
+	}
+	float getZenith()
+	{
+		return _zenith;
+	}
+
 	virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
-	virtual void zoom(float amount) = 0;
+	virtual void zoom(float deltaZoom) = 0;
 
 	virtual void updateProjectionMatrix() = 0;	/// called to update the projection matrix, eg when the window size changes.
 
@@ -80,15 +92,15 @@ protected:
 	{
 		return false;
 	}
-	virtual bool handleMouseRelease( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us )
+	virtual bool handleMouseRelease( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa )
 	{
 		return false;
 	}
-	virtual bool handleMouseMove( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us )
+	virtual bool handleMouseMove( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa )
 	{
 		return false;
 	}
-	virtual bool handleMouseDrag( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us )
+	virtual bool handleMouseDrag( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa )
 	{
 		return false;
 	}
@@ -96,11 +108,11 @@ protected:
 	{
 		return false;
 	}
-	virtual bool handleKeyDown( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us )
+	virtual bool handleKeyDown( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa )
 	{
 		return false;
 	}
-	virtual bool handleKeyUp( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us )
+	virtual bool handleKeyUp( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa )
 	{
 		return false;
 	}
