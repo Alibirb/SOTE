@@ -1,7 +1,6 @@
 #include "Projectile.h"
 #include "Level.h"
 #include "PhysicsNodeCallback.h"
-#include "OwnerUpdateCallback.h"
 
 #include "AngelScriptEngine.h"
 
@@ -13,6 +12,7 @@
 #include "Fighter.h"
 
 #define PROJECTILE_SCRIPT_LOCATION "media/Projectiles/"
+
 
 ProjectileStats::ProjectileStats(Damages damages, std::string imageFilename)
 {
@@ -50,18 +50,13 @@ Projectile::Projectile(osg::Vec3 startingPosition, osg::Vec3 heading, Projectile
 
 	setStats(stats);
 
-	position = startingPosition;
+	osg::Vec3 position = startingPosition;
 	heading.normalize();
 	this->heading = heading;
+
 	width = .25;
 	height = .25;
-	sprite = new Sprite(stats.imageFilename, width, height);
-	sprite->setUpdateCallback(new OwnerUpdateCallback<Projectile>(this));
-	transformNode = new osg::PositionAttitudeTransform();
-
-	transformNode->setPosition(position);
-	transformNode->addChild(sprite);
-	addToSceneGraph(transformNode);
+	setModelNode(new Sprite(stats.imageFilename, width, height));
 
 #ifdef USE_BOX2D_PHYSICS
 	box2DToOsgAdjustment = osg::Vec3(0.0, 0.0, 0.0);
@@ -71,7 +66,6 @@ Projectile::Projectile(osg::Vec3 startingPosition, osg::Vec3 heading, Projectile
 	bodyDef.position.Set(position.x() - box2DToOsgAdjustment.x() , position.y() - box2DToOsgAdjustment.y());
 	physicsBody = getCurrentLevel()->getPhysicsWorld()->CreateBody(&bodyDef);
 
-	//b2PolygonShape collisionShape;
 	b2CircleShape collisionShape;
 	collisionShape.m_radius = width/2;
 
@@ -84,8 +78,6 @@ Projectile::Projectile(osg::Vec3 startingPosition, osg::Vec3 heading, Projectile
 	physicsBody->CreateFixture(&fixtureDef);
 	physicsBody->SetLinearVelocity(toB2Vec2(heading));
 
-
-
 	transformNode->setUpdateCallback(new PhysicsNodeCallback(transformNode, physicsBody, box2DToOsgAdjustment));
 #else
 	physicsToModelAdjustment = osg::Vec3(0, 0, 0);
@@ -94,36 +86,15 @@ Projectile::Projectile(osg::Vec3 startingPosition, osg::Vec3 heading, Projectile
 	btTransform transform = btTransform();
 	transform.setIdentity();
 	transform.setOrigin(osgbCollision::asBtVector3(position + physicsToModelAdjustment));
-	//btPairCachingGhostObject* ghostObject = new btPairCachingGhostObject();
-/*	btDefaultMotionState* motionState = new btDefaultMotionState();
-	motionState->setWorldTransform(transform);
-	_physicsBody = new btRigidBody(0, motionState, shape);
-	_physicsBody->setWorldTransform(transform);
-	//getCurrentLevel()->getBulletWorld()->getBroadphase()->getOverlappingPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
-	_physicsBody->setCollisionShape(shape);
-	_physicsBody->setCollisionFlags(_physicsBody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
-	_physicsBody->setActivationState(DISABLE_DEACTIVATION);
-	//ghostObject->setCollisionFlags (btCollisionObject::CF_CHARACTER_OBJECT);
-	_physicsBody->setLinearVelocity(osgbCollision::asBtVector3(heading));
-	_velocity = heading;
-
-	getCurrentLevel()->getBulletWorld()->addRigidBody(_physicsBody);
-	*/
 
 	_velocity = heading;
 
 	_physicsBody = new btPairCachingGhostObject();
 	_physicsBody->setWorldTransform(transform);
-	getCurrentLevel()->getBulletWorld()->getBroadphase()->getOverlappingPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
 	_physicsBody->setCollisionShape(shape);
-	//_physicsBody->setCollisionFlags (btCollisionObject::CF_CHARACTER_OBJECT);
-
-//	getCurrentLevel()->getBulletWorld()->addCollisionObject(_physicsBody, btBroadphaseProxy::SensorTrigger, btBroadphaseProxy::StaticFilter|btBroadphaseProxy::DefaultFilter);
 	getCurrentLevel()->getBulletWorld()->addCollisionObject(_physicsBody, btBroadphaseProxy::SensorTrigger, btBroadphaseProxy::AllFilter);
-	//getCurrentLevel()->getBulletWorld()->addAction(controller);
 
-
-	transformNode->setUpdateCallback(new BulletPhysicsNodeCallback(_physicsBody, -physicsToModelAdjustment));
+	_transformNode->setUpdateCallback(new BulletPhysicsNodeCallback(_physicsBody, -physicsToModelAdjustment));
 #endif
 
 	PhysicsUserData *userData = new PhysicsUserData;
@@ -135,29 +106,17 @@ Projectile::Projectile(osg::Vec3 startingPosition, osg::Vec3 heading, Projectile
 	_physicsBody->setUserPointer(userData);
 #endif
 
-
-
+	setPosition(startingPosition);
 }
 
 Projectile::~Projectile()
 {
-#ifdef USE_BOX2D_PHYSICS
-	getCurrentLevel()->getPhysicsWorld()->DestroyBody(physicsBody);
-#else
-	getCurrentLevel()->getBulletWorld()->removeCollisionObject(_physicsBody);
-	delete _physicsBody;
-#endif
-}
-
-void Projectile::onCollision()
-{
-	markForRemoval(this, "Projectile");
 }
 
 void Projectile::checkForCollisions()	/// NOTE: Detects overlapping bounding boxes. Not what we want, but it works for now.
 {
 	btManifoldArray   manifoldArray;
-	btBroadphasePairArray& pairArray = _physicsBody->getOverlappingPairCache()->getOverlappingPairArray();
+	btBroadphasePairArray& pairArray = ((btPairCachingGhostObject*)_physicsBody)->getOverlappingPairCache()->getOverlappingPairArray();
 	int numPairs = pairArray.size();
 
 	for (int i = 0; i < numPairs; i++)
@@ -189,13 +148,13 @@ void Projectile::checkForCollisions()	/// NOTE: Detects overlapping bounding box
 
 			if(dataA->ownerType == "Projectile" && (dataB->ownerType == "Enemy" || dataB->ownerType == "Player") )
 			{
-				((Fighter*)dataB->owner)->onCollision(((Projectile*)dataA->owner));
-				((Projectile*)dataA->owner)->onCollision();
+				((Fighter*)dataB->owner)->onCollision((Projectile*)dataA->owner);
+				((Projectile*)dataA->owner)->onCollision((Fighter*)dataB->owner);
 			}
 			else if((dataA->ownerType == "Enemy" || dataA->ownerType == "Player") && dataB->ownerType == "Projectile")
 			{
-				((Fighter*)dataA->owner)->onCollision(((Projectile*)dataB->owner));
-				((Projectile*)dataB->owner)->onCollision();
+				((Fighter*)dataA->owner)->onCollision((Projectile*)dataB->owner);
+				((Projectile*)dataB->owner)->onCollision((Fighter*)dataA->owner);
 			}
 
 
@@ -216,17 +175,36 @@ void Projectile::checkForCollisions()	/// NOTE: Detects overlapping bounding box
 	}
 }
 
-void Projectile::setPosition(osg::Vec3 position)
-{
-	this->position = position;
-	this->transformNode->setPosition(position);
-}
-
 Damages Projectile::getDamages()
 {
 	return _stats.damages;
 }
 
+void Projectile::setStats(ProjectileStats& stats)
+{
+	this->_stats = stats;
+}
+
+std::string Projectile::getTeam()
+{
+	return _team;
+}
+
+void Projectile::onUpdate(float deltaTime)
+{
+	/// Bullet does not allow you to set a velocity for kinematic objects, so we need to manually warp the projectile's body. This also means there's no collision detection.
+	btTransform transform;
+	transform = _physicsBody->getWorldTransform();
+	transform.setOrigin(_physicsBody->getWorldTransform().getOrigin() + osgbCollision::asBtVector3(_velocity * deltaTime));
+	_physicsBody->setWorldTransform(transform);
+
+//	checkForCollisions();
+}
+void Projectile::onCollision(GameObject* other)
+{
+	if(dynamic_cast<Fighter*>(other))
+		markForRemoval(this, "Projectile");
+}
 
 
 namespace AngelScriptWrapperFunctions

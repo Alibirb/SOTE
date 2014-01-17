@@ -41,8 +41,8 @@ Type of SmallRoom.001 is MESH
 exporting object SmallRoom.001
 mesh_object is Plane.004
 mesh SmallRoom.001 with material Red
-vertexes reduced from 124 to 66
-faces 34
+vertexes reduced from 244 to 128
+faces 64
 WARNING update material animation not yet supported
 WARNING the texture <bpy_struct, MaterialTextureSlot("Texture")> has no Image, skip it
 ------------------------------------
@@ -52,8 +52,8 @@ Type of Hallway.001 is MESH
 exporting object Hallway.001
 mesh_object is Plane.003
 mesh Hallway.001 with material Red
-vertexes reduced from 32 to 28
-faces 8
+vertexes reduced from 88 to 64
+faces 22
 ----------------------------------
 vertex groups False False 
 
@@ -88,8 +88,8 @@ Type of BigRoom is MESH
 exporting object BigRoom
 mesh_object is Plane.002
 mesh BigRoom with material Grey
-vertexes reduced from 296 to 133
-faces 81
+vertexes reduced from 504 to 261
+faces 133
 -------------------------------
 vertex groups False False 
 geode GeodePlane.008

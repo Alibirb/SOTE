@@ -23,34 +23,33 @@ Fighter::Fighter(std::string name, osg::Vec3 position, std::string team) : Entit
 {
 	this->_team = team;
 	loadStats("media/Entities/" + name + ".as");
-	//loadStats("media/Enemies/Human.as");
 	equipWeapon(new Weapon(_stats.weaponStats));
 
 }
 
 Fighter::~Fighter()
 {
-	delete equipedWeapon;	// Note that this may not be the final desired behavior.
+	delete _equippedWeapon;	// Note that this may not be the final desired behavior.
 }
 
 void Fighter::equipWeapon(Weapon *theWeapon)
 {
 	//if(equipedWeapon)
 	//	transformNode->removeChild(equipedWeapon->getTransformNode());
-	equipedWeapon = theWeapon;
-	transformNode->addChild(equipedWeapon->getTransformNode());
-	equipedWeapon->setPosition(osg::Vec3(0,0,1));
-	equipedWeapon->setTeam(_team);
+	_equippedWeapon = theWeapon;
+	_equippedWeapon->parentTo(_transformNode);
+	_equippedWeapon->setPosition(osg::Vec3(0,0,1));
+	_equippedWeapon->setTeam(_team);
 }
 
 void Fighter::aimWeapon(Entity *theOneWhoMustDie)
 {
-	equipedWeapon->aimAt(theOneWhoMustDie->getPosition());
+	_equippedWeapon->aimAt(theOneWhoMustDie->getWorldPosition());
 }
 
 Weapon* Fighter::getWeapon()
 {
-	return equipedWeapon;
+	return _equippedWeapon;
 }
 
 void Fighter::setStats(FighterStats& newStats)
@@ -87,6 +86,24 @@ float Fighter::getResistance(DamageType& type)
 {
 	return _stats.resistances[type];
 }
+
+bool Fighter::isHurtByTeam(std::string otherTeam)
+{
+	return (_team.compare(otherTeam) != 0);
+}
+
+void Fighter::onCollision(Projectile* projectile)
+{
+	if(isHurtByTeam(projectile->getTeam()))
+		takeDamages(projectile->getDamages());
+}
+void Fighter::onCollision(GameObject* other)
+{
+	if(dynamic_cast<Projectile*>(other))
+		onCollision(dynamic_cast<Projectile*>(other));
+}
+
+
 
 
 void addDamageIndicator(Fighter* entityHurt, float damageDealt, DamageType& damageType)

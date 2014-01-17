@@ -9,6 +9,8 @@
 
 void removeExpiredObjects();
 
+bool isMarked(void* object);
+
 void markForRemoval(void *toBeEXTERMINATED, std::string objectType);
 
 #endif

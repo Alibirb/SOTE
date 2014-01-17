@@ -181,14 +181,7 @@ int main()
 	windowWidth = 1600;
 	windowHeight = 900;
 
-	//Level2D *level2D;
-	//level2D = new Level2D("media/smallTestMap(base64).tmx");
-	//level2D = new Level2D("media/smallTestMap(noObjectLayer).tmx");
-	Level *level;
-	level = new Level("media/DemoLevel.xml");
-
-	//osg::Node* LevelGeometry = osgDB::readNodeFile("DemoLevel.osgt");
-	//addToSceneGraph(LevelGeometry);
+	Level *level = new Level("media/DemoLevel.xml");
 
 
 	osg::Light* sun = new osg::Light;
@@ -255,7 +248,7 @@ int main()
 		getDebugDisplayer()->addText(frameRateStream);
 
 		std::ostringstream playerCoordinatesStream;
-		playerCoordinatesStream << "Player: " << getActivePlayer()->getPosition().x() << ", " << getActivePlayer()->getPosition().y() << ", " << getActivePlayer()->getPosition().z() << std::endl;
+		playerCoordinatesStream << "Player: " << getActivePlayer()->getWorldPosition().x() << ", " << getActivePlayer()->getWorldPosition().y() << ", " << getActivePlayer()->getWorldPosition().z() << std::endl;
 		getDebugDisplayer()->addText(playerCoordinatesStream);
 
 

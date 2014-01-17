@@ -25,20 +25,18 @@ Entity::Entity(std::string name, osg::Vec3 position)
 	initialPosition = position;
 
 	this->name = name;
-	transformNode = new osg::PositionAttitudeTransform();
-	transformNode->setPosition(position);
+	_transformNode->setPosition(position);
 
 	if(_useSpriteAsModel)
-		modelNode = new Sprite();
+		_modelNode = new Sprite();
 	else
 	{
 		std::string modelFilename = DEFAULT_ENTITY_MODEL_NAME;
-		modelNode = osgDB::readNodeFile(modelFilename);
+		_modelNode = osgDB::readNodeFile(modelFilename);
 	}
-	modelNode->setUpdateCallback(new OwnerUpdateCallback<Entity>(this));
+	_modelNode->setUpdateCallback(new OwnerUpdateCallback<Entity>(this));
 
-	addToSceneGraph(transformNode);
-	transformNode->addChild(modelNode);
+	_transformNode->addChild(_modelNode);
 
 #ifdef USE_BOX2D_PHYSICS
 	box2DToOsgAdjustment = osg::Vec3(0.0, 0.0, 0.0);
@@ -72,7 +70,6 @@ Entity::Entity(std::string name, osg::Vec3 position)
 	userData->ownerType = "Entity";
 	physicsBody->SetUserData(userData);
 
-
 	transformNode->setUpdateCallback(new PhysicsNodeCallback(transformNode, physicsBody, box2DToOsgAdjustment));
 #else
 	float capsuleHeight = 1.25;
@@ -83,19 +80,17 @@ Entity::Entity(std::string name, osg::Vec3 position)
 	btTransform transform = btTransform();
 	transform.setIdentity();
 	transform.setOrigin(osgbCollision::asBtVector3(position + physicsToModelAdjustment));
-	btPairCachingGhostObject * ghostObject = new btPairCachingGhostObject();
-	ghostObject->setWorldTransform(transform);
-	getCurrentLevel()->getBulletWorld()->getBroadphase()->getOverlappingPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
-	ghostObject->setCollisionShape(shape);
-	ghostObject->setCollisionFlags (btCollisionObject::CF_CHARACTER_OBJECT);
+	_physicsBody = new btPairCachingGhostObject();
+	_physicsBody->setWorldTransform(transform);
+	_physicsBody->setCollisionShape(shape);
+	_physicsBody->setCollisionFlags(btCollisionObject::CF_CHARACTER_OBJECT);
 	float stepHeight = .35;
-	controller = new btKinematicCharacterController(ghostObject, shape, stepHeight, 2);
+	controller = new btKinematicCharacterController((btPairCachingGhostObject*)_physicsBody, shape, stepHeight, 2);
 	controller->setGravity(-getCurrentLevel()->getBulletWorld()->getGravity().z());
-	//getCurrentLevel()->getBulletWorld()->addCollisionObject(ghostObject, btBroadphaseProxy::CharacterFilter, btBroadphaseProxy::StaticFilter|btBroadphaseProxy::DefaultFilter);
-	getCurrentLevel()->getBulletWorld()->addCollisionObject(ghostObject, btBroadphaseProxy::CharacterFilter, btBroadphaseProxy::AllFilter);
+	getCurrentLevel()->getBulletWorld()->addCollisionObject(_physicsBody, btBroadphaseProxy::CharacterFilter, btBroadphaseProxy::AllFilter);
 	getCurrentLevel()->getBulletWorld()->addAction(controller);
 
-	transformNode->setUpdateCallback(new BulletPhysicsNodeCallback(ghostObject, -physicsToModelAdjustment));
+	_transformNode->setUpdateCallback(new BulletPhysicsNodeCallback(_physicsBody, -physicsToModelAdjustment));
 #endif
 
 	state = awake;
@@ -103,27 +98,10 @@ Entity::Entity(std::string name, osg::Vec3 position)
 
 Entity::~Entity()
 {
-	transformNode->getParent(0)->removeChild(transformNode);	// remove the node from the scenegraph.
-#ifdef USE_BOX2D_PHYSICS
-	getCurrentLevel()->getPhysicsWorld()->DestroyBody(physicsBody);
-#else
-	getCurrentLevel()->getBulletWorld()->removeCollisionObject(controller->getGhostObject());
+#ifndef USE_BOX2D_PHYSICS
 	getCurrentLevel()->getBulletWorld()->removeAction(controller);
 	delete controller;
 #endif
-}
-
-void Entity::loadModel(std::string modelFilename)
-{
-	if(_useSpriteAsModel)
-		dynamic_pointer_cast<Sprite>(modelNode)->setImage(modelFilename);
-	else
-	{
-		transformNode->removeChild(modelNode);
-		modelNode = osgDB::readNodeFile(modelFilename);
-		modelNode->setUpdateCallback(new OwnerUpdateCallback<Entity>(this));
-		transformNode->addChild(modelNode);
-	}
 }
 
 void Entity::jump()
@@ -133,5 +111,45 @@ void Entity::jump()
 #endif // USE_BOX2D_PHYSICS
 }
 
+void Entity::setPosition(osg::Vec3 newPosition)
+{
+	_transformNode->setPosition(newPosition);
+#ifdef USE_BOX2D_PHYSICS
+	physicsBody->SetTransform(toB2Vec2(newPosition - box2DToOsgAdjustment), physicsBody->GetAngle());
+#else
+	controller->warp(osgbCollision::asBtVector3(newPosition - physicsToModelAdjustment));
+	controller->setVelocityForTimeInterval(btVector3(0,0,0), 0.0);
+#endif
+}
 
+double Entity::getHeading()
+{
+	double angle;
+	osg::Vec3 axis;
+	_transformNode->getAttitude().getRotate(angle, axis);
+	if (axis == osg::Vec3(0,0,1))	// make sure the rotation is only around the z-axis. If it's not, this will crash the program, because nothing is returned.
+	{
+		return angle;
+	}
+	else if (axis == osg::Vec3(0,0,-1))
+		return -angle;
+	logError("Can only obtain heading for entities rotated around z-axis.\n");
+	//FIXME: this will not work if the rotation isn't centered on the z-axis.
+}
+void Entity::setHeading(double angle)
+{
+	this->setAttitude(osg::Quat(angle, osg::Vec3(0,0,1)));
+}
+
+const osg::Quat& Entity::getAttitude()
+{
+	return _transformNode->getAttitude();
+}
+void Entity::setAttitude(const osg::Quat& newAttitude)
+{
+	_transformNode->setAttitude(newAttitude);
+#ifndef USE_BOX2D_PHYSICS
+	controller->getGhostObject()->getWorldTransform().setBasis(osgbCollision::asBtMatrix3x3(osg::Matrix(newAttitude)));
+#endif
+}
 

@@ -14,6 +14,60 @@
 
 #include "PhysicsData.h"
 
+void myTickCallback(btDynamicsWorld *world, btScalar timeStep)
+{
+  //  printf("The world just ticked by %f seconds\n", (float)timeStep);
+
+	int numManifolds = world->getDispatcher()->getNumManifolds();
+	for (int i=0;i<numManifolds;i++)
+	{
+		btPersistentManifold* contactManifold =  world->getDispatcher()->getManifoldByIndexInternal(i);
+	//	btCollisionObject* obA = static_cast<btCollisionObject*>(contactManifold->getBody0());
+	//	btCollisionObject* obB = static_cast<btCollisionObject*>(contactManifold->getBody1());
+		const btCollisionObject* obA = contactManifold->getBody0();
+		const btCollisionObject* obB = contactManifold->getBody1();
+
+
+		PhysicsUserData* dataA = (PhysicsUserData*) obA->getUserPointer();
+		PhysicsUserData* dataB = (PhysicsUserData*) obB->getUserPointer();
+
+		if(!dataA || !dataB)
+		{
+			logError("Physics object with no userdata.");
+			continue;
+		}
+
+		if(dataA->ownerType == "Projectile" && (dataB->ownerType == "Enemy" || dataB->ownerType == "Player") )
+		{
+			((Fighter*)dataB->owner)->onCollision((Projectile*)dataA->owner);
+			((Projectile*)dataA->owner)->onCollision((Fighter*)dataB->owner);
+		}
+		else if((dataA->ownerType == "Enemy" || dataA->ownerType == "Player") && dataB->ownerType == "Projectile")
+		{
+			((Fighter*)dataA->owner)->onCollision((Projectile*)dataB->owner);
+			((Projectile*)dataB->owner)->onCollision((Fighter*)dataA->owner);
+		}
+		else if(dataA->ownerType != "Level" && dataB->ownerType != "Level")
+		{
+			((GameObject*)dataA->owner)->onCollision((GameObject*)dataB->owner);
+			((GameObject*)dataB->owner)->onCollision((GameObject*)dataA->owner);
+		}
+
+		int numContacts = contactManifold->getNumContacts();
+		for (int j=0;j<numContacts;j++)
+		{
+			btManifoldPoint& pt = contactManifold->getContactPoint(j);
+			if (pt.getDistance()<0.f)
+			{
+				const btVector3& ptA = pt.getPositionWorldOnA();
+				const btVector3& ptB = pt.getPositionWorldOnB();
+				const btVector3& normalOnB = pt.m_normalWorldOnB;
+
+
+			}
+		}
+	}
+}
 
 
 Level::Level(std::string filename)
@@ -36,6 +90,7 @@ Level::Level(std::string filename)
 	// Bullet world setup
 	btDefaultCollisionConfiguration *collisionConfiguration = new btDefaultCollisionConfiguration();
 	btBroadphaseInterface *broadphase = new btAxisSweep3(btVector3(-1000, -1000, -1000), btVector3(1000, 1000, 1000));
+	broadphase->getOverlappingPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
 	btCollisionDispatcher *dispatcher = new btCollisionDispatcher(collisionConfiguration);
 	btSequentialImpulseConstraintSolver *solver = new btSequentialImpulseConstraintSolver();
 	_physicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
@@ -44,6 +99,7 @@ Level::Level(std::string filename)
 	_physicsWorld->setDebugDrawer(_debugDrawer);
 	_debugDrawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);
 	addToSceneGraph(_debugDrawer->getSceneGraph());
+	_physicsWorld->setInternalTickCallback(myTickCallback);
 #endif
 
 	loadFromXml(filename);

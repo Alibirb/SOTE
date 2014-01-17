@@ -11,7 +11,6 @@ std::unordered_map<std::string, Player*> players;	/// List of all Players, ident
 
 Player::Player(std::string name, osg::Vec3 position) : Fighter(name, position, "Player")
 {
-
 	PhysicsUserData *userData = new PhysicsUserData;
 	userData->owner = this;
 	userData->ownerType = "Player";
@@ -20,11 +19,6 @@ Player::Player(std::string name, osg::Vec3 position) : Fighter(name, position, "
 #else
 	controller->getGhostObject()->setUserPointer(userData);
 #endif
-}
-
-void Player::setPosition(osg::Vec3 newPosition)
-{
-	Entity::setPosition(newPosition);
 }
 
 void Player::processMovementControls(osg::Vec3 controlVector)
@@ -37,7 +31,7 @@ void Player::processMovementControls(osg::Vec3 controlVector)
 	{
 		controlAngle += pi;
 	}
-	static float threshold = pi/12.0;
+	static float threshold = pi/12.0;	// For turning, I think. Will need to check previous code to see what this used to mean.
 	float angleDistance = (controlAngle + pi/2) - this->getHeading();
 	if (abs(angleDistance) > pi)
 	{
@@ -60,12 +54,12 @@ void Player::processMovementControls(osg::Vec3 controlVector)
 
 osg::Vec3 Player::getCameraTarget()
 {
-	return this->getPosition() + osg::Vec3(0, 0, 1.5);
+	return this->getWorldPosition() + osg::Vec3(0, 0, 1.5);
 }
 
 void Player::attack(Enemy *theOneWhoMustDie)
 {
-	equipedWeapon->fire();
+	_equippedWeapon->fire();
 }
 
 bool Player::isActivePlayer()
@@ -106,10 +100,10 @@ Player* getClosestPlayer(osg::Vec3 position)
 	for(auto kv : players)
 	{
 		Player* p = kv.second;	// Get the Player from the key-value pair.
-		if(getDistance(position, p->getPosition()) < shortestDistance)
+		if(getDistance(position, p->getWorldPosition()) < shortestDistance)
 		{
 			closest = p;
-			shortestDistance = getDistance(position, p->getPosition());
+			shortestDistance = getDistance(position, p->getWorldPosition());
 		}
 	}
 

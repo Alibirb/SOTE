@@ -44,13 +44,10 @@ public:
 	void fire();
 	bool isReady();
 
-	void onUpdate(float deltaTime);
+	virtual void onUpdate(float deltaTime);
 
 	/// Aims the Weapon at the target world coordinates.
 	void aimAt(osg::Vec3 target);
-	void setPosition(osg::Vec3 position);
-	osg::Vec3 getPosition();
-	osg::Vec3 getWorldPosition();
 	void setRotation(double angle);
 	void setStats(WeaponStats& stats)
 	{

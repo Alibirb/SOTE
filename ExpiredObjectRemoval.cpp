@@ -10,8 +10,6 @@
 
 
 
-
-
 struct ObjectInfo
 {
 	void* object;
@@ -38,9 +36,7 @@ void removeExpiredObjects()
 		else if (objectType == "TemporaryText")
 		{
 			delete ((TemporaryText*) expiredObjects.front().object);
-
 		}
-
 		else
 			logError("Object of unfamiliar type \"" + objectType + "\" marked for deletion");	// cannot properly delete the object unless we know what type it is.
 
@@ -48,7 +44,22 @@ void removeExpiredObjects()
 	}
 }
 
+bool isMarked(void* object)
+{
+	for(ObjectInfo info : expiredObjects)
+	{
+		if(info.object == object)
+			return true;
+	}
+	return false;
+}
+
 void markForRemoval(void *toBeEXTERMINATED, std::string objectType) {
+	if(isMarked(toBeEXTERMINATED))
+	{
+		logWarning("Object already marked for removal.");
+		return;
+	}
 	ObjectInfo info;
 	info.object = toBeEXTERMINATED;
 	info.objectType = objectType;

@@ -75,7 +75,7 @@ bool MainEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIAction
 			getActivePlayer()->jump();
 		if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Shift_L)
 			if (getEnemies().size() > 0)
-				getActivePlayer()->aimWeapon(getClosestEnemy(getActivePlayer()->getPosition(), getEnemies()));
+				getActivePlayer()->aimWeapon(getClosestEnemy(getActivePlayer()->getWorldPosition(), getEnemies()));
 		return false;
 	}
 	case(osgGA::GUIEventAdapter::KEYUP):

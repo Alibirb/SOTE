@@ -1,6 +1,3 @@
-
-
-
 #include "TwoDimensionalCameraManipulator.h"
 #include "Player.h"
 #include "input.h"

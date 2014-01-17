@@ -4,34 +4,26 @@
 
 Item::Item(std::string imageFilename)
 {
-
-	sprite = new Sprite(imageFilename);
-	transformNode = new osg::PositionAttitudeTransform();
-	transformNode->addChild(sprite);
-	sprite->setUpdateCallback(new OwnerUpdateCallback<Item>(this));
+	_useSpriteAsModel = true;
+	loadModel(imageFilename);
 }
 
 Item::~Item()
 {
-	if(transformNode->getNumParents() == 0)
-		logError("Item with no parents found.");
-	if(transformNode->getNumParents() > 1)
-		logError("Item with multiple parents found.");
-	transformNode->getParent(0)->removeChild(transformNode);	// remove the node from the scenegraph.
 }
 
 Sprite* Item::getSprite()
 {
-	return sprite;
-}
-
-osg::PositionAttitudeTransform* Item::getTransformNode()
-{
-	return transformNode;
+	return dynamic_pointer_cast<Sprite>(_modelNode);
 }
 
 void Item::onUpdate(float deltaTime)
 {
 
+}
+
+void Item::onCollision(GameObject* other)
+{
+	// TODO
 }
 

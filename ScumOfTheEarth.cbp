@@ -84,6 +84,8 @@
 		<Unit filename="ExpiredObjectRemoval.h" />
 		<Unit filename="Fighter.cpp" />
 		<Unit filename="Fighter.h" />
+		<Unit filename="GameObject.cpp" />
+		<Unit filename="GameObject.h" />
 		<Unit filename="Item.cpp" />
 		<Unit filename="Item.h" />
 		<Unit filename="Level.cpp" />

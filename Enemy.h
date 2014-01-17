@@ -17,7 +17,6 @@ public:
 	virtual void onUpdate(float deltaTime);
 
 protected:
-private:
 };
 
 

@@ -6,6 +6,10 @@ const usage:
 	int * const constPtr;	// const pointer. Can modify the value pointed to, but can't make it point to something else
 	const int * const constPtrToConst;	// const pointer to const value. Cannot modify the value, cannot make it point to anything else.
 
+virtual:
+	Allows a pointer to a base class to call the version of the function contained in the derived class.
+	Non-virtual functions can also be redefined, but a pointer to the base class will call its own version instead.
+
 Pointers/references:
 	&	reference operator. "address of"
 	*	dereference operator. "value pointed to by"

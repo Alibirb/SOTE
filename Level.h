@@ -20,7 +20,10 @@
 	#include "TmxParser/Tmx.h"
 #endif
 
+#include <iostream>
 
+
+void myTickCallback(btDynamicsWorld *world, btScalar timeStep);
 
 class Level
 {
@@ -69,10 +72,12 @@ public:
 		_physicsWorld->DrawDebugData();
 		_debugDrawer->endDraw();
 #else
+	//	std::cout << "Stepping simulation" << std::endl;
 		_physicsWorld->stepSimulation(deltaTime);
 		_debugDrawer->BeginDraw();
 		_physicsWorld->debugDrawWorld();
 		_debugDrawer->EndDraw();
+		//myTickCallback(_physicsWorld, deltaTime);
 #endif
 	}
 

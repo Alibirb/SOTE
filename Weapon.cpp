@@ -34,14 +34,11 @@ Weapon::Weapon(WeaponStats stats)
 {
 	setStats(stats);
 
-	sprite = new Sprite(_stats.imageFilename);
-	transformNode = new osg::PositionAttitudeTransform();
-	transformNode->addChild(sprite);
-	sprite->setUpdateCallback(new OwnerUpdateCallback<Weapon>(this));
+	loadModel(_stats.imageFilename);
 
 	projectileStartingTransform = new osg::PositionAttitudeTransform();
 	projectileStartingTransform->setPosition(osg::Vec3(.75,0,0));
-	transformNode->addChild(projectileStartingTransform);
+	_transformNode->addChild(projectileStartingTransform);
 	_ready = true;
 }
 
@@ -64,9 +61,8 @@ void Weapon::fire()
 		return;
 	double angle;
 	Vec3 axis;
-	transformNode->getAttitude().getRotate(angle, axis);
+	_transformNode->getAttitude().getRotate(angle, axis);
 	new Projectile(getWorldCoordinates(projectileStartingTransform)->getTrans(), Vec3(cos(angle), sin(angle), 0), _stats.projectileStats, this->_team);
-	//new Projectile(getWorldCoordinates(projectileStartingTransform)->getTrans(), Vec3(cos(angle), sin(angle), 0));
 	if(_stats.coolDownTime != 0.0)
 	{
 		_ready = false;
@@ -94,7 +90,7 @@ void Weapon::setRotation(double angle)
 
 	rotation.makeRotate(angle, osg::Vec3(0,0,1));
 
-	transformNode->setAttitude(rotation);
+	_transformNode->setAttitude(rotation);
 }
 
 void Weapon::aimAt(osg::Vec3 target)
@@ -111,22 +107,8 @@ void Weapon::aimAt(osg::Vec3 target)
 
 	rotation.makeRotate(angle, osg::Vec3(0,0,1));
 
-	transformNode->setAttitude(rotation);
+	_transformNode->setAttitude(rotation);
 }
-
-void Weapon::setPosition(osg::Vec3 position)
-{
-	this->transformNode->setPosition(position);
-}
-osg::Vec3 Weapon::getPosition()
-{
-	return transformNode->getPosition();
-}
-osg::Vec3 Weapon::getWorldPosition()
-{
-	return getWorldCoordinates(transformNode)->getTrans();
-}
-
 
 
 
