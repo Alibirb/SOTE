@@ -47,7 +47,7 @@ public:
 	{
 		osg::Matrix mat = osgbCollision::asOsgMatrix(physicsBody->getWorldTransform());
 
-		osg::PositionAttitudeTransform *pat = dynamic_cast<osg::PositionAttitudeTransform *> (node);
+		osg::PositionAttitudeTransform *pat = dynamic_cast<osg::PositionAttitudeTransform*>(node);
 		pat->setPosition(mat.getTrans() + physicsToOsgAdjustment);
 		pat->setAttitude(mat.getRotate());
 

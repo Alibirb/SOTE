@@ -26,3 +26,10 @@ Pointers/references:
 		Uses:
 			safer than pointers.
 			for functions, if the parameter is made "const type& var", it gives direct read-only access to whatever's passed in, whereas "type var" requires creating a copy of the parameter. Can be called in the same manner.
+
+
+STL containers:
+	list
+	deque
+	map
+	set--store unique elements following a specific order.

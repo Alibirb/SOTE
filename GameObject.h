@@ -14,6 +14,8 @@
 #endif
 
 
+class TiXmlElement;
+
 /// Class for an object
 class GameObject
 {
@@ -32,6 +34,7 @@ protected:
 
 public:
 	GameObject();
+	GameObject(TiXmlElement* xmlElement);
 	virtual ~GameObject();
 
 	virtual void setPosition(osg::Vec3 newPosition);
@@ -41,12 +44,14 @@ public:
 	osg::Vec3 worldToLocal(osg::Vec3 worldVector);
 
 	virtual void load(std::string xmlFilename);
+	virtual void load(TiXmlElement* xmlElement);
 	virtual void reset();	/// Reset the object.
 
 	void loadModel(std::string modelFilename);
 	void setModelNode(osg::Node* node);
 
 	void parentTo(osg::Group* parent);
+	void unparentFrom(osg::Group* parent);
 
 	virtual void onUpdate(float deltaTime)=0;
 	virtual void onCollision(GameObject* other)=0;

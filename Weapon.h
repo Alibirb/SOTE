@@ -39,7 +39,11 @@ protected:
 public:
 	Weapon(WeaponStats stats);
 	Weapon(std::string type = DEFAULT_WEAPON_TYPE);
+	Weapon(TiXmlElement* xmlElement);
 	virtual ~Weapon();
+
+	void load(TiXmlElement* xmlElement);
+	void load(std::string xmlFilename);
 
 	void fire();
 	bool isReady();
@@ -52,6 +56,10 @@ public:
 	void setStats(WeaponStats& stats)
 	{
 		this->_stats = stats;
+	}
+	void setProjectileStats(ProjectileStats& stats)
+	{
+		this->_stats.setProjectileStats(stats);
 	}
 
 	void setTeam(std::string team)

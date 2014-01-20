@@ -148,7 +148,8 @@ void Level::loadFromXml(std::string filename)
 			currentElement->QueryFloatAttribute("y", &y);
 			currentElement->QueryFloatAttribute("z", &z);
 
-			new Enemy(type, osg::Vec3(x, y, z));
+			//new Enemy(type, osg::Vec3(x, y, z));
+			new Enemy(currentElement);
 		}
 		else if(elementType == "player")
 		{
@@ -158,7 +159,8 @@ void Level::loadFromXml(std::string filename)
 			currentElement->QueryFloatAttribute("y", &y);
 			currentElement->QueryFloatAttribute("z", &z);
 
-			addNewPlayer(name, osg::Vec3(x, y, z));
+			//addNewPlayer(name, osg::Vec3(x, y, z));
+			addPlayer(name, new Player(currentElement));
 			setActivePlayer(name);
 		}
 		//else

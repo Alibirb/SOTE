@@ -4,15 +4,17 @@
 
 #include "TemporaryText.h"
 
+#include "tinyxml/tinyxml.h"
+
 FighterStats::FighterStats()
 {
 }
 
-float FighterStats::getResistance(DamageType& damType)
+float FighterStats::getResistance(std::string& damType)
 {
 	return resistances[damType];
 }
-void FighterStats::setResistance(DamageType& type, float value)
+void FighterStats::setResistance(std::string& type, float value)
 {
 	resistances[type] = value;
 }
@@ -29,17 +31,21 @@ Fighter::Fighter(std::string name, osg::Vec3 position, std::string team) : Entit
 
 Fighter::~Fighter()
 {
-	delete _equippedWeapon;	// Note that this may not be the final desired behavior.
+	delete _equippedWeapon;
 }
 
 void Fighter::equipWeapon(Weapon *theWeapon)
 {
-	//if(equipedWeapon)
-	//	transformNode->removeChild(equipedWeapon->getTransformNode());
+	if(_equippedWeapon)
+		unequipWeapon();
 	_equippedWeapon = theWeapon;
 	_equippedWeapon->parentTo(_transformNode);
 	_equippedWeapon->setPosition(osg::Vec3(0,0,1));
 	_equippedWeapon->setTeam(_team);
+}
+void Fighter::unequipWeapon()
+{
+	_equippedWeapon->unparentFrom(_transformNode);
 }
 
 void Fighter::aimWeapon(Entity *theOneWhoMustDie)
@@ -66,6 +72,84 @@ void Fighter::loadStats(std::string scriptFilename)
 	this->loadModel(_stats.modelFilename);
 }
 
+Fighter::Fighter(TiXmlElement* xmlElement) : Entity()
+{
+	_equippedWeapon = NULL;
+	load(xmlElement);
+}
+
+void Fighter::load(TiXmlElement* xmlElement)
+{
+	if(xmlElement->Attribute("source"))		/// Load from external source first, then apply changes.
+		load(xmlElement->Attribute("source"));
+
+	float x, y, z;
+	xmlElement->QueryFloatAttribute("x", &x);
+	xmlElement->QueryFloatAttribute("y", &y);
+	xmlElement->QueryFloatAttribute("z", &z);
+
+	initialPosition = osg::Vec3(x, y, z);
+	setPosition(initialPosition);
+
+
+	if(xmlElement->Attribute("maxHealth"))
+		xmlElement->QueryFloatAttribute("maxHealth", &this->_stats.maxHealth);
+
+	TiXmlElement* currentElement = xmlElement->FirstChildElement();
+	for( ; currentElement; currentElement = currentElement->NextSiblingElement())
+	{
+		std::string elementType = currentElement->Value();
+		if(elementType == "geometry")
+			loadModel(currentElement->Attribute("source"));
+		else if(elementType == "resistance")
+		{
+			std::string type = currentElement->Attribute("type");
+			float value;
+			currentElement->QueryFloatAttribute("value", &value);
+			setResistance(type, value);
+		}
+		else if(elementType == "weapon")
+		{
+			if(getWeapon())
+				markForRemoval(getWeapon(), "Item");	/// If we already have a weapon, we must be trying to override it. Delete the old one.
+			equipWeapon(new Weapon(currentElement));
+		}
+
+	}
+}
+
+void Fighter::load(std::string xmlFilename)
+{
+
+	FILE *file = fopen(xmlFilename.c_str(), "rb");
+	if(!file)
+	{
+		xmlFilename = "media/Entities/" + xmlFilename;
+		file = fopen(xmlFilename.c_str(), "rb");
+		if(!file)
+			logError("Failed to open file " + xmlFilename);
+	}
+
+
+	TiXmlDocument doc(xmlFilename);
+	//bool loadOkay = doc.LoadFile();
+	bool loadOkay = doc.LoadFile(file);
+	if (!loadOkay)
+	{
+		logError("Failed to load file " + xmlFilename);
+		logError(doc.ErrorDesc());
+	}
+
+
+	TiXmlHandle docHandle(&doc);
+	TiXmlElement* currentElement;
+	TiXmlElement* rootElement = docHandle.FirstChildElement().Element();
+	TiXmlHandle rootHandle = TiXmlHandle(docHandle.FirstChildElement().Element());
+
+	load(rootElement);
+
+}
+
 void Fighter::takeDamages(Damages dams)
 {
 	if(this->state == dead)
@@ -82,9 +166,14 @@ void Fighter::takeDamages(Damages dams)
 	}
 }
 
-float Fighter::getResistance(DamageType& type)
+float Fighter::getResistance(std::string type)
 {
 	return _stats.resistances[type];
+}
+
+void Fighter::setResistance(std::string type, float value)
+{
+	_stats.setResistance(type, value);
 }
 
 bool Fighter::isHurtByTeam(std::string otherTeam)
@@ -106,7 +195,7 @@ void Fighter::onCollision(GameObject* other)
 
 
 
-void addDamageIndicator(Fighter* entityHurt, float damageDealt, DamageType& damageType)
+void addDamageIndicator(Fighter* entityHurt, float damageDealt, std::string& damageType)
 {
 	std::ostringstream stream;
 	stream << "-" << damageDealt;
@@ -158,7 +247,8 @@ void registerFighterStats()
 	getScriptEngine()->registerObjectProperty("FighterStats", "string weaponType", asOFFSET(FighterStats, weaponType));
 	getScriptEngine()->registerObjectProperty("FighterStats", "WeaponStats weaponStats", asOFFSET(FighterStats, weaponStats));
 
-	getScriptEngine()->registerObjectMethod("FighterStats", "void setResistance(DamageType &in, float value)", asMETHODPR(FighterStats, setResistance, (DamageType&, float), void), asCALL_THISCALL);
+	//getScriptEngine()->registerObjectMethod("FighterStats", "void setResistance(DamageType &in, float value)", asMETHODPR(FighterStats, setResistance, (DamageType&, float), void), asCALL_THISCALL);
+
 	getScriptEngine()->registerObjectMethod("FighterStats", "void setWeaponStats(WeaponStats &in)", asMETHOD(FighterStats, setWeaponStats), asCALL_THISCALL);
 
 	registered = true;

@@ -2,18 +2,20 @@
 #define DAMAGE_H
 
 #include <vector>
-
+#include <string>
+/*
 enum DamageType
 {
 	HOT, COLD, SHARP, IMPACT, ACID, PURE_MAGIC, NAP, POISON
 };
-
+*/
 
 /// NOTE: this should really be a struct, but it doesn't seem like AngelScript supports structs.
 class Damage
 {
 public:
-	DamageType type;
+	//DamageType type;
+	std::string type;
 	float amount;
 };
 

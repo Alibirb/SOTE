@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fighter name="Player" source="Human.xml" maxHealth="25.0">
+	<weapon name="Staff" source="Staff.xml">
+		<projectile source="Fireball.xml"/>
+	</weapon>
+</fighter>

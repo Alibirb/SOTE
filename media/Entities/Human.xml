@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fighter name="Human" maxHealth="5.0">
+	<geometry source="humanmodelNoBones.osg"/>
+	<resistance type="HOT" value="0.0"/>
+	<resistance type="COLD" value="0.0"/>
+	<resistance type="ACID" value="0.0"/>
+	<weapon name="Staff" source="Staff.xml"/>
+</fighter>

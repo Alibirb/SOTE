@@ -21,6 +21,20 @@ Player::Player(std::string name, osg::Vec3 position) : Fighter(name, position, "
 #endif
 }
 
+Player::Player(TiXmlElement* xmlElement) : Fighter(xmlElement)
+{
+	PhysicsUserData *userData = new PhysicsUserData;
+	userData->owner = this;
+	userData->ownerType = "Player";
+#ifdef USE_BOX2D_PHYSICS
+	physicsBody->SetUserData(userData);
+#else
+	controller->getGhostObject()->setUserPointer(userData);
+#endif
+	_team = "Player";
+	_equippedWeapon->setTeam(_team);
+}
+
 void Player::processMovementControls(osg::Vec3 controlVector)
 {
 	if(controlVector.length() > 1.0f ) controlVector.normalize();
@@ -123,6 +137,10 @@ void setActivePlayer(std::string newActivePlayerName)
 void addNewPlayer(std::string playerName, osg::Vec3 position)
 {
 	players[playerName] = new Player(playerName, position);
+}
+void addPlayer(std::string playerName, Player* thePlayer)
+{
+	players[playerName] = thePlayer;
 }
 
 std::unordered_map<std::string, Player*> getPlayers()

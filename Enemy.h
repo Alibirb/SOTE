@@ -11,6 +11,7 @@ protected:
 
 public:
 	Enemy(std::string name, osg::Vec3 position);
+	Enemy(TiXmlElement* xmlElement);
 	void attack();
 	void die();
 	virtual ~Enemy();

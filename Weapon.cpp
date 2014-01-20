@@ -3,8 +3,9 @@
 #include "Projectile.h"
 
 #include "AngelScriptEngine.h"
-
 #include "OwnerUpdateCallback.h"
+
+#include "TmxParser/tinyxml.h"
 
 #define WEAPON_SCRIPT_LOCATION "media/Weapons/"
 
@@ -44,6 +45,69 @@ Weapon::Weapon(WeaponStats stats)
 
 Weapon::Weapon(std::string type) : Weapon(WeaponStats::loadPrototype(type))
 {
+}
+
+Weapon::Weapon(TiXmlElement* xmlElement)
+{
+	projectileStartingTransform = new osg::PositionAttitudeTransform();
+	projectileStartingTransform->setPosition(osg::Vec3(.75,0,0));
+	_transformNode->addChild(projectileStartingTransform);
+
+	load(xmlElement);
+
+	_ready = true;
+}
+
+void Weapon::load(TiXmlElement* xmlElement)
+{
+	if(xmlElement->Attribute("source"))		/// Load from external source first, then apply changes.
+		load(xmlElement->Attribute("source"));
+
+	if(xmlElement->Attribute("coolDownTime"))
+		xmlElement->QueryFloatAttribute("coolDownTime", &_stats.coolDownTime);
+
+
+	TiXmlElement* currentElement = xmlElement->FirstChildElement();
+	for( ; currentElement; currentElement = currentElement->NextSiblingElement())
+	{
+		std::string elementType = currentElement->Value();
+		if(elementType == "geometry")
+			loadModel(currentElement->Attribute("source"));
+		else if(elementType == "projectile")
+		{
+			setProjectileStats(*(new ProjectileStats(currentElement)));
+		}
+
+	}
+}
+void Weapon::load(std::string xmlFilename)
+{
+	FILE *file = fopen(xmlFilename.c_str(), "rb");
+	if(!file)
+	{
+		xmlFilename = WEAPON_SCRIPT_LOCATION + xmlFilename;
+		file = fopen(xmlFilename.c_str(), "rb");
+		if(!file)
+			logError("Failed to open file " + xmlFilename);
+	}
+
+
+	TiXmlDocument doc(xmlFilename.c_str());
+	//bool loadOkay = doc.LoadFile();
+	bool loadOkay = doc.LoadFile(file);
+	if (!loadOkay)
+	{
+		logError("Failed to load file " + xmlFilename);
+		logError(doc.ErrorDesc());
+	}
+
+
+	TiXmlHandle docHandle(&doc);
+	TiXmlElement* currentElement;
+	TiXmlElement* rootElement = docHandle.FirstChildElement().Element();
+	TiXmlHandle rootHandle = TiXmlHandle(docHandle.FirstChildElement().Element());
+
+	load(rootElement);
 }
 
 Weapon::~Weapon()

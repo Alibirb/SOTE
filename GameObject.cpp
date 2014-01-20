@@ -8,10 +8,36 @@
 #include "Sprite.h"
 #include "OwnerUpdateCallback.h"
 
+#include "TmxParser/tinyxml.h"
+
 GameObject::GameObject()
 {
 	_transformNode = new osg::PositionAttitudeTransform();
 	addToSceneGraph(_transformNode);
+}
+
+GameObject::GameObject(TiXmlElement* xmlElement)
+{
+	_transformNode = new osg::PositionAttitudeTransform();
+	addToSceneGraph(_transformNode);
+
+	float x, y, z;
+	xmlElement->QueryFloatAttribute("x", &x);
+	xmlElement->QueryFloatAttribute("y", &y);
+	xmlElement->QueryFloatAttribute("z", &z);
+
+	initialPosition = osg::Vec3(x, y, z);
+	//setPosition(initialPosition);
+
+
+	TiXmlElement* currentElement = xmlElement->FirstChildElement();
+	for( ; currentElement; currentElement = currentElement->NextSiblingElement())
+	{
+		std::string elementType = currentElement->Value();
+		if(elementType == "geometry")
+			loadModel(currentElement->Attribute("source"));
+
+	}
 }
 
 GameObject::~GameObject()
@@ -75,7 +101,7 @@ void GameObject::setPosition(osg::Vec3 newPosition)
 		btTransform transform;
 		transform = _physicsBody->getWorldTransform();
 		//transform.setOrigin(osgbCollision::asBtVector3(localToWorld(newPosition - physicsToModelAdjustment)));
-		transform.setOrigin(osgbCollision::asBtVector3(newPosition - physicsToModelAdjustment));	/// FIXME: should convert to world coordinates.
+		transform.setOrigin(osgbCollision::asBtVector3(newPosition + physicsToModelAdjustment));	/// FIXME: should convert to world coordinates.
 		_physicsBody->setWorldTransform(transform);
 #endif // USE_BOX2D_PHYSICS
 	}
@@ -108,6 +134,10 @@ void GameObject::load(std::string xmlFilename)
 {
 
 }
+void GameObject::load(TiXmlElement* xmlElement)
+{
+
+}
 void GameObject::reset()
 {
 	this->setPosition(initialPosition);
@@ -121,4 +151,8 @@ void GameObject::parentTo(osg::Group* parent)
 		_transformNode->getParent(0)->removeChild(_transformNode);	// Remove from current parent.
 	}
 	parent->addChild(_transformNode);
+}
+void GameObject::unparentFrom(osg::Group* parent)
+{
+	parent->removeChild(_transformNode);
 }

@@ -6,12 +6,12 @@ Basics:
 
 TODO:
 	DoneThisCommit:
-		Implemented GameObject class.
+		Changed loading to use XML instead of AngelScript.
 	Current Task:
 	Next Steps:
-		Change loading to use XML instead of AngelScript.
 		Implement Controller and ControlledObject classes, as well as a switch and door for the demo level.
 		Flame jets for the demo level.
+		Clean up.
 
 
 	Objects:
@@ -21,7 +21,6 @@ TODO:
 	Scripting:
 		Add ability to load (not run) an AngelScript file, adding functions, variabels, object types, etc to the current context/module.
 			Can use the CompileFunction and CompileGlobalVar functions to add functions and variables.
-	Should define stats with XML, not AngelScript.
 	Animation
 	AI:
 		Enemies need more intelligent behavior (e.g. dodge)

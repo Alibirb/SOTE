@@ -9,13 +9,20 @@
 #define DEFAULT_PROJECTILE_IMAGE "circle.png"
 
 
+
+/// Class to hold stats for a Projectile. Used by a Weapon to ease creation of a Projectile when needed.
 class ProjectileStats
 {
 public:
 	ProjectileStats();
+	ProjectileStats(TiXmlElement* xmlElement);
 	ProjectileStats(Damages damages, std::string imageFilename);
 	ProjectileStats(const ProjectileStats& other);
 	~ProjectileStats(){}
+
+	void load(TiXmlElement* xmlElement);
+	void load(std::string xmlFilename);
+
 	static ProjectileStats loadPrototype(std::string& prototypeName);	/// Loads prototype stats for the specified type
 	Damages damages;
 	std::string imageFilename;

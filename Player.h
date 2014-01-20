@@ -16,6 +16,7 @@ protected:
 
 public:
 	Player(std::string name, osg::Vec3 position);
+	Player(TiXmlElement* xmlElement);
 
 	/// Handles moving the player according to the given input vector.
 	void processMovementControls(osg::Vec3 controlVector);
@@ -44,6 +45,7 @@ Player* getClosestPlayer(osg::Vec3 position);
 Player* getActivePlayer();
 void setActivePlayer(std::string newActivePlayer);
 void addNewPlayer(std::string playerName, osg::Vec3 position = osg::Vec3(0,0,0));
+void addPlayer(std::string playerName, Player* thePlayer);
 std::unordered_map<std::string, Player*> getPlayers();
 
 #endif // PLAYER_H

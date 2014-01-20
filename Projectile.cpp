@@ -13,6 +13,13 @@
 
 #define PROJECTILE_SCRIPT_LOCATION "media/Projectiles/"
 
+#include "TmxParser/tinyxml.h"
+
+
+ProjectileStats::ProjectileStats(TiXmlElement* xmlElement)
+{
+	load(xmlElement);
+}
 
 ProjectileStats::ProjectileStats(Damages damages, std::string imageFilename)
 {
@@ -29,6 +36,60 @@ ProjectileStats::ProjectileStats(const ProjectileStats& other)
 ProjectileStats::ProjectileStats()
 {
 	this->imageFilename = "";
+}
+
+void ProjectileStats::load(TiXmlElement* xmlElement)
+{
+	if(xmlElement->Attribute("source"))		/// Load from external source first, then apply changes.
+		load(xmlElement->Attribute("source"));
+
+
+	TiXmlElement* currentElement = xmlElement->FirstChildElement();
+	for( ; currentElement; currentElement = currentElement->NextSiblingElement())
+	{
+		std::string elementType = currentElement->Value();
+		if(elementType == "geometry")
+			imageFilename = currentElement->Attribute("source");
+		else if(elementType == "damage")
+		{
+			Damage dam = Damage();
+			//std::string tddsd = currentElement->Attribute("type");
+			dam.type = currentElement->Attribute("type");
+			currentElement->QueryFloatAttribute("amount", &dam.amount);
+			damages.push_back(dam);
+		}
+
+	}
+}
+
+void ProjectileStats::load(std::string xmlFilename)
+{
+	FILE *file = fopen(xmlFilename.c_str(), "rb");
+	if(!file)
+	{
+		xmlFilename = PROJECTILE_SCRIPT_LOCATION + xmlFilename;
+		file = fopen(xmlFilename.c_str(), "rb");
+		if(!file)
+			logError("Failed to open file " + xmlFilename);
+	}
+
+
+	TiXmlDocument doc(xmlFilename.c_str());
+	//bool loadOkay = doc.LoadFile();
+	bool loadOkay = doc.LoadFile(file);
+	if (!loadOkay)
+	{
+		logError("Failed to load file " + xmlFilename);
+		logError(doc.ErrorDesc());
+	}
+
+
+	TiXmlHandle docHandle(&doc);
+	TiXmlElement* currentElement;
+	TiXmlElement* rootElement = docHandle.FirstChildElement().Element();
+	TiXmlHandle rootHandle = TiXmlHandle(docHandle.FirstChildElement().Element());
+
+	load(rootElement);
 }
 
 ProjectileStats ProjectileStats::loadPrototype(std::string& prototypeName)

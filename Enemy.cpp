@@ -19,6 +19,21 @@ Enemy::Enemy(std::string name, osg::Vec3 position) : Fighter(name, position, "En
 	controller->getGhostObject()->setUserPointer(userData);
 #endif
 }
+Enemy::Enemy(TiXmlElement* xmlElement) : Fighter(xmlElement)
+{
+	addEnemy(this);	// put this Enemy in the enemyList.
+
+	PhysicsUserData *userData = new PhysicsUserData;
+	userData->owner = this;
+	userData->ownerType = "Enemy";
+#ifdef USE_BOX2D_PHYSICS
+	physicsBody->SetUserData(userData);
+#else
+	controller->getGhostObject()->setUserPointer(userData);
+#endif
+	_team = "Enemy";
+	_equippedWeapon->setTeam(_team);
+}
 
 Enemy::~Enemy()
 {
