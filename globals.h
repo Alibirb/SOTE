@@ -28,7 +28,7 @@ using namespace osg;
 //extern ref_ptr<osg::Group> lightGroup;
 extern osg::Group* root;
 extern osg::Group* lightGroup;
-extern osgViewer::Viewer viewer;
+//extern osgViewer::Viewer viewer;
 const double pi = 3.14159265358979323846;
 extern int windowWidth;
 extern int windowHeight;
@@ -63,6 +63,9 @@ void runCleanup();	/// Cleans up before the program exits.
 /// If it's not safe, puts the node on a list of additions, and adds it once it's safe.
 void addToSceneGraph(Node* node, Group* parent=root);
 
+void writeOutSceneGraph();
+
+osgViewer::Viewer* getViewer();
 
 
 #endif /* GLOBALS_H_ */

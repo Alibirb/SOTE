@@ -40,13 +40,13 @@ void Player::processMovementControls(osg::Vec3 controlVector)
 	if(controlVector.length() > 1.0f ) controlVector.normalize();
 	osg::Vec3 worldMovement = cameraToWorldTranslation(controlVector * maxSpeed * getDeltaTime());
 
-	double controlAngle =  atan( worldMovement.y()/worldMovement.x());
+	double controlAngle =  -atan( worldMovement.y()/worldMovement.x());
 	if ( worldMovement.x() < 0 )
 	{
 		controlAngle += pi;
 	}
 	static float threshold = pi/12.0;	// For turning, I think. Will need to check previous code to see what this used to mean.
-	float angleDistance = (controlAngle + pi/2) - this->getHeading();
+	float angleDistance = (controlAngle - pi/2) - this->getHeading();
 	if (abs(angleDistance) > pi)
 	{
 		if (angleDistance > 0 ) angleDistance -= 2*pi;
@@ -54,7 +54,7 @@ void Player::processMovementControls(osg::Vec3 controlVector)
 	}
 	if (worldMovement != osg::Vec3(0,0,0))
 	{
-		this->setHeading(controlAngle + pi/2);
+		this->setHeading(controlAngle - pi/2);
 	}
 
 #ifdef USE_BOX2D_PHYSICS
@@ -109,7 +109,7 @@ Player::~Player()
 Player* getClosestPlayer(osg::Vec3 position)
 {
 	Player* closest;
-	float shortestDistance = 9999999999999999999;
+	float shortestDistance = FLT_MAX;
 
 	for(auto kv : players)
 	{

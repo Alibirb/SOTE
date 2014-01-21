@@ -140,6 +140,17 @@ void Level::loadFromXml(std::string filename)
 		std::string elementType = currentElement->Value();
 		if(elementType == "geometry")
 			addNode(osgDB::readNodeFile(currentElement->Attribute("source")));
+		else if(elementType == "gameObject")
+		{
+			std::string type = currentElement->Attribute("name");
+			float x, y, z;
+			currentElement->QueryFloatAttribute("x", &x);
+			currentElement->QueryFloatAttribute("y", &y);
+			currentElement->QueryFloatAttribute("z", &z);
+
+			//new Enemy(type, osg::Vec3(x, y, z));
+			new GameObject(currentElement);
+		}
 		else if(elementType == "enemy")
 		{
 			std::string type = currentElement->Attribute("name");

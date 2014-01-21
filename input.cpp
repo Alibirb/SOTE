@@ -60,12 +60,16 @@ bool MainEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIAction
 
 		if (ea.getKey() == 'r')
 		{
-			viewer.getCameraManipulator()->home(ea, aa);
+			getViewer()->getCameraManipulator()->home(ea, aa);
 			getActivePlayer()->resetPosition();
 		}
 		else if (ea.getKey() == 'p')
 		{
 			getCurrentLevel()->getDebugDrawer()->setEnabled(!getCurrentLevel()->getDebugDrawer()->getEnabled());
+		}
+		else if (ea.getKey() == 'o')
+		{
+			writeOutSceneGraph();
 		}
 		if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Return)
 			//if (getEnemies().size() > 0)

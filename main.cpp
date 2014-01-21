@@ -16,6 +16,17 @@
 #include <osgDB/ReadFile>
 #include <osgDB/FileUtils>
 
+#include <osgGA/TrackballManipulator>
+
+#include <osgAnimation/BasicAnimationManager>
+#include <osgAnimation/MorphGeometry>
+
+#include <osgDB/WriteFile>
+
+#include <osgViewer/ViewerEventHandlers>
+
+#include <osgGA/StateSetManipulator>
+
 using namespace std;
 
 
@@ -24,17 +35,20 @@ using namespace std;
 //osg::ref_ptr<osg::Group> lightGroup;
 osg::Group* root;
 osg::Group* lightGroup;
-osgViewer::Viewer viewer;
 int windowWidth, windowHeight;
 double deltaTime;
 
+
+
+osgAnimation::BasicAnimationManager* animationManager;
+
 void logError(std::string errorMessage)
 {
-	std::cout << errorMessage << std::endl;
+	std::cout << "Error: " << errorMessage << std::endl;
 }
 void logWarning(std::string warning)
 {
-	std::cout << warning << std::endl;
+	std::cout << "Warning: " << warning << std::endl;
 }
 
 double getDeltaTime()
@@ -69,7 +83,7 @@ float getDistance(osg::Vec3 a, osg::Vec3 b)
 
 osg::Vec3 cameraToWorldTranslation(float x, float y, float z)
 {
-	double camangle = ((BaseCameraManipulator*) viewer.getCameraManipulator())->getHeading();
+	double camangle = ((BaseCameraManipulator*) getViewer()->getCameraManipulator())->getHeading();
 	return osg::Vec3(x*cos(camangle) + y*cos(camangle+pi/2), x*sin(camangle) + y*sin(camangle+pi/2), z);
 }
 osg::Vec3 cameraToWorldTranslation(osg::Vec3 camTranslation)
@@ -165,8 +179,23 @@ void runCleanup()
 	//	delete getTempTexts().front();
 }
 
+void writeOutSceneGraph()
+{
+	osgDB::writeNodeFile(*root, "sceneGraph.osg");
+}
+
+
+
+osgViewer::Viewer* getViewer()
+{
+	static osgViewer::Viewer* viewer = new osgViewer::Viewer();
+	return viewer;
+}
+
+
 int main()
 {
+
 	root = new osg::Group();
 	lightGroup = new osg::Group();
 	root->addChild(lightGroup);
@@ -181,7 +210,9 @@ int main()
 	windowWidth = 1600;
 	windowHeight = 900;
 
-	Level *level = new Level("media/DemoLevel.xml");
+
+    Level *level = new Level("media/DemoLevel.xml");
+
 
 
 	osg::Light* sun = new osg::Light;
@@ -195,17 +226,25 @@ int main()
 	lightGroup->addChild(lightSource);
 
 
-	viewer.setSceneData(root);
-	viewer.addEventHandler(getMainEventHandler());
-	viewer.apply(new osgViewer::SingleWindow(0, 0, windowWidth, windowHeight, 0));
+	getViewer()->setSceneData(root);
+	getViewer()->addEventHandler(getMainEventHandler());
+	getViewer()->apply(new osgViewer::SingleWindow(0, 0, windowWidth, windowHeight, 0));
 #ifdef TOP_DOWN_2D_VIEW
-	viewer.setCameraManipulator(new TwoDimensionalCameraManipulator());
-	viewer.getCamera()->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
-	viewer.getCamera()->setViewMatrix(osg::Matrix::identity());
+	getViewer()->setCameraManipulator(new TwoDimensionalCameraManipulator());
+	getViewer()->getCamera()->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
+	getViewer()->getCamera()->setViewMatrix(osg::Matrix::identity());
 #else
-	viewer.setCameraManipulator(new ThirdPersonCameraManipulator());
+	getViewer()->setCameraManipulator(new ThirdPersonCameraManipulator());
 #endif
-	viewer.realize();
+
+	osgViewer::StatsHandler* statsHandler = new osgViewer::StatsHandler();
+	statsHandler->setKeyEventTogglesOnScreenStats( osgGA::GUIEventAdapter::KEY_F3);
+	getViewer()->addEventHandler(statsHandler);
+    getViewer()->addEventHandler(new osgViewer::WindowSizeHandler());
+//	viewer.addEventHandler(new osgGA::StateSetManipulator(viewer.getCamera()->getOrCreateStateSet()));
+
+
+	getViewer()->realize();
 
 
 	//getScriptEngine()->initialize();
@@ -227,11 +266,16 @@ int main()
 
 	addNodesToGraph();
 
-	while(!viewer.done())
+	double elapsedTime = 0.0;	// Elapsed time, in seconds, that the game has been running for.
+
+	while(!getViewer()->done())
 	{
 		osg::Timer_t now_tick = osg::Timer::instance()->tick();
 		deltaTime = osg::Timer::instance()->delta_s(frame_tick, now_tick);
 		frame_tick = now_tick;
+
+		elapsedTime = osg::Timer::instance()->time_s();
+
 		getCurrentLevel()->updatePhysics(deltaTime);
 		if (deltaTime > 0)
 		{
@@ -242,27 +286,17 @@ int main()
 			fpsTotal += fps[fpsArrayLength - 1];
 		}
 
-		std::ostringstream frameRateStream;
-		frameRateStream << "FPS: " << (1 / deltaTime) << "(current)" << std::endl;
-		frameRateStream << "FPS: " << (fpsTotal / fpsArrayLength) << "(average)"<< std::endl;
-		getDebugDisplayer()->addText(frameRateStream);
-
-		std::ostringstream playerCoordinatesStream;
-		playerCoordinatesStream << "Player: " << getActivePlayer()->getWorldPosition().x() << ", " << getActivePlayer()->getWorldPosition().y() << ", " << getActivePlayer()->getWorldPosition().z() << std::endl;
-		getDebugDisplayer()->addText(playerCoordinatesStream);
-
-
 		removeExpiredObjects();
 
 		safeToAddRemoveNodes = false;
-		viewer.frame(deltaTime);
+		getViewer()->frame(elapsedTime);
 		safeToAddRemoveNodes = true;
 		addNodesToGraph();
 
 		//std::cout << "Frame" << std::endl;
 	}
-	root = NULL;
-	lightGroup = NULL;
+//	root = NULL;
+	//lightGroup = NULL;
 
 	return 0;
 }

@@ -7,7 +7,7 @@
 
 #include "ThirdPersonCameraManipulator.h"
 #include "TextDisplay.h"
-#include <osgViewer/View>
+#include <osgViewer/Viewer>
 
 
 ThirdPersonCameraManipulator::ThirdPersonCameraManipulator()
@@ -22,7 +22,8 @@ ThirdPersonCameraManipulator::ThirdPersonCameraManipulator()
 	calculateRotation();
 
 	osg::ref_ptr<osgGA::GUIEventAdapter> ea = new osgGA::GUIEventAdapter();
-	centerMousePointer(*ea, viewer);
+	osgViewer::Viewer* aa = getViewer();
+	centerMousePointer(*ea, *aa);
 
 }
 

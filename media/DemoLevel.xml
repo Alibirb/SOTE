@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <level3D>
 	<geometry source="DemoLevel.osgt"/>
+	<gameObject name="Door" source="SlidingDoor.xml" x="8" y="0" z="0"/>
 	<enemy name="Human" source="Human.xml" x="5" y="5" z="0"/>
 	<player name="Player" source="Player.xml" x="5" y="-5" z="0"/>
 </level3D>

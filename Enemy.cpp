@@ -69,7 +69,7 @@ void Enemy::onUpdate(float deltaTime)
 Enemy* getClosestEnemy(osg::Vec3 position, std::list<Enemy*> possibilities)
 {
 	Enemy* closest;
-	float shortestDistance = 9999999999999999999.9;
+	float shortestDistance = FLT_MAX;
 	for(Enemy* enemy : possibilities)
 		if(getDistance(position, enemy->getWorldPosition()) < shortestDistance)
 		{

@@ -34,7 +34,7 @@ TextDisplay::TextDisplay()
 	textGeode = new osg::Geode();
 	projectionMatrix = new osg::Projection;
 	int x, y, width, height;
-	((osgViewer::GraphicsWindow* )viewer.getCamera()->getGraphicsContext())->getWindowRectangle(x, y, width, height);
+	((osgViewer::GraphicsWindow* )getViewer()->getCamera()->getGraphicsContext())->getWindowRectangle(x, y, width, height);
 	projectionMatrix->setMatrix(osg::Matrix::ortho2D(x, windowWidth, y, windowHeight));
 	viewMatrix = new osg::MatrixTransform;
 	viewMatrix->setMatrix(osg::Matrix::identity());
@@ -64,7 +64,7 @@ TextDisplay::~TextDisplay()
 void TextDisplay::updateProjection()
 {
 	int x, y, width, height;
-	((osgViewer::GraphicsWindow* )viewer.getCamera()->getGraphicsContext())->getWindowRectangle(x, y, width, height);
+	((osgViewer::GraphicsWindow* )getViewer()->getCamera()->getGraphicsContext())->getWindowRectangle(x, y, width, height);
 	projectionMatrix->setMatrix(osg::Matrix::ortho2D(x, windowWidth, y, windowHeight));
 	text->setPosition(osg::Vec3(0, height - 25, 0));
 }

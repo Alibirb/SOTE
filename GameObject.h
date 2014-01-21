@@ -5,6 +5,9 @@
 #include <osg/ref_ptr>
 #include <osg/Node>
 #include <osg/PositionAttitudeTransform>
+#include <osgAnimation/BasicAnimationManager>
+
+#include "ImprovedAnimationManager.h"
 
 #ifdef USE_BOX2D_PHYSICS
 	#include "Box2DIntegration.h"
@@ -23,8 +26,12 @@ protected:
 	bool _useSpriteAsModel = false;
 	osg::Vec3 initialPosition;
 
-	osg::ref_ptr<osg::Node> _modelNode;
+	ImprovedAnimationManager* _animationManager;
+	//osgAnimation::BasicAnimationManager* _animationManager;
 	osg::ref_ptr<osg::PositionAttitudeTransform> _transformNode;
+	osg::ref_ptr<osg::Node> _modelNode;
+	osg::ref_ptr<osg::Node> _updateNode;	// Used to update the object each frame.
+
 #ifdef USE_BOX2D_PHYSICS
 	b2Body* physicsBody;
 #else
@@ -53,8 +60,16 @@ public:
 	void parentTo(osg::Group* parent);
 	void unparentFrom(osg::Group* parent);
 
-	virtual void onUpdate(float deltaTime)=0;
-	virtual void onCollision(GameObject* other)=0;
+	virtual void onUpdate(float deltaTime){};
+	virtual void onCollision(GameObject* other){};
+
+	bool findAnimation();
+
+/* TODO:
+	addAnimation();
+	playAnimation();
+	generatePhysicsBody();	/// Should allow to specify method of generation (see osgbCollision/CollisionShapes.h)
+*/
 
 protected:
 };

@@ -19,7 +19,7 @@ void TwoDimensionalCameraManipulator::centerPlayerInView()
 
 void TwoDimensionalCameraManipulator::updateProjectionMatrix()
 {
-	viewer.getCamera()->setProjectionMatrixAsOrtho2D(-5/currentZoom, 5/currentZoom, -5/ currentZoom * windowHeight/windowWidth, 5 / currentZoom * windowHeight/windowWidth);
+	getViewer()->getCamera()->setProjectionMatrixAsOrtho2D(-5/currentZoom, 5/currentZoom, -5/ currentZoom * windowHeight/windowWidth, 5 / currentZoom * windowHeight/windowWidth);
 }
 
 void TwoDimensionalCameraManipulator::zoom(float deltaZoom)

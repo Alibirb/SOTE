@@ -10,7 +10,8 @@ const unsigned int MASK_2D = 0xF0000000;
 
 AngelScriptConsole::AngelScriptConsole() : osgWidget::Input("console", "", 50)
 {
-	osgWidget::WindowManager* wm = new osgWidget::WindowManager(&viewer, 1280.0f, 1024.0f, MASK_2D, osgWidget::WindowManager::WM_PICK_DEBUG);
+	osgViewer::Viewer* viewer = getViewer();
+	osgWidget::WindowManager* wm = new osgWidget::WindowManager(viewer, 1280.0f, 1024.0f, MASK_2D, osgWidget::WindowManager::WM_PICK_DEBUG);
 
 	osgWidget::Box* box = new osgWidget::Box("vbox", osgWidget::Box::VERTICAL);
 
@@ -30,9 +31,9 @@ AngelScriptConsole::AngelScriptConsole() : osgWidget::Input("console", "", 50)
 //	root->addChild(camera);
 	addToSceneGraph(camera);
 
-	viewer.addEventHandler(new osgWidget::MouseHandler(wm));
-	viewer.addEventHandler(new osgWidget::KeyboardHandler(wm));
-	viewer.addEventHandler(new osgWidget::ResizeHandler(wm, camera));
+	viewer->addEventHandler(new osgWidget::MouseHandler(wm));
+	viewer->addEventHandler(new osgWidget::KeyboardHandler(wm));
+	viewer->addEventHandler(new osgWidget::ResizeHandler(wm, camera));
 
 	wm->resizeAllWindows();
 

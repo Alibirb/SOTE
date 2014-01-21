@@ -204,7 +204,7 @@ bool BaseCameraManipulator::handleResize(const osgGA::GUIEventAdapter& ea, osgGA
 {
 	// Update the global variables windowWidth and windowHeight.
 	osgViewer::ViewerBase::Windows windows;
-	viewer.getWindows(windows);
+	getViewer()->getWindows(windows);
 	windowWidth = ea.getWindowWidth();
 	windowHeight = ea.getWindowHeight();
 	updateProjectionMatrix();	// must change projection matrix.

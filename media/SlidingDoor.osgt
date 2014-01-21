@@ -1,0 +1,711 @@
+#Ascii Scene
+#Version 92
+#Generator osgexport 0.13.0
+
+osg::Group {
+  UniqueID 1223
+  Name "Root"
+  UpdateCallback TRUE {
+    osgAnimation::BasicAnimationManager {
+      UniqueID 1224
+      Animations 3 {
+        osgAnimation::Animation {
+          UniqueID 1185
+          Name "ArmatureAction.001"
+          Channels 3 {
+            Type Vec3LinearChannel {
+              Name translate
+              TargetName Bone.001
+              KeyFrameContainer TRUE 21 {
+                 0.00000 0.00000 0.00000 0.00000
+                 0.04167 0.00000 -0.02236 0.00000
+                 0.08333 0.00000 -0.08952 0.00000
+                 0.12500 0.00000 -0.19845 0.00000
+                 0.16667 0.00000 -0.34056 0.00000
+                 0.20833 0.00000 -0.50119 0.00000
+                 0.25000 0.00000 -0.66157 0.00000
+                 0.29167 0.00000 -0.80306 0.00000
+                 0.33333 0.00000 -0.91125 0.00000
+                 0.37500 0.00000 -0.97785 0.00000
+                 0.41667 0.00000 -1.00000 0.00000
+                 0.45833 0.00000 -0.97785 0.00000
+                 0.50000 0.00000 -0.91125 0.00000
+                 0.54167 0.00000 -0.80306 0.00000
+                 0.58333 0.00000 -0.66157 0.00000
+                 0.62500 0.00000 -0.50119 0.00000
+                 0.66667 0.00000 -0.34056 0.00000
+                 0.70833 0.00000 -0.19845 0.00000
+                 0.75000 0.00000 -0.08952 0.00000
+                 0.79167 0.00000 -0.02236 0.00000
+                 0.83333 0.00000 0.00000 0.00000
+              }
+            }
+            Type QuatSphericalLinearChannel {
+              Name quaternion
+              TargetName Bone.001
+              KeyFrameContainer TRUE 2 {
+                 0.00000 0.00000 0.00000 0.00000 1.00000
+                 0.83333 0.00000 0.00000 0.00000 1.00000
+              }
+            }
+            Type Vec3LinearChannel {
+              Name scale
+              TargetName Bone.001
+              KeyFrameContainer TRUE 2 {
+                 0.00000 1.00000 1.00000 1.00000
+                 0.83333 1.00000 1.00000 1.00000
+              }
+            }
+          }
+        }
+        osgAnimation::Animation {
+          UniqueID 1193
+          Name "CubeAction.001"
+          Channels 5 {
+            Type Vec3LinearChannel {
+              Name translate
+              TargetName Outer
+              KeyFrameContainer TRUE 2 {
+                 0.00000 0.00000 0.00000 0.00000
+                 0.83333 0.00000 0.00000 0.00000
+              }
+            }
+            Type FloatLinearChannel {
+              Name euler_x
+              TargetName Outer
+              KeyFrameContainer TRUE 2 {
+                 0.00000 0.00000
+                 0.83333 0.00000
+              }
+            }
+            Type FloatLinearChannel {
+              Name euler_y
+              TargetName Outer
+              KeyFrameContainer TRUE 2 {
+                 0.00000 -0.00000
+                 0.83333 -0.00000
+              }
+            }
+            Type FloatLinearChannel {
+              Name euler_z
+              TargetName Outer
+              KeyFrameContainer TRUE 2 {
+                 0.00000 0.00000
+                 0.83333 0.00000
+              }
+            }
+            Type Vec3LinearChannel {
+              Name scale
+              TargetName Outer
+              KeyFrameContainer TRUE 2 {
+                 0.00000 1.00000 1.00000 1.00000
+                 0.83333 1.00000 1.00000 1.00000
+              }
+            }
+          }
+        }
+        osgAnimation::Animation {
+          UniqueID 1219
+          Name "CubeAction"
+          Channels 5 {
+            Type Vec3LinearChannel {
+              Name translate
+              TargetName Inner
+              KeyFrameContainer TRUE 2 {
+                 0.00000 0.00000 0.00000 0.00000
+                 0.83333 0.00000 0.00000 0.00000
+              }
+            }
+            Type FloatLinearChannel {
+              Name euler_x
+              TargetName Inner
+              KeyFrameContainer TRUE 2 {
+                 0.00000 0.00000
+                 0.83333 0.00000
+              }
+            }
+            Type FloatLinearChannel {
+              Name euler_y
+              TargetName Inner
+              KeyFrameContainer TRUE 2 {
+                 0.00000 -0.00000
+                 0.83333 -0.00000
+              }
+            }
+            Type FloatLinearChannel {
+              Name euler_z
+              TargetName Inner
+              KeyFrameContainer TRUE 2 {
+                 0.00000 0.00000
+                 0.83333 0.00000
+              }
+            }
+            Type Vec3LinearChannel {
+              Name scale
+              TargetName Inner
+              KeyFrameContainer TRUE 2 {
+                 0.00000 1.00000 1.00000 1.00000
+                 0.83333 1.00000 1.00000 1.00000
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  Children 1 {
+    osg::MatrixTransform {
+      UniqueID 1175
+      Name "SlidingDoor"
+      Children 1 {
+        osgAnimation::Skeleton {
+          UniqueID 1177
+          Name "Armature.001"
+          UpdateCallback TRUE {
+            osgAnimation::UpdateSkeleton {
+              UniqueID 1178
+            }
+          }
+          Children 3 {
+            osgAnimation::Bone {
+              UniqueID 1179
+              Name "Bone.001"
+              DataVariance DYNAMIC
+              UpdateCallback TRUE {
+                osgAnimation::UpdateBone {
+                  UniqueID 1180
+                  Name "Bone.001"
+                  StackedTransforms 4 {
+                    osgAnimation::StackedMatrixElement {
+                      UniqueID 1181
+                      Name "bindmatrix"
+                      Matrix {
+                        0.08225 -0.00000 0.99661 0.00000
+                        0.00000 1.00000 0.00000 0.00000
+                        -0.99661 0.00000 0.08225 0.00000
+                        -0.00000 0.00000 -0.00000 1.00000
+                      }
+                    }
+                    osgAnimation::StackedTranslateElement {
+                      UniqueID 1182
+                      Name "translate"
+                      Translate 0.00000 0.00000 0.00000
+                    }
+                    osgAnimation::StackedQuaternionElement {
+                      UniqueID 1183
+                      Name "quaternion"
+                      Quaternion 0.00000 0.00000 0.00000 1.00000
+                    }
+                    osgAnimation::StackedScaleElement {
+                      UniqueID 1184
+                      Name "scale"
+                      Scale 1.00000 1.00000 1.00000
+                    }
+                  }
+                }
+              }
+              Matrix {
+                1.00000 0.00000 0.00000 0.00000
+                0.00000 1.00000 0.00000 0.00000
+                0.00000 0.00000 1.00000 0.00000
+                0.00000 0.00000 0.00000 1.00000
+              }
+              InvBindMatrixInSkeletonSpace {
+                0.08225 0.00000 -0.99661 -0.00000
+                -0.00000 1.00000 0.00000 0.00000
+                0.99661 0.00000 0.08225 -0.00000
+                0.00000 0.00000 0.00000 1.00000
+              }
+            }
+            osg::MatrixTransform {
+              UniqueID 1186
+              Name "Outer"
+              UpdateCallback TRUE {
+                osgAnimation::UpdateMatrixTransform {
+                  UniqueID 1187
+                  Name "Outer"
+                  StackedTransforms 5 {
+                    osgAnimation::StackedTranslateElement {
+                      UniqueID 1188
+                      Name "translate"
+                      Translate 0.00000 0.00000 0.00000
+                    }
+                    osgAnimation::StackedRotateAxisElement {
+                      UniqueID 1191
+                      Name "euler_z"
+                      Axis 0.00000 0.00000 1.00000
+                      Angle 0.00000
+                    }
+                    osgAnimation::StackedRotateAxisElement {
+                      UniqueID 1190
+                      Name "euler_y"
+                      Axis 0.00000 1.00000 0.00000
+                      Angle 0.00000
+                    }
+                    osgAnimation::StackedRotateAxisElement {
+                      UniqueID 1189
+                      Name "euler_x"
+                      Axis 1.00000 0.00000 0.00000
+                      Angle 0.00000
+                    }
+                    osgAnimation::StackedScaleElement {
+                      UniqueID 1192
+                      Name "scale"
+                      Scale 1.00000 1.00000 1.00000
+                    }
+                  }
+                }
+              }
+              Children 1 {
+                osg::Geode {
+                  UniqueID 1211
+                  Name "GeodeCube.001"
+                  Drawables 1 {
+                    osg::Geometry {
+                      UniqueID 1194
+                      Name "Outer"
+                      StateSet TRUE {
+                        osg::StateSet {
+                          UniqueID 1195
+                          Name "Yellow"
+                          DataVariance DYNAMIC
+                          UserDataContainer TRUE {
+                            osg::DefaultUserDataContainer {
+                              UniqueID 1209
+                              UDC_UserObjects 1 {
+                                osg::StringValueObject {
+                                  UniqueID 1210
+                                  Name "source"
+                                  Value "blender"
+                                }
+                              }
+                            }
+                          }
+                          AttributeList 1 {
+                            osg::Material {
+                              UniqueID 1196
+                              Name "Yellow"
+                              DataVariance DYNAMIC
+                              UserDataContainer TRUE {
+                                osg::DefaultUserDataContainer {
+                                  UniqueID 1197
+                                  UDC_UserObjects 11 {
+                                    osg::StringValueObject {
+                                      UniqueID 1198
+                                      Name "source"
+                                      Value "blender"
+                                    }
+                                    osg::StringValueObject {
+                                      UniqueID 1199
+                                      Name "DiffuseIntensity"
+                                      Value "1.0"
+                                    }
+                                    osg::StringValueObject {
+                                      UniqueID 1200
+                                      Name "DiffuseColor"
+                                      Value "[ 0.776022, 0.800000, 0.000000 ]"
+                                    }
+                                    osg::StringValueObject {
+                                      UniqueID 1201
+                                      Name "SpecularIntensity"
+                                      Value "0.5"
+                                    }
+                                    osg::StringValueObject {
+                                      UniqueID 1202
+                                      Name "SpecularColor"
+                                      Value "[ 1.000000, 1.000000, 1.000000 ]"
+                                    }
+                                    osg::StringValueObject {
+                                      UniqueID 1203
+                                      Name "SpecularHardness"
+                                      Value "50"
+                                    }
+                                    osg::StringValueObject {
+                                      UniqueID 1204
+                                      Name "Emit"
+                                      Value "0.0"
+                                    }
+                                    osg::StringValueObject {
+                                      UniqueID 1205
+                                      Name "Ambient"
+                                      Value "1.0"
+                                    }
+                                    osg::StringValueObject {
+                                      UniqueID 1206
+                                      Name "Translucency"
+                                      Value "0.0"
+                                    }
+                                    osg::StringValueObject {
+                                      UniqueID 1207
+                                      Name "DiffuseShader"
+                                      Value "LAMBERT"
+                                    }
+                                    osg::StringValueObject {
+                                      UniqueID 1208
+                                      Name "SpecularShader"
+                                      Value "COOKTORR"
+                                    }
+                                  }
+                                }
+                              }
+                              Ambient TRUE Front 0.00000 0.00000 0.00000 1.00000 Back 0.00000 0.00000 0.00000 1.00000
+                              Diffuse TRUE Front 0.77602 0.80000 0.00000 1.00000 Back 0.77602 0.80000 0.00000 1.00000
+                              Specular TRUE Front 0.50000 0.50000 0.50000 1.00000 Back 0.50000 0.50000 0.50000 1.00000
+                              Emission TRUE Front 0.00000 0.00000 0.00000 1.00000 Back 0.00000 0.00000 0.00000 1.00000
+                              Shininess TRUE Front 12.50000 Back 12.50000
+                            }
+                            Value OFF
+                          }
+                        }
+                      }
+                      PrimitiveSetList 1 {
+                          DrawElementsUInt GL_QUADS 48 {
+                            0 1 2 3 
+                            4 5 6 7 
+                            8 9 10 11 
+                            12 13 14 15 
+                            16 17 18 19 
+                            20 21 22 23 
+                            24 25 26 27 
+                            28 29 30 31 
+                            32 33 34 35 
+                            36 37 38 39 
+                            40 41 42 43 
+                            44 45 46 47 
+                          }
+                      }
+                      VertexData {
+                        Array TRUE ArrayID 194 Vec3fArray 48 {
+                          0.15000 -2.00000 0.00000
+                          0.20000 -2.00000 0.00000
+                          0.20000 -2.00000 3.00000
+                          0.15000 -2.00000 3.00000
+                          0.15000 -2.00000 3.00000
+                          0.15000 -1.00000 3.00000
+                          0.15000 -1.00000 0.00000
+                          0.15000 -2.00000 0.00000
+                          0.15000 -1.00000 3.00000
+                          0.20000 -1.00000 3.00000
+                          0.20000 -1.00000 0.00000
+                          0.15000 -1.00000 0.00000
+                          0.20000 -2.00000 0.00000
+                          0.20000 -1.00000 0.00000
+                          0.20000 -1.00000 3.00000
+                          0.20000 -2.00000 3.00000
+                          0.20000 -2.00000 0.00000
+                          0.15000 -2.00000 0.00000
+                          0.15000 -1.00000 0.00000
+                          0.20000 -1.00000 0.00000
+                          0.20000 -1.00000 3.00000
+                          0.15000 -1.00000 3.00000
+                          0.15000 -2.00000 3.00000
+                          0.20000 -2.00000 3.00000
+                          0.05000 -2.00000 3.00000
+                          0.00000 -2.00000 3.00000
+                          0.00000 -2.00000 0.00000
+                          0.05000 -2.00000 0.00000
+                          0.00000 -2.00000 3.00000
+                          0.00000 -1.00000 3.00000
+                          0.00000 -1.00000 0.00000
+                          0.00000 -2.00000 0.00000
+                          0.00000 -1.00000 3.00000
+                          0.05000 -1.00000 3.00000
+                          0.05000 -1.00000 0.00000
+                          0.00000 -1.00000 0.00000
+                          0.05000 -1.00000 3.00000
+                          0.05000 -2.00000 3.00000
+                          0.05000 -2.00000 0.00000
+                          0.05000 -1.00000 0.00000
+                          0.05000 -2.00000 0.00000
+                          0.00000 -2.00000 0.00000
+                          0.00000 -1.00000 0.00000
+                          0.05000 -1.00000 0.00000
+                          0.05000 -2.00000 3.00000
+                          0.05000 -1.00000 3.00000
+                          0.00000 -1.00000 3.00000
+                          0.00000 -2.00000 3.00000
+                        }
+                        Indices FALSE
+                        Binding BIND_PER_VERTEX
+                        Normalize 0
+                      }
+                      NormalData {
+                        Array TRUE ArrayID 195 Vec3fArray 48 {
+                          0.00000 -1.00000 -0.00000
+                          0.00000 -1.00000 -0.00000
+                          0.00000 -1.00000 -0.00000
+                          0.00000 -1.00000 -0.00000
+                          -1.00000 0.00000 0.00000
+                          -1.00000 0.00000 0.00000
+                          -1.00000 0.00000 0.00000
+                          -1.00000 0.00000 0.00000
+                          0.00000 1.00000 -0.00000
+                          0.00000 1.00000 -0.00000
+                          0.00000 1.00000 -0.00000
+                          0.00000 1.00000 -0.00000
+                          1.00000 0.00000 0.00000
+                          1.00000 0.00000 0.00000
+                          1.00000 0.00000 0.00000
+                          1.00000 0.00000 0.00000
+                          0.00000 -0.00000 -1.00000
+                          0.00000 -0.00000 -1.00000
+                          0.00000 -0.00000 -1.00000
+                          0.00000 -0.00000 -1.00000
+                          0.00000 -0.00000 1.00000
+                          0.00000 -0.00000 1.00000
+                          0.00000 -0.00000 1.00000
+                          0.00000 -0.00000 1.00000
+                          0.00000 -1.00000 0.00000
+                          0.00000 -1.00000 0.00000
+                          0.00000 -1.00000 0.00000
+                          0.00000 -1.00000 0.00000
+                          -1.00000 0.00000 0.00000
+                          -1.00000 0.00000 0.00000
+                          -1.00000 0.00000 0.00000
+                          -1.00000 0.00000 0.00000
+                          0.00000 1.00000 -0.00000
+                          0.00000 1.00000 -0.00000
+                          0.00000 1.00000 -0.00000
+                          0.00000 1.00000 -0.00000
+                          1.00000 0.00000 -0.00000
+                          1.00000 0.00000 -0.00000
+                          1.00000 0.00000 -0.00000
+                          1.00000 0.00000 -0.00000
+                          0.00000 -0.00000 -1.00000
+                          0.00000 -0.00000 -1.00000
+                          0.00000 -0.00000 -1.00000
+                          0.00000 -0.00000 -1.00000
+                          -0.00000 0.00000 1.00000
+                          -0.00000 0.00000 1.00000
+                          -0.00000 0.00000 1.00000
+                          -0.00000 0.00000 1.00000
+                        }
+                        Indices FALSE
+                        Binding BIND_PER_VERTEX
+                        Normalize 0
+                      }
+                    }
+                  }
+                }
+              }
+              Matrix {
+                1.00000 0.00000 0.00000 0.00000
+                0.00000 1.00000 0.00000 0.00000
+                0.00000 0.00000 1.00000 0.00000
+                0.00000 0.00000 0.00000 1.00000
+              }
+            }
+            osg::MatrixTransform {
+              UniqueID 1212
+              Name "Inner"
+              UpdateCallback TRUE {
+                osgAnimation::UpdateMatrixTransform {
+                  UniqueID 1213
+                  Name "Inner"
+                  StackedTransforms 5 {
+                    osgAnimation::StackedTranslateElement {
+                      UniqueID 1214
+                      Name "translate"
+                      Translate 0.00000 0.00000 0.00000
+                    }
+                    osgAnimation::StackedRotateAxisElement {
+                      UniqueID 1217
+                      Name "euler_z"
+                      Axis 0.00000 0.00000 1.00000
+                      Angle 0.00000
+                    }
+                    osgAnimation::StackedRotateAxisElement {
+                      UniqueID 1216
+                      Name "euler_y"
+                      Axis 0.00000 1.00000 0.00000
+                      Angle 0.00000
+                    }
+                    osgAnimation::StackedRotateAxisElement {
+                      UniqueID 1215
+                      Name "euler_x"
+                      Axis 1.00000 0.00000 0.00000
+                      Angle 0.00000
+                    }
+                    osgAnimation::StackedScaleElement {
+                      UniqueID 1218
+                      Name "scale"
+                      Scale 1.00000 1.00000 1.00000
+                    }
+                  }
+                }
+              }
+              Children 1 {
+                osg::Geode {
+                  UniqueID 1222
+                  Name "GeodeCube"
+                  Drawables 1 {
+                    osgAnimation::RigGeometry {
+                      UniqueID 1221
+                      Name "Inner"
+                      StateSet TRUE {
+                        osg::StateSet {
+                          UniqueID 1195
+                        }
+                      }
+                      PrimitiveSetList 1 {
+                          DrawElementsUInt GL_QUADS 24 {
+                            0 1 2 3 
+                            4 5 6 7 
+                            8 9 10 11 
+                            12 13 14 15 
+                            16 17 18 19 
+                            20 21 22 23 
+                          }
+                      }
+                      VertexData {
+                        Array TRUE ArrayID 196 Vec3fArray 24 {
+                          0.05000 -1.00000 0.00000
+                          0.15000 -1.00000 0.00000
+                          0.15000 -1.00000 3.00000
+                          0.05000 -1.00000 3.00000
+                          0.05000 -1.00000 3.00000
+                          0.05000 0.00000 3.00000
+                          0.05000 0.00000 0.00000
+                          0.05000 -1.00000 0.00000
+                          0.05000 0.00000 3.00000
+                          0.15000 0.00000 3.00000
+                          0.15000 0.00000 0.00000
+                          0.05000 0.00000 0.00000
+                          0.15000 -1.00000 0.00000
+                          0.15000 0.00000 0.00000
+                          0.15000 0.00000 3.00000
+                          0.15000 -1.00000 3.00000
+                          0.15000 -1.00000 0.00000
+                          0.05000 -1.00000 0.00000
+                          0.05000 0.00000 0.00000
+                          0.15000 0.00000 0.00000
+                          0.15000 0.00000 3.00000
+                          0.05000 0.00000 3.00000
+                          0.05000 -1.00000 3.00000
+                          0.15000 -1.00000 3.00000
+                        }
+                        Indices FALSE
+                        Binding BIND_PER_VERTEX
+                        Normalize 0
+                      }
+                      NormalData {
+                        Array TRUE ArrayID 197 Vec3fArray 24 {
+                          0.00000 -1.00000 -0.00000
+                          0.00000 -1.00000 -0.00000
+                          0.00000 -1.00000 -0.00000
+                          0.00000 -1.00000 -0.00000
+                          -1.00000 0.00000 0.00000
+                          -1.00000 0.00000 0.00000
+                          -1.00000 0.00000 0.00000
+                          -1.00000 0.00000 0.00000
+                          0.00000 1.00000 -0.00000
+                          0.00000 1.00000 -0.00000
+                          0.00000 1.00000 -0.00000
+                          0.00000 1.00000 -0.00000
+                          1.00000 0.00000 0.00000
+                          1.00000 0.00000 0.00000
+                          1.00000 0.00000 0.00000
+                          1.00000 0.00000 0.00000
+                          0.00000 -0.00000 -1.00000
+                          0.00000 -0.00000 -1.00000
+                          0.00000 -0.00000 -1.00000
+                          0.00000 -0.00000 -1.00000
+                          0.00000 -0.00000 1.00000
+                          0.00000 -0.00000 1.00000
+                          0.00000 -0.00000 1.00000
+                          0.00000 -0.00000 1.00000
+                        }
+                        Indices FALSE
+                        Binding BIND_PER_VERTEX
+                        Normalize 0
+                      }
+                      InfluenceMap 1 {
+                        VertexInfluence Bone.001 24 {
+                          0 1.00000
+                          1 1.00000
+                          2 0.94490
+                          3 1.00000
+                          4 1.00000
+                          5 0.99992
+                          6 0.99753
+                          7 1.00000
+                          8 0.99992
+                          9 0.99144
+                          10 1.00000
+                          11 0.99753
+                          12 1.00000
+                          13 1.00000
+                          14 0.99144
+                          15 0.94490
+                          16 1.00000
+                          17 1.00000
+                          18 0.99753
+                          19 1.00000
+                          20 0.99144
+                          21 0.99992
+                          22 1.00000
+                          23 0.94490
+                        }
+                      }
+                      SourceGeometry TRUE {
+                        osg::Geometry {
+                          UniqueID 1220
+                          Name "Inner"
+                          StateSet TRUE {
+                            osg::StateSet {
+                              UniqueID 1195
+                            }
+                          }
+                          PrimitiveSetList 1 {
+                              DrawElementsUInt GL_QUADS 24 {
+                                0 1 2 3 
+                                4 5 6 7 
+                                8 9 10 11 
+                                12 13 14 15 
+                                16 17 18 19 
+                                20 21 22 23 
+                              }
+                          }
+                          VertexData {
+                            Array TRUE ArrayID 196
+                            Indices FALSE
+                            Binding BIND_PER_VERTEX
+                            Normalize 0
+                          }
+                          NormalData {
+                            Array TRUE ArrayID 197
+                            Indices FALSE
+                            Binding BIND_PER_VERTEX
+                            Normalize 0
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+              Matrix {
+                1.00000 0.00000 0.00000 0.00000
+                0.00000 1.00000 0.00000 0.00000
+                0.00000 0.00000 1.00000 0.00000
+                0.00000 0.00000 0.00000 1.00000
+              }
+            }
+          }
+          Matrix {
+            1.00000 0.00000 0.00000 0.00000
+            0.00000 1.00000 0.00000 0.00000
+            0.00000 0.00000 1.00000 0.00000
+            0.00000 0.00000 0.00000 1.00000
+          }
+        }
+      }
+      Matrix {
+        1.00000 0.00000 0.00000 0.00000
+        0.00000 1.00000 0.00000 0.00000
+        0.00000 0.00000 1.00000 0.00000
+        0.00000 0.00000 0.00000 1.00000
+      }
+    }
+  }
+}
