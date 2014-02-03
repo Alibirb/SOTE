@@ -13,7 +13,7 @@
 
 #define PROJECTILE_SCRIPT_LOCATION "media/Projectiles/"
 
-#include "TmxParser/tinyxml.h"
+#include "tinyxml/tinyxml.h"
 
 
 ProjectileStats::ProjectileStats(TiXmlElement* xmlElement)
@@ -264,7 +264,11 @@ void Projectile::onUpdate(float deltaTime)
 void Projectile::onCollision(GameObject* other)
 {
 	if(dynamic_cast<Fighter*>(other))
+	{
 		markForRemoval(this, "Projectile");
+		//_stats.damages.clear();	/// Possible way to ensure the damage is only dealt once. Could cause no damage to be dealt, however, if the Projectile's onCollision is called before that of the Fighter.
+	}
+
 }
 
 

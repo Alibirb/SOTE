@@ -50,7 +50,7 @@ public:
 	osg::Vec3 localToWorld(osg::Vec3 localVector);
 	osg::Vec3 worldToLocal(osg::Vec3 worldVector);
 
-	virtual void load(std::string xmlFilename);
+	void loadFromFile(std::string xmlFilename, std::string searchPath="media/Objects/");
 	virtual void load(TiXmlElement* xmlElement);
 	virtual void reset();	/// Reset the object.
 
@@ -61,17 +61,20 @@ public:
 	void unparentFrom(osg::Group* parent);
 
 	virtual void onUpdate(float deltaTime){};
-	virtual void onCollision(GameObject* other){};
+	virtual void onCollision(GameObject* other){};	/// Called when two objects collide. Ideally should check the type of the other object, and call a more appropriate onCollision method.
 
 	bool findAnimation();
 
+	void playAnimation(std::string& animationName);
+
 /* TODO:
 	addAnimation();
-	playAnimation();
 	generatePhysicsBody();	/// Should allow to specify method of generation (see osgbCollision/CollisionShapes.h)
 */
 
 protected:
 };
+
+void registerGameObject();
 
 #endif // GAMEOBJECT_H

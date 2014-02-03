@@ -71,6 +71,8 @@ bool MainEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIAction
 		{
 			writeOutSceneGraph();
 		}
+		else if(ea.getKey() == 'e')
+			getActivePlayer()->interact();
 		if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Return)
 			//if (getEnemies().size() > 0)
 				//getActivePlayer()->attack(getClosestEnemy(getActivePlayer()->getPosition(), getEnemies()));

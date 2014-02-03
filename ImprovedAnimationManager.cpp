@@ -18,9 +18,12 @@ ImprovedAnimationManager::~ImprovedAnimationManager()
 
 bool ImprovedAnimationManager::play(std::string name)
 {
-	for(unsigned int i = 0; i < _amv.size(); i++) if(_amv[i] == name) _focus = i;
-        playAnimation(_map[name].get());
-        return true;
+	for(unsigned int i = 0; i < _amv.size(); i++)
+		if(_amv[i] == name)
+			_focus = i;
+	std::cout << "Play " << name << std::endl;
+	playAnimation(_map[name].get());
+	return true;
 }
 bool ImprovedAnimationManager::play()
 {

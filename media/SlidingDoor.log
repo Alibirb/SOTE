@@ -3,10 +3,10 @@ Type of SlidingDoor is EMPTY
 
 Type of Armature.001 is ARMATURE
 processing Armature Armature.001
-animation_data is Armature.001 <bpy_struct, AnimData at 0x55740a8>
+animation_data is Armature.001 <bpy_struct, AnimData at 0x59efb08>
 animations created for object 'Armature.001'
 Exporting animation on object <bpy_struct, Object("Armature.001")>
-ArmatureAction.001 processing channels for bone Bone.001
+open processing channels for bone Bone.001
 time 0.0 0.0 24
 time 1.0 0.041666666666666664 24
 time 2.0 0.08333333333333333 24
@@ -18,20 +18,10 @@ time 7.0 0.2916666666666667 24
 time 8.0 0.3333333333333333 24
 time 9.0 0.375 24
 time 10.0 0.4166666666666667 24
-time 11.0 0.4583333333333333 24
-time 12.0 0.5 24
-time 13.0 0.5416666666666666 24
-time 14.0 0.5833333333333334 24
-time 15.0 0.625 24
-time 16.0 0.6666666666666666 24
-time 17.0 0.7083333333333334 24
-time 18.0 0.75 24
-time 19.0 0.7916666666666666 24
-time 20.0 0.8333333333333334 24
 time 0.0 0.0 24
-time 20.0 0.8333333333333334 24
+time 10.0 0.4166666666666667 24
 time 0.0 0.0 24
-time 20.0 0.8333333333333334 24
+time 10.0 0.4166666666666667 24
 
 Type of Outer is MESH
 curve.data_path location 0 location
@@ -45,15 +35,15 @@ curve.data_path scale 1 scale
 curve.data_path scale 2 scale
 Exporting animation on object <bpy_struct, Object("Outer")>
 time 0.0 0.0 24
-time 20.0 0.8333333333333334 24
+time 10.0 0.4166666666666667 24
 time 0.0 0.0 24
-time 20.0 0.8333333333333334 24
+time 10.0 0.4166666666666667 24
 time 0.0 0.0 24
-time 20.0 0.8333333333333334 24
+time 10.0 0.4166666666666667 24
 time 0.0 0.0 24
-time 20.0 0.8333333333333334 24
+time 10.0 0.4166666666666667 24
 time 0.0 0.0 24
-time 20.0 0.8333333333333334 24
+time 10.0 0.4166666666666667 24
 exporting object Outer
 mesh_object is Cube.001
 mesh Outer with material Yellow
@@ -77,15 +67,15 @@ curve.data_path scale 1 scale
 curve.data_path scale 2 scale
 Exporting animation on object <bpy_struct, Object("Inner")>
 time 0.0 0.0 24
-time 20.0 0.8333333333333334 24
+time 10.0 0.4166666666666667 24
 time 0.0 0.0 24
-time 20.0 0.8333333333333334 24
+time 10.0 0.4166666666666667 24
 time 0.0 0.0 24
-time 20.0 0.8333333333333334 24
+time 10.0 0.4166666666666667 24
 time 0.0 0.0 24
-time 20.0 0.8333333333333334 24
+time 10.0 0.4166666666666667 24
 time 0.0 0.0 24
-time 20.0 0.8333333333333334 24
+time 10.0 0.4166666666666667 24
 exporting object Inner
 mesh_object is Cube
 mesh Inner with material Yellow

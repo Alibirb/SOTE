@@ -32,4 +32,5 @@ STL containers:
 	list
 	deque
 	map
-	set--store unique elements following a specific order.
+		unordered_map
+	set:	store unique elements following a specific order.

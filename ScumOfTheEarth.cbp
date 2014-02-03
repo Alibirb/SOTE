@@ -61,6 +61,7 @@
 			<Add directory="/usr/local/lib64" />
 			<Add directory="../ScumOfTheEarth" />
 			<Add directory="../Box2D_v2.3.0/Box2D/Box2D" />
+			<Add directory="tinyxml" />
 		</Linker>
 		<Unit filename="AngelScript.notes" />
 		<Unit filename="AngelScriptConsole.cpp" />
@@ -75,6 +76,10 @@
 		<Unit filename="Box2DIntegration.cpp" />
 		<Unit filename="Box2DIntegration.h" />
 		<Unit filename="C++.notes" />
+		<Unit filename="ControlledObject.cpp" />
+		<Unit filename="ControlledObject.h" />
+		<Unit filename="Controller.cpp" />
+		<Unit filename="Controller.h" />
 		<Unit filename="Damage.cpp" />
 		<Unit filename="Damage.h" />
 		<Unit filename="Enemy.cpp" />
@@ -108,6 +113,8 @@
 		<Unit filename="RandomGenerator.h" />
 		<Unit filename="Sprite.cpp" />
 		<Unit filename="Sprite.h" />
+		<Unit filename="StateMachine.cpp" />
+		<Unit filename="StateMachine.h" />
 		<Unit filename="TemporaryText.cpp" />
 		<Unit filename="TemporaryText.h" />
 		<Unit filename="TextDisplay.cpp" />
@@ -190,7 +197,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="TmxParser/inftrees.h" />
-		<Unit filename="TmxParser/tinystr.h" />
 		<Unit filename="TmxParser/tinyxml.h" />
 		<Unit filename="TmxParser/trees.c">
 			<Option compilerVar="CC" />
@@ -218,6 +224,8 @@
 		<Unit filename="media/Entities/Golem.as" />
 		<Unit filename="media/Entities/Human.as" />
 		<Unit filename="media/Entities/Player.as" />
+		<Unit filename="media/Objects/SlidingDoor.xml" />
+		<Unit filename="media/Objects/Switch.xml" />
 		<Unit filename="media/Projectiles/Fireball.as" />
 		<Unit filename="media/Projectiles/Magic.as" />
 		<Unit filename="media/Projectiles/Rock.as" />

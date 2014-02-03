@@ -6,6 +6,8 @@
 
 #include "Player.h"
 #include "Enemy.h"
+#include "ControlledObject.h"
+#include "Controller.h"
 
 #include <osgDB/ReadFile>
 #include <osgDB/FileUtils>
@@ -47,7 +49,17 @@ void myTickCallback(btDynamicsWorld *world, btScalar timeStep)
 			((Fighter*)dataA->owner)->onCollision((Projectile*)dataB->owner);
 			((Projectile*)dataB->owner)->onCollision((Fighter*)dataA->owner);
 		}
-		else if(dataA->ownerType != "Level" && dataB->ownerType != "Level")
+		else if(dataA->ownerType == "Player" && dataB->ownerType == "Controller")
+		{
+			((Player*)dataA->owner)->onCollision((Controller*)dataB->owner);
+			//((GameObject*)dataB->owner)->onCollision((GameObject*)dataA->owner);
+		}
+		else if(dataA->ownerType == "Controller" && dataB->ownerType == "Player")
+		{
+			((Player*)dataB->owner)->onCollision((Controller*)dataA->owner);
+			//((GameObject*)dataB->owner)->onCollision((GameObject*)dataA->owner);
+		}
+		else if(dataA->ownerType != "Level" && dataB->ownerType != "Level")		// Neither body is part of the Level geometry
 		{
 			((GameObject*)dataA->owner)->onCollision((GameObject*)dataB->owner);
 			((GameObject*)dataB->owner)->onCollision((GameObject*)dataA->owner);
@@ -137,40 +149,28 @@ void Level::loadFromXml(std::string filename)
 	currentElement = rootHandle.FirstChildElement().Element();
 	for( ; currentElement; currentElement = currentElement->NextSiblingElement())
 	{
-		std::string elementType = currentElement->Value();
+		std::string elementType = currentElement->ValueStr();
 		if(elementType == "geometry")
 			addNode(osgDB::readNodeFile(currentElement->Attribute("source")));
 		else if(elementType == "gameObject")
 		{
-			std::string type = currentElement->Attribute("name");
-			float x, y, z;
-			currentElement->QueryFloatAttribute("x", &x);
-			currentElement->QueryFloatAttribute("y", &y);
-			currentElement->QueryFloatAttribute("z", &z);
-
-			//new Enemy(type, osg::Vec3(x, y, z));
 			new GameObject(currentElement);
+		}
+		else if(elementType == "controlledObject")
+		{
+			new ControlledObject(currentElement);
+		}
+		else if(elementType == "controller")
+		{
+			new Controller(currentElement);
 		}
 		else if(elementType == "enemy")
 		{
-			std::string type = currentElement->Attribute("name");
-			float x, y, z;
-			currentElement->QueryFloatAttribute("x", &x);
-			currentElement->QueryFloatAttribute("y", &y);
-			currentElement->QueryFloatAttribute("z", &z);
-
-			//new Enemy(type, osg::Vec3(x, y, z));
 			new Enemy(currentElement);
 		}
 		else if(elementType == "player")
 		{
 			std::string name = currentElement->Attribute("name");
-			float x, y, z;
-			currentElement->QueryFloatAttribute("x", &x);
-			currentElement->QueryFloatAttribute("y", &y);
-			currentElement->QueryFloatAttribute("z", &z);
-
-			//addNewPlayer(name, osg::Vec3(x, y, z));
 			addPlayer(name, new Player(currentElement));
 			setActivePlayer(name);
 		}

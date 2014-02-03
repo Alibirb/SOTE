@@ -7,12 +7,14 @@
 
 #define DEFAULT_PLAYER_IMAGE "player.png"
 
+class Controller;
 
 class Enemy;
 
 class Player : public Fighter
 {
 protected:
+	Controller* _willInteractWith;	/// nearest interactable object (or none if none are in range)
 
 public:
 	Player(std::string name, osg::Vec3 position);
@@ -34,6 +36,10 @@ public:
 	void die();
 
 	void onUpdate(float deltaTime);
+	void onCollision(Controller* controller);
+	void onCollision(GameObject* other);
+
+	void interact();	/// Interact with an object if in range.
 
 	virtual ~Player();
 protected:

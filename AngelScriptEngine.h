@@ -81,6 +81,28 @@ protected:
 
 
 public:
+	/* TODO:
+	void addFunction(const char* sectionName, const char* code, int lineOffset, asDWORD compileFlags, asIScriptFunction** outFunc)
+	/// Compiles and returns the functions. Does not add to module.
+	asIScriptFunction compileFunction(const char* sectionName, const char* code, int lineOffset, asDWORD compileFlags);
+
+	void addGlobalVariable
+
+	*/
+
+	void addFunction(const char* sectionName, const char* code, int lineOffset, asDWORD compileFlags, asIScriptFunction** outFunc)
+	{
+		mod->CompileFunction(sectionName, code, lineOffset, compileFlags, outFunc);
+	}
+	/// Compiles and returns the functions. Does not add to module.
+	asIScriptFunction* compileFunction(const char* sectionName, const char* code, int lineOffset, asDWORD compileFlags)
+	{
+		asIScriptFunction* func;
+		mod->CompileFunction(sectionName, code, lineOffset, compileFlags, &func);
+		return func;
+	}
+
+
 	AngelScriptEngine();
 	virtual ~AngelScriptEngine();
 
@@ -108,21 +130,6 @@ public:
 			logError("Could not register property.");
 	}
 
-	/// Registers an object type, along with default constructor and destructor.
-	/// See http://www.angelcode.com/angelscript/sdk/docs/manual/doc_register_val_type.html for explanation of how it works.
-	/// Use GetTypeTraits<type>() to automatically determine the appropriate traits. (With C++11 compiler).
-	void registerObjectType(const char *obj, int byteSize, asDWORD flags, const asSFuncPtr &constructorPointer, const asSFuncPtr &destructorPointer)
-	{
-		int r = engine->RegisterObjectType(obj, byteSize, flags);
-		if(r < 0)
-			logError("Could not register object type.");
-
-		r = engine->RegisterObjectBehaviour(obj, asBEHAVE_CONSTRUCT, "void f()", constructorPointer, asCALL_CDECL_OBJLAST);
-		assert( r >= 0 );
-		r = engine->RegisterObjectBehaviour(obj, asBEHAVE_DESTRUCT, "void f()", destructorPointer, asCALL_CDECL_OBJLAST);
-		assert( r >= 0 );
-	}
-
 	/// Registers an object type.
 	/// See http://www.angelcode.com/angelscript/sdk/docs/manual/doc_register_val_type.html for explanation of how it works.
 	/// Use GetTypeTraits<type>() to automatically determine the appropriate traits. (With C++11 compiler).
@@ -131,18 +138,157 @@ public:
 		int r = engine->RegisterObjectType(obj, byteSize, flags);
 		if(r < 0)
 			logError("Could not register object type.");
+		if(r < 0)
+			switch(r)
+			{
+			case asINVALID_ARG:
+				cout << "Invalid argument" << " (the flags are invalid)" << std::endl;
+				break;
+			case asINVALID_NAME:
+				cout << "Invalid name" << std::endl;
+				break;
+			case asALREADY_REGISTERED:
+				cout << "Already registered" << std::endl;
+				break;
+			case asNAME_TAKEN:
+				cout << "Name taken" << std::endl;
+				break;
+			case asLOWER_ARRAY_DIMENSION_NOT_REGISTERED:
+				cout << "Lower array dimension not registered" << std::endl;
+				break;
+			case asINVALID_TYPE:
+				cout << "Invalid type" << std::endl;
+				break;
+			case asNOT_SUPPORTED:
+				cout << "Not supported" << std::endl;
+				break;
+			}
+	}
+
+
+	/// Registers an object type, along with default constructor and destructor.
+	/// See http://www.angelcode.com/angelscript/sdk/docs/manual/doc_register_val_type.html for explanation of how it works.
+	/// Use GetTypeTraits<type>() to automatically determine the appropriate traits. (With C++11 compiler).
+	void registerObjectType(const char *obj, int byteSize, asDWORD flags, const asSFuncPtr &constructorPointer, const asSFuncPtr &destructorPointer)
+	{
+		registerObjectType(obj, byteSize, flags);
+
+		registerConstructor(obj, "void f()", constructorPointer);
+		registerDestructor(obj, destructorPointer);
+	}
+
+
+	/// Registers a factory function. For use by reference types.
+	void registerFactoryFunction(const char *obj, const char *declaration, const asSFuncPtr &funcPointer)
+	{
+		int r = engine->RegisterObjectBehaviour(obj, asBEHAVE_FACTORY, declaration, funcPointer, asCALL_CDECL);
+		if(r < 0)
+			switch(r)
+			{
+			case asWRONG_CONFIG_GROUP:
+				cout << "Wrong config group" << std::endl;
+				break;
+			case asNOT_SUPPORTED:
+				cout << "Not supported" << std::endl;
+				break;
+			case asINVALID_TYPE:
+				cout << "Invalid type" << std::endl;
+				break;
+			case asINVALID_DECLARATION:
+				cout << "Invalid declaration" << std::endl;
+				break;
+			case asNAME_TAKEN:
+				cout << "Name taken" << std::endl;
+				break;
+			case asWRONG_CALLING_CONV:
+				cout << "Wrong calling convention" << std::endl;
+				break;
+			case asALREADY_REGISTERED:
+				cout << "Already registered" << std::endl;
+				break;
+			case asILLEGAL_BEHAVIOUR_FOR_TYPE:
+				cout << "Illegal behaviour for type" << std::endl;
+				break;
+			case asINVALID_ARG:
+				cout << "Invalid argument" << std::endl;
+				break;
+
+			}
 	}
 
 	void registerDestructor(const char *obj, const asSFuncPtr &funcPointer)
 	{
 		int r = engine->RegisterObjectBehaviour(obj, asBEHAVE_DESTRUCT, "void f()", funcPointer, asCALL_CDECL_OBJLAST);
-		assert( r >= 0 );
+		if(r < 0)
+			switch(r)
+			{
+			case asWRONG_CONFIG_GROUP:
+				cout << "Wrong config group" << std::endl;
+				break;
+			case asNOT_SUPPORTED:
+				cout << "Not supported" << std::endl;
+				break;
+			case asINVALID_TYPE:
+				cout << "Invalid type" << std::endl;
+				break;
+			case asINVALID_DECLARATION:
+				cout << "Invalid declaration" << std::endl;
+				break;
+			case asNAME_TAKEN:
+				cout << "Name taken" << std::endl;
+				break;
+			case asWRONG_CALLING_CONV:
+				cout << "Wrong calling convention" << std::endl;
+				break;
+			case asALREADY_REGISTERED:
+				cout << "Already registered" << std::endl;
+				break;
+			case asILLEGAL_BEHAVIOUR_FOR_TYPE:
+				cout << "Illegal behaviour for type." << std::endl;
+				break;
+			case asINVALID_ARG:
+				cout << "Invalid argument" << std::endl;
+				break;
+
+			}
 	}
 
+	/// Registers a constructor. For use by value types.
 	void registerConstructor(const char *obj, const char *declaration, const asSFuncPtr &funcPointer)
 	{
 		int r = engine->RegisterObjectBehaviour(obj, asBEHAVE_CONSTRUCT, declaration, funcPointer, asCALL_CDECL_OBJLAST);
-		assert( r >= 0 );
+		if(r < 0)
+			switch(r)
+			{
+			case asWRONG_CONFIG_GROUP:
+				cout << "Wrong config group" << std::endl;
+				break;
+			case asNOT_SUPPORTED:
+				cout << "Not supported" << std::endl;
+				break;
+			case asINVALID_TYPE:
+				cout << "Invalid type" << std::endl;
+				break;
+			case asINVALID_DECLARATION:
+				cout << "Invalid declaration" << std::endl;
+				break;
+			case asNAME_TAKEN:
+				cout << "Name taken" << std::endl;
+				break;
+			case asWRONG_CALLING_CONV:
+				cout << "Wrong calling convention" << std::endl;
+				break;
+			case asALREADY_REGISTERED:
+				cout << "Already registered" << std::endl;
+				break;
+			case asILLEGAL_BEHAVIOUR_FOR_TYPE:
+				cout << "Illegal behaviour for type" << std::endl;
+				break;
+			case asINVALID_ARG:
+				cout << "Invalid argument" << std::endl;
+				break;
+
+			}
 	}
 
 	/// Register a list contructor.
@@ -232,6 +378,61 @@ public:
 		setArguments(ctx, index+1, Fargs...);
 	}
 
+	void runFunction(asIScriptFunction* func);
+
+	template<typename... Targs>
+	void runFunction(asIScriptFunction* func, Targs... Fargs)
+	{
+		bool nestedCall = executing;
+
+		asIScriptContext* ctx = 0;
+
+#ifdef REUSE_ACTIVE_CONTEXT_FOR_NESTED_CALLS
+		if(nestedCall)
+		{
+			ctx = asGetCurrentContext();
+			int r = ctx->PushState();	/// For nested calls (script function called c++ function that called another script function), must save and restore our state.
+			assert(r >= 0);
+		}
+		else
+#endif
+			ctx = getContextFromPool();
+
+		ctx->Prepare(func);
+		executing = true;
+		setArguments(ctx, 0, Fargs...);
+		int r = ctx->Execute();
+
+
+		if(r != asEXECUTION_FINISHED)
+		{
+			if(r == asEXECUTION_EXCEPTION)
+			{
+				string warning = "AngelScript engine says \"";
+				warning += ctx->GetExceptionString();
+				warning += "\".";
+				logWarning(warning);
+				return;
+			}
+		}
+
+		_returnObject = ctx->GetReturnObject();	/// Save the return object (which may not exist)
+		_returnValue = ctx->GetReturnQWord();
+
+#ifdef REUSE_ACTIVE_CONTEXT_FOR_NESTED_CALLS
+		if(nestedCall)
+		{
+			int r = ctx->PopState();
+			assert(r >= 0);
+		}
+		else
+#endif
+		{
+			returnContextToPool(ctx);
+			executing = false;
+		}
+	}
+
 
 	template<typename... Targs>
 	void runFunction(const char * declaration, Targs... Fargs)
@@ -284,6 +485,7 @@ public:
 		{
 			int r = ctx->PopState();
 			assert(r >= 0);
+		}
 		else
 #endif
 		{
@@ -293,6 +495,81 @@ public:
 	}
 
 	void runFunction(const char * declaration);
+
+	template<typename... Targs>
+	void runMethod(void* object, asIScriptFunction* func, Targs... Fargs)
+	{
+		bool nestedCall = executing;
+
+		asIScriptContext* ctx = 0;
+
+#ifdef REUSE_ACTIVE_CONTEXT_FOR_NESTED_CALLS
+		if(nestedCall)
+		{
+			ctx = asGetCurrentContext();
+			int r = ctx->PushState();	/// For nested calls (script function called c++ function that called another script function), must save and restore our state.
+			assert(r >= 0);
+		}
+		else
+#endif
+			ctx = getContextFromPool();
+
+		ctx->Prepare(func);
+		executing = true;
+		setArguments(ctx, 0, Fargs...);
+
+		ctx->SetObject(object);
+
+		int r = ctx->Execute();
+
+
+		if(r != asEXECUTION_FINISHED)
+		{
+			if(r == asEXECUTION_EXCEPTION)
+			{
+				string warning = "AngelScript engine says \"";
+				warning += ctx->GetExceptionString();
+				warning += "\".";
+				logWarning(warning);
+				return;
+			}
+		}
+
+		_returnObject = ctx->GetReturnObject();	/// Save the return object (which may not exist)
+		_returnValue = ctx->GetReturnQWord();
+
+#ifdef REUSE_ACTIVE_CONTEXT_FOR_NESTED_CALLS
+		if(nestedCall)
+		{
+			int r = ctx->PopState();
+			assert(r >= 0);
+		}
+		else
+#endif
+		{
+			returnContextToPool(ctx);
+			executing = false;
+		}
+	}
+
+	void runMethod(void* object, asIScriptFunction* func);
+
+	template<typename... Targs>
+	void runMethod(void* object, const char* declaration, Targs... Fargs)
+	{
+		asIScriptFunction *func = mod->GetFunctionByDecl(declaration);
+		if (func == 0)
+		{
+			// The function couldn't be found. Instruct the script writer to include the expected function in the script.
+			std::cout << "could not find function \"" << declaration << "\"." << std::endl;
+			return;
+		}
+		else
+			runMethod(object, func, Fargs...);
+	}
+
+	void runMethod(void* object, const char* declaration);
+
 
 	int getReturnInt();
 	float getReturnFloat();
@@ -316,6 +593,9 @@ protected:
 
 private:
 };
+
+
+
 
 AngelScriptEngine* getScriptEngine();
 

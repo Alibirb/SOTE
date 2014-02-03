@@ -83,70 +83,6 @@ vertexes reduced from 244 to 128
 faces 64
 -------------------------------------
 vertex groups False False 
-
-Type of Armature.001 is ARMATURE
-processing Armature Armature.001
-animation_data is Armature.001 <bpy_struct, AnimData at 0x5865db8>
-animations created for object 'Armature.001'
-Exporting animation on object <bpy_struct, Object("Armature.001")>
-ArmatureAction.001 processing channels for bone Bone.001
-time 0.0 0.0 24
-time 1.0 0.041666666666666664 24
-time 2.0 0.08333333333333333 24
-time 3.0 0.125 24
-time 4.0 0.16666666666666666 24
-time 5.0 0.20833333333333334 24
-time 6.0 0.25 24
-time 7.0 0.2916666666666667 24
-time 8.0 0.3333333333333333 24
-time 9.0 0.375 24
-time 10.0 0.4166666666666667 24
-time 11.0 0.4583333333333333 24
-time 12.0 0.5 24
-time 13.0 0.5416666666666666 24
-time 14.0 0.5833333333333334 24
-time 15.0 0.625 24
-time 16.0 0.6666666666666666 24
-time 17.0 0.7083333333333334 24
-time 18.0 0.75 24
-time 19.0 0.7916666666666666 24
-time 20.0 0.8333333333333334 24
-time 0.0 0.0 24
-time 20.0 0.8333333333333334 24
-time 0.0 0.0 24
-time 20.0 0.8333333333333334 24
-
-Type of Cube is MESH
-curve.data_path location 0 location
-curve.data_path location 1 location
-curve.data_path location 2 location
-curve.data_path rotation_euler 0 rotation_euler
-curve.data_path rotation_euler 1 rotation_euler
-curve.data_path rotation_euler 2 rotation_euler
-curve.data_path scale 0 scale
-curve.data_path scale 1 scale
-curve.data_path scale 2 scale
-Exporting animation on object <bpy_struct, Object("Cube")>
-time 0.0 0.0 24
-time 20.0 0.8333333333333334 24
-time 0.0 0.0 24
-time 20.0 0.8333333333333334 24
-time 0.0 0.0 24
-time 20.0 0.8333333333333334 24
-time 0.0 0.0 24
-time 20.0 0.8333333333333334 24
-time 0.0 0.0 24
-time 20.0 0.8333333333333334 24
-exporting object Cube
-mesh_object is Cube
-mesh Cube with material Yellow
-vertexes reduced from 72 to 68
-faces 18
-vertex groups 1
-WARNING update material animation not yet supported
-WARNING the texture <bpy_struct, MaterialTextureSlot("Texture")> has no Image, skip it
-------------------------------
-vertex groups True True 
 geode GeodePlane.004
 geode GeodePlane.003
 geode GeodePlane.002
@@ -156,7 +92,5 @@ geode GeodePlane.011
 geode GeodePlane.012
 geode GeodePlane.013
 geode GeodePlane.014
-geode GeodeCube
-NOTICE: Reparenting GeodeCube to Armature.001
 write file to /home/daniel/Documents/C++/ScumOfTheEarth/media/DemoLevel.osgt
 Check log file /home/daniel/Documents/C++/ScumOfTheEarth/media/DemoLevel.log

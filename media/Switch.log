@@ -1,0 +1,22 @@
+
+Type of Cylinder is MESH
+exporting object Cylinder
+mesh_object is Cylinder.001
+mesh Cylinder without material
+vertexes reduced from 308 to 192
+faces 92
+------------------------------
+vertex groups False False 
+
+Type of Cube is MESH
+exporting object Cube
+mesh_object is Cube.002
+mesh Cube without material
+vertexes 24
+faces 6
+--------------------------
+vertex groups False False 
+geode GeodeCylinder.001
+geode GeodeCube.002
+write file to /home/daniel/Documents/C++/ScumOfTheEarth/media/Switch.osgt
+Check log file /home/daniel/Documents/C++/ScumOfTheEarth/media/Switch.log

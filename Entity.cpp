@@ -216,7 +216,7 @@ double Entity::getHeading()
 	double angle;
 	osg::Vec3 axis;
 	_transformNode->getAttitude().getRotate(angle, axis);
-	if (axis == osg::Vec3(0,0,1))	// make sure the rotation is only around the z-axis. If it's not, this will crash the program, because nothing is returned.
+	if (axis == osg::Vec3(0,0,1))	// make sure the rotation is only around the z-axis.
 	{
 		return angle;
 	}

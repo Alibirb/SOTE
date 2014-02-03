@@ -6,11 +6,16 @@ Basics:
 
 TODO:
 	DoneThisCommit:
-		Added support for animation. Also fixed the segfault-on-closing bug.
+		Implemented Controller and ControlledObject classes (along with a switch and door for the demo).  Also added animation and ability to embed AngelScript in XML files.
 	Current Task:
-	Next Steps:
 		Implement Controller and ControlledObject classes, as well as a switch and door for the demo level.
+	Next Steps:
 		Clean up.
+			Unnecessary includes
+			Remove physics stuff from Projectile.
+			Move functions in AngelScriptEngine.h to the cpp file.
+			Change AngelScriptEngine execution methods such that they call runFunction(asIScriptFunction* func) instead of reimplementing the same code everywhere.
+			Clean up the Controller and ControlledObject classes (a lot of code changes... they've become a bit of a mess.)
 		Begin work on level editor.
 		Flame jets for the demo level.
 
@@ -19,8 +24,9 @@ TODO:
 		Controllers and ControlledObjects--eg light switch and lamp, or switch and door.
 			ControlledObject should use a FSM
 		Some mechanism by which you can easily move between a set list of places (teleportation, taxicab, etc.). Long glides, jumps, etc. may leave you stranded otherwise.
+		Figure out how best to use AngelScript to specify object behavior (AngelScript class cannot inherit a C++ class, so it's not that simple.)
 	Scripting:
-		Add ability to load (not run) an AngelScript file, adding functions, variabels, object types, etc to the current context/module.
+		Add ability to load (not run) an AngelScript file, adding functions, variables, object types, etc to the current context/module.
 			Can use the CompileFunction and CompileGlobalVar functions to add functions and variables.
 	AI:
 		Enemies need more intelligent behavior (e.g. dodge)
@@ -31,7 +37,11 @@ TODO:
 	Development cheats and features:
 		Changing game speed
 	Level should contain lighting, enemies, and other things that would be in the scene.
+	Physics fixes:
+		figure out proper collision filtering technique for ghost objects (there should be no collision response, but it still needs to be detected.)
 	Make sure it all works on Windows (with the exception of the extra mouse button support I added)
+	Clean up:
+
 
 Extras (if I get bored):
 	SVG support.
@@ -40,16 +50,30 @@ Extras (if I get bored):
 
 BUGS:
 	input handler does not respond to releasing a key if Ctrl is pressed. Most likely due to the way OSG reports the button. I think it's a different value if a modkey is pressed.
+	The ghost object for the switch stops the player's movement.
 	Console does not appear until window is resized
 	Weapons do not point in the correct direction (rotated relative to the owner)
 	Lighting needs work. Should figure out how to ensure every surface is lit.
 	Collision checking (in Level) may call onCollision() multiple times for the same pair of objects if they have multiple manifolds, or if Bullet takes multiple simulation steps for one rendering step.
+	Doors open, but do not close (not sure how to have multiple animations in Bullet, so currently they can have an open animation or a closing animation, but not both.)
 	2D Stuff:
 		TiledMap does not account for maps with multiple tilesets.
 		Seg faults if the Box2D debug drawer sets the data variance to "dynamic"
 
+Bugs I expect to see later:
+	The functions specified in the XML files may cause issues once I have multiple objects of the same type (e.g. two kinds of ControlledObject), because they might override one another.
+
+Issues: (with other software)
+	TinyXML returns text as if it were all in one line, which causes issues when the text is AngelScript with comments (a single-line comment comments out the rest of the program).
+	Not sure how to have multiple animations on an object in Blender. See http://wiki.blender.org/index.php/Doc:2.6/Manual/Animation/Basics/Actions
+
 Things to remember to prevent bugs:
 	It is NOT safe to alter the scene graph during a traversal (multi-threaded, multiple traversals happen at the same time). To ensure that doesn't happen, use the addToSceneGraph function for any new nodes, rather than adding them directly.
+	TinyXML returns text as if it were all in one line, which causes issues when the text is AngelScript with comments (a single-line comment comments out the rest of the program).
+
+
+Things to consider:
+	Check out AngelScript/sdk/samples/game. Uses a "controller" class to control game objects. Might be a useful approach.
 
 
 Useful notes:
@@ -73,7 +97,7 @@ Engine features:
 		Can embed in the level file, link to an external file, or both (using external file as prototype and making necessary alterations in the level file).
 			Can also define an object using another as a prototype (e.g. multiple versions of an enemy use a common base).
 		Can embed AngelScript inside the XML file, further increasing adaptability.
-
+			Can attach functions to an object, to be used elsewhere (e.g. a door has the functions "open()" and "close()" defined in a central location, and called in response to signals from a switch.)
 
 
 Multiple playable characters:

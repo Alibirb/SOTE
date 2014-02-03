@@ -220,6 +220,7 @@ bool AngelScriptEngine::eval(const std::string& code)
 	{
 		int r = ctx->PopState();
 		assert(r >= 0);
+	}
 	else
 #endif
 	{
@@ -229,6 +230,7 @@ bool AngelScriptEngine::eval(const std::string& code)
 
 	return true;
 }
+
 
 
 bool AngelScriptEngine::runFile(const std::string& filePath, const char* functionName)
@@ -359,6 +361,129 @@ void AngelScriptEngine::runFunction(const char * declaration)
 	{
 		int r = ctx->PopState();
 		assert(r >= 0);
+	}
+	else
+#endif
+	{
+		returnContextToPool(ctx);
+		executing = false;
+	}
+}
+
+void AngelScriptEngine::runMethod(void* object, asIScriptFunction* func)
+{
+	bool nestedCall = executing;	/// If another call is in progress, this is a nested call.
+
+	asIScriptContext* ctx = 0;
+
+#ifdef REUSE_ACTIVE_CONTEXT_FOR_NESTED_CALLS
+	if(nestedCall)
+	{
+		ctx = asGetCurrentContext();
+		int r = ctx->PushState();	/// For nested calls (script function called c++ function that called another script function), must save and restore our state.
+		assert(r >= 0);
+	}
+	else
+#endif
+		ctx = getContextFromPool();
+
+	ctx->Prepare(func);
+
+	ctx->SetObject(object);
+
+	executing = true;
+	int r = ctx->Execute();
+
+
+	if(r != asEXECUTION_FINISHED)
+	{
+		if(r == asEXECUTION_EXCEPTION)
+		{
+			string warning = "AngelScript engine says \"";
+			warning += ctx->GetExceptionString();
+			warning += "\".";
+			logWarning(warning);
+			return;
+		}
+	}
+	//func->Release();
+
+	_returnObject = ctx->GetReturnObject();	/// Save the return object (which may not exist)
+	//memcpy(_returnObject, const_cast<const void*>(ctx->GetReturnObject()), sizeof(ctx->GetReturnObject()));
+
+	_returnValue = ctx->GetReturnQWord();
+#ifdef REUSE_ACTIVE_CONTEXT_FOR_NESTED_CALLS
+	if(nestedCall)
+	{
+		int r = ctx->PopState();
+		assert(r >= 0);
+	}
+	else
+#endif
+	{
+		returnContextToPool(ctx);
+		executing = false;
+	}
+}
+
+void AngelScriptEngine::runMethod(void* object, const char* declaration)
+{
+	asIScriptFunction *func = mod->GetFunctionByDecl(declaration);
+	if (func == 0)
+	{
+		// The function couldn't be found. Instruct the script writer to include the expected function in the script.
+		std::cout << "could not find function \"" << declaration << "\"." << std::endl;
+		return;
+	}
+	else
+		runMethod(object, func);
+}
+
+void AngelScriptEngine::runFunction(asIScriptFunction* func)
+{
+	bool nestedCall = executing;	/// If another call is in progress, this is a nested call.
+
+	asIScriptContext* ctx = 0;
+
+#ifdef REUSE_ACTIVE_CONTEXT_FOR_NESTED_CALLS
+	if(nestedCall)
+	{
+		ctx = asGetCurrentContext();
+		int r = ctx->PushState();	/// For nested calls (script function called c++ function that called another script function), must save and restore our state.
+		assert(r >= 0);
+	}
+	else
+#endif
+		ctx = getContextFromPool();
+
+	ctx->Prepare(func);
+	executing = true;
+	int r = ctx->Execute();
+
+
+	if(r != asEXECUTION_FINISHED)
+	{
+		if(r == asEXECUTION_EXCEPTION)
+		{
+			string warning = "AngelScript engine says \"";
+			warning += ctx->GetExceptionString();
+			warning += "\".";
+			logWarning(warning);
+			return;
+		}
+	}
+	//func->Release();
+
+	_returnObject = ctx->GetReturnObject();	/// Save the return object (which may not exist)
+	//memcpy(_returnObject, const_cast<const void*>(ctx->GetReturnObject()), sizeof(ctx->GetReturnObject()));
+
+	_returnValue = ctx->GetReturnQWord();
+#ifdef REUSE_ACTIVE_CONTEXT_FOR_NESTED_CALLS
+	if(nestedCall)
+	{
+		int r = ctx->PopState();
+		assert(r >= 0);
+	}
 	else
 #endif
 	{

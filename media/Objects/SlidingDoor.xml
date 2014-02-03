@@ -1,5 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<gameObject name="Door" animation="true">
+<controlledObject name="Door" animation="true" defaultState="closed">
 	<geometry source="SlidingDoor.osgt"/>
-	<!--<geometry source="morph_scene.osg"/>-->
-</gameObject>
+	<onMessage message="toggle">
+		void onMessage(ControlledObject@ self)
+		{
+			print("recieved toggle message");
+
+			print("Current state is " + self.getStateName());
+			if(self.getStateName() == "closed")
+			{
+				self.changeState("open");
+				print("just opened");
+			}
+			else
+			{
+				self.changeState("closed");
+				print("just closed");
+			}
+		}
+	</onMessage>
+	<state name="open">
+		<onEnter>
+			void onEnter(ControlledObject@ self)
+			{
+				print("opening");
+				self.playAnimation("open");
+			}
+		</onEnter>
+	</state>
+	<state name="closed">
+		<onEnter>
+			void onEnter(ControlledObject@ self)
+			{
+				print("closing");
+				self.playAnimation("close");
+			}
+		</onEnter>
+	</state>
+</controlledObject>

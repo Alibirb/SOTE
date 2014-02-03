@@ -10,8 +10,10 @@
 #include "Level.h"
 #include "Sprite.h"
 #include "OwnerUpdateCallback.h"
+#include "AngelScriptEngine.h"
 
-#include "TmxParser/tinyxml.h"
+//#include "TmxParser/tinyxml.h"
+#include "tinyxml/tinyxml.h"
 
 
 struct AnimationManagerFinder : public osg::NodeVisitor
@@ -39,6 +41,8 @@ struct AnimationManagerFinder : public osg::NodeVisitor
 
 GameObject::GameObject() : _physicsBody(NULL)
 {
+	registerGameObject();
+
 	_transformNode = new osg::PositionAttitudeTransform();
 	addToSceneGraph(_transformNode);
 	_updateNode = new osg::Node();
@@ -48,6 +52,8 @@ GameObject::GameObject() : _physicsBody(NULL)
 
 GameObject::GameObject(TiXmlElement* xmlElement) : _physicsBody(NULL)
 {
+	registerGameObject();
+
 	_transformNode = new osg::PositionAttitudeTransform();
 	addToSceneGraph(_transformNode);
 	_updateNode = new osg::Node();
@@ -82,12 +88,11 @@ void GameObject::loadModel(std::string modelFilename)
 		_useSpriteAsModel = true;
 	if(_useSpriteAsModel)
 	{
-		if(!dynamic_pointer_cast<Sprite>(_modelNode))
+		if(!osg::dynamic_pointer_cast<Sprite>(_modelNode))
 			setModelNode(new Sprite(modelFilename));
 		else
-			dynamic_pointer_cast<Sprite>(_modelNode)->setImage(modelFilename);
+			osg::dynamic_pointer_cast<Sprite>(_modelNode)->setImage(modelFilename);
 	}
-
 	else
 	{
 		_transformNode->removeChild(_modelNode);
@@ -145,12 +150,12 @@ osg::Vec3 GameObject::worldToLocal(osg::Vec3 worldVector)	/// FIXME: May not wor
 	return localVector;
 }
 
-void GameObject::load(std::string xmlFilename)
+void GameObject::loadFromFile(std::string xmlFilename, std::string searchPath)
 {
 	FILE *file = fopen(xmlFilename.c_str(), "rb");
 	if(!file)
 	{
-		xmlFilename = "media/Objects/" + xmlFilename;
+		xmlFilename = searchPath + xmlFilename;
 		file = fopen(xmlFilename.c_str(), "rb");
 		if(!file)
 			logError("Failed to open file " + xmlFilename);
@@ -177,7 +182,7 @@ void GameObject::load(std::string xmlFilename)
 void GameObject::load(TiXmlElement* xmlElement)
 {
 	if(xmlElement->Attribute("source"))		/// Load from external source first, then apply changes.
-		load(xmlElement->Attribute("source"));
+		loadFromFile(xmlElement->Attribute("source"));
 
 	float x, y, z;
 	xmlElement->QueryFloatAttribute("x", &x);
@@ -192,7 +197,7 @@ void GameObject::load(TiXmlElement* xmlElement)
 	TiXmlElement* currentElement = xmlElement->FirstChildElement();
 	for( ; currentElement; currentElement = currentElement->NextSiblingElement())
 	{
-		std::string elementType = currentElement->Value();
+		std::string elementType = currentElement->ValueStr();
 		if(elementType == "geometry")
 			loadModel(currentElement->Attribute("source"));
 	}
@@ -204,9 +209,8 @@ void GameObject::load(TiXmlElement* xmlElement)
 			findAnimation();
 	}
 
-
-
 }
+
 void GameObject::reset()
 {
 	this->setPosition(initialPosition);
@@ -235,9 +239,9 @@ bool GameObject::findAnimation()
         _modelNode->addUpdateCallback(finder._am.get());
         _animationManager = finder._am.get();
         std::cout << "Found animation." << std::endl;
-       // _animationManager->setPlayMode(osgAnimation::Animation::LOOP);
+        _animationManager->setPlayMode(osgAnimation::Animation::ONCE);
        // _animationManager->play();
-       _animationManager->playAnimation(_animationManager->getAnimationList().front());
+ //      _animationManager->playAnimation(_animationManager->getAnimationList().front());
         return true;
     } else {
     	std::cout << "Did not find animation." << std::endl;
@@ -245,3 +249,68 @@ bool GameObject::findAnimation()
         return false;
     }
 }
+
+void GameObject::playAnimation(std::string& animationName)
+{
+	_animationManager->play(animationName);
+	_animationManager->setPlayMode(osgAnimation::Animation::ONCE);
+}
+
+
+
+
+namespace AngelScriptWrapperFunctions
+{
+/*	void GameObjectConstructor(GameObject *memory)
+	{
+		// Initialize the pre-allocated memory by calling the object constructor with the placement-new operator
+		new(memory) GameObject();
+	}*/
+	GameObject* GameObjectFactoryFunction()
+	{
+		return new GameObject();
+	}
+	/*void GameObjectInitConstructor(Damages damages, std::string imageFilename, GameObject *self)
+	{
+		new(self) GameObject(damages, imageFilename);
+	}
+	void GameObjectCopyConstructor(GameObject& other, GameObject* self)
+	{
+		new(self) GameObject(other.damages, other.imageFilename);
+	}*/
+	void GameObjectDestructor(void *memory)
+	{
+		// Uninitialize the memory by calling the object destructor
+		((GameObject*)memory)->~GameObject();
+	}
+
+}
+
+using namespace AngelScriptWrapperFunctions;
+
+
+void registerGameObject()
+{
+	static bool registered = false;
+	if(registered)
+		return;
+
+	//getScriptEngine()->registerObjectType("GameObject", 0, asOBJ_REF | asOBJ_NOCOUNT | GetTypeTraits<GameObject>() );
+	getScriptEngine()->registerObjectType("GameObject", sizeof(GameObject), asOBJ_REF | asOBJ_NOCOUNT );
+	getScriptEngine()->registerFactoryFunction("GameObject", "GameObject@ f()", asFUNCTION(GameObjectFactoryFunction));
+	//getScriptEngine()->registerConstructor("GameObject", "void f(const Damages &in, const string &in)", asFUNCTION(GameObjectInitConstructor));
+//	getScriptEngine()->registerConstructor("GameObject", "void f()", asFUNCTION(GameObjectConstructor));
+//	getScriptEngine()->registerDestructor("GameObject", asFUNCTION(GameObjectDestructor));
+//	getScriptEngine()->registerConstructor("GameObject", "void f(const GameObject &in)", asFUNCTION(GameObjectCopyConstructor));
+//	getScriptEngine()->registerObjectProperty("GameObject", "Damages damages", asOFFSET(GameObject, damages));
+//	getScriptEngine()->registerObjectProperty("GameObject", "string imageFilename", asOFFSET(GameObject, imageFilename));
+
+	getScriptEngine()->registerObjectMethod("GameObject", "void playAnimation(string &in)", asMETHOD(GameObject, playAnimation), asCALL_THISCALL);
+	//getScriptEngine()->registerObjectMethod("ProjectileStats", "ProjectileStats opAssign(const ProjectileStats &in) const", asMETHODPR(ProjectileStats, operator=, (const ProjectileStats &), ProjectileStats&), asCALL_THISCALL);
+
+	//getScriptEngine()->registerFunction("GameObject loadProjectilePrototype(const string &in)", asFUNCTION(GameObject::loadPrototype));
+
+	registered = true;
+}
+
+

@@ -14,7 +14,7 @@ Item::~Item()
 
 Sprite* Item::getSprite()
 {
-	return dynamic_pointer_cast<Sprite>(_modelNode);
+	return osg::dynamic_pointer_cast<Sprite>(_modelNode);
 }
 
 void Item::onUpdate(float deltaTime)

@@ -71,8 +71,8 @@ public:
 
 	bool isHurtByTeam(std::string otherTeam);
 
-	void onCollision(GameObject* other);
-	void onCollision(Projectile* projectile);
+	virtual void onCollision(GameObject* other);
+	virtual void onCollision(Projectile* projectile);
 
 protected:
 };

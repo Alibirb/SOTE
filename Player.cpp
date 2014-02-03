@@ -2,6 +2,7 @@
 #include "Enemy.h"
 #include "Weapon.h"
 #include "PhysicsData.h"
+#include "Controller.h"
 
 
 std::string activePlayerName;
@@ -98,10 +99,30 @@ void Player::onUpdate(float deltaTime)
 
 }
 
+void Player::onCollision(GameObject* other)
+{
+	if(dynamic_cast<Projectile*>(other))
+		onCollision(dynamic_cast<Projectile*>(other));
+	else if(dynamic_cast<Controller*>(other))
+		onCollision(dynamic_cast<Controller*>(other));
+}
+void Player::onCollision(Controller* controller)
+{
+	_willInteractWith = controller;
+}
+
+void Player::interact()
+{
+	if(_willInteractWith)
+		_willInteractWith->onPlayerInteraction();
+}
+
 Player::~Player()
 {
 	std::cout << "Player destructor called" << std::endl;
 }
+
+
 
 
 

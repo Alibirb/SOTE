@@ -124,9 +124,9 @@ void Weapon::fire()
 	if(!isReady())
 		return;
 	double angle;
-	Vec3 axis;
+	osg::Vec3 axis;
 	_transformNode->getAttitude().getRotate(angle, axis);
-	new Projectile(getWorldCoordinates(projectileStartingTransform)->getTrans(), Vec3(cos(angle), sin(angle), 0), _stats.projectileStats, this->_team);
+	new Projectile(getWorldCoordinates(projectileStartingTransform)->getTrans(), osg::Vec3(cos(angle), sin(angle), 0), _stats.projectileStats, this->_team);
 	if(_stats.coolDownTime != 0.0)
 	{
 		_ready = false;

@@ -3,20 +3,20 @@
 #Generator osgexport 0.13.0
 
 osg::Group {
-  UniqueID 1223
+  UniqueID 217
   Name "Root"
   UpdateCallback TRUE {
     osgAnimation::BasicAnimationManager {
-      UniqueID 1224
+      UniqueID 218
       Animations 3 {
         osgAnimation::Animation {
-          UniqueID 1185
-          Name "ArmatureAction.001"
+          UniqueID 179
+          Name "open"
           Channels 3 {
             Type Vec3LinearChannel {
               Name translate
               TargetName Bone.001
-              KeyFrameContainer TRUE 21 {
+              KeyFrameContainer TRUE 11 {
                  0.00000 0.00000 0.00000 0.00000
                  0.04167 0.00000 -0.02236 0.00000
                  0.08333 0.00000 -0.08952 0.00000
@@ -28,16 +28,6 @@ osg::Group {
                  0.33333 0.00000 -0.91125 0.00000
                  0.37500 0.00000 -0.97785 0.00000
                  0.41667 0.00000 -1.00000 0.00000
-                 0.45833 0.00000 -0.97785 0.00000
-                 0.50000 0.00000 -0.91125 0.00000
-                 0.54167 0.00000 -0.80306 0.00000
-                 0.58333 0.00000 -0.66157 0.00000
-                 0.62500 0.00000 -0.50119 0.00000
-                 0.66667 0.00000 -0.34056 0.00000
-                 0.70833 0.00000 -0.19845 0.00000
-                 0.75000 0.00000 -0.08952 0.00000
-                 0.79167 0.00000 -0.02236 0.00000
-                 0.83333 0.00000 0.00000 0.00000
               }
             }
             Type QuatSphericalLinearChannel {
@@ -45,7 +35,7 @@ osg::Group {
               TargetName Bone.001
               KeyFrameContainer TRUE 2 {
                  0.00000 0.00000 0.00000 0.00000 1.00000
-                 0.83333 0.00000 0.00000 0.00000 1.00000
+                 0.41667 0.00000 0.00000 0.00000 1.00000
               }
             }
             Type Vec3LinearChannel {
@@ -53,13 +43,13 @@ osg::Group {
               TargetName Bone.001
               KeyFrameContainer TRUE 2 {
                  0.00000 1.00000 1.00000 1.00000
-                 0.83333 1.00000 1.00000 1.00000
+                 0.41667 1.00000 1.00000 1.00000
               }
             }
           }
         }
         osgAnimation::Animation {
-          UniqueID 1193
+          UniqueID 187
           Name "CubeAction.001"
           Channels 5 {
             Type Vec3LinearChannel {
@@ -67,7 +57,7 @@ osg::Group {
               TargetName Outer
               KeyFrameContainer TRUE 2 {
                  0.00000 0.00000 0.00000 0.00000
-                 0.83333 0.00000 0.00000 0.00000
+                 0.41667 0.00000 0.00000 0.00000
               }
             }
             Type FloatLinearChannel {
@@ -75,7 +65,7 @@ osg::Group {
               TargetName Outer
               KeyFrameContainer TRUE 2 {
                  0.00000 0.00000
-                 0.83333 0.00000
+                 0.41667 0.00000
               }
             }
             Type FloatLinearChannel {
@@ -83,7 +73,7 @@ osg::Group {
               TargetName Outer
               KeyFrameContainer TRUE 2 {
                  0.00000 -0.00000
-                 0.83333 -0.00000
+                 0.41667 -0.00000
               }
             }
             Type FloatLinearChannel {
@@ -91,7 +81,7 @@ osg::Group {
               TargetName Outer
               KeyFrameContainer TRUE 2 {
                  0.00000 0.00000
-                 0.83333 0.00000
+                 0.41667 0.00000
               }
             }
             Type Vec3LinearChannel {
@@ -99,13 +89,13 @@ osg::Group {
               TargetName Outer
               KeyFrameContainer TRUE 2 {
                  0.00000 1.00000 1.00000 1.00000
-                 0.83333 1.00000 1.00000 1.00000
+                 0.41667 1.00000 1.00000 1.00000
               }
             }
           }
         }
         osgAnimation::Animation {
-          UniqueID 1219
+          UniqueID 213
           Name "CubeAction"
           Channels 5 {
             Type Vec3LinearChannel {
@@ -113,7 +103,7 @@ osg::Group {
               TargetName Inner
               KeyFrameContainer TRUE 2 {
                  0.00000 0.00000 0.00000 0.00000
-                 0.83333 0.00000 0.00000 0.00000
+                 0.41667 0.00000 0.00000 0.00000
               }
             }
             Type FloatLinearChannel {
@@ -121,7 +111,7 @@ osg::Group {
               TargetName Inner
               KeyFrameContainer TRUE 2 {
                  0.00000 0.00000
-                 0.83333 0.00000
+                 0.41667 0.00000
               }
             }
             Type FloatLinearChannel {
@@ -129,7 +119,7 @@ osg::Group {
               TargetName Inner
               KeyFrameContainer TRUE 2 {
                  0.00000 -0.00000
-                 0.83333 -0.00000
+                 0.41667 -0.00000
               }
             }
             Type FloatLinearChannel {
@@ -137,7 +127,7 @@ osg::Group {
               TargetName Inner
               KeyFrameContainer TRUE 2 {
                  0.00000 0.00000
-                 0.83333 0.00000
+                 0.41667 0.00000
               }
             }
             Type Vec3LinearChannel {
@@ -145,7 +135,7 @@ osg::Group {
               TargetName Inner
               KeyFrameContainer TRUE 2 {
                  0.00000 1.00000 1.00000 1.00000
-                 0.83333 1.00000 1.00000 1.00000
+                 0.41667 1.00000 1.00000 1.00000
               }
             }
           }
@@ -155,29 +145,29 @@ osg::Group {
   }
   Children 1 {
     osg::MatrixTransform {
-      UniqueID 1175
+      UniqueID 169
       Name "SlidingDoor"
       Children 1 {
         osgAnimation::Skeleton {
-          UniqueID 1177
+          UniqueID 171
           Name "Armature.001"
           UpdateCallback TRUE {
             osgAnimation::UpdateSkeleton {
-              UniqueID 1178
+              UniqueID 172
             }
           }
           Children 3 {
             osgAnimation::Bone {
-              UniqueID 1179
+              UniqueID 173
               Name "Bone.001"
               DataVariance DYNAMIC
               UpdateCallback TRUE {
                 osgAnimation::UpdateBone {
-                  UniqueID 1180
+                  UniqueID 174
                   Name "Bone.001"
                   StackedTransforms 4 {
                     osgAnimation::StackedMatrixElement {
-                      UniqueID 1181
+                      UniqueID 175
                       Name "bindmatrix"
                       Matrix {
                         0.08225 -0.00000 0.99661 0.00000
@@ -187,17 +177,17 @@ osg::Group {
                       }
                     }
                     osgAnimation::StackedTranslateElement {
-                      UniqueID 1182
+                      UniqueID 176
                       Name "translate"
                       Translate 0.00000 0.00000 0.00000
                     }
                     osgAnimation::StackedQuaternionElement {
-                      UniqueID 1183
+                      UniqueID 177
                       Name "quaternion"
                       Quaternion 0.00000 0.00000 0.00000 1.00000
                     }
                     osgAnimation::StackedScaleElement {
-                      UniqueID 1184
+                      UniqueID 178
                       Name "scale"
                       Scale 1.00000 1.00000 1.00000
                     }
@@ -218,38 +208,38 @@ osg::Group {
               }
             }
             osg::MatrixTransform {
-              UniqueID 1186
+              UniqueID 180
               Name "Outer"
               UpdateCallback TRUE {
                 osgAnimation::UpdateMatrixTransform {
-                  UniqueID 1187
+                  UniqueID 181
                   Name "Outer"
                   StackedTransforms 5 {
                     osgAnimation::StackedTranslateElement {
-                      UniqueID 1188
+                      UniqueID 182
                       Name "translate"
                       Translate 0.00000 0.00000 0.00000
                     }
                     osgAnimation::StackedRotateAxisElement {
-                      UniqueID 1191
+                      UniqueID 185
                       Name "euler_z"
                       Axis 0.00000 0.00000 1.00000
                       Angle 0.00000
                     }
                     osgAnimation::StackedRotateAxisElement {
-                      UniqueID 1190
+                      UniqueID 184
                       Name "euler_y"
                       Axis 0.00000 1.00000 0.00000
                       Angle 0.00000
                     }
                     osgAnimation::StackedRotateAxisElement {
-                      UniqueID 1189
+                      UniqueID 183
                       Name "euler_x"
                       Axis 1.00000 0.00000 0.00000
                       Angle 0.00000
                     }
                     osgAnimation::StackedScaleElement {
-                      UniqueID 1192
+                      UniqueID 186
                       Name "scale"
                       Scale 1.00000 1.00000 1.00000
                     }
@@ -258,23 +248,23 @@ osg::Group {
               }
               Children 1 {
                 osg::Geode {
-                  UniqueID 1211
+                  UniqueID 205
                   Name "GeodeCube.001"
                   Drawables 1 {
                     osg::Geometry {
-                      UniqueID 1194
+                      UniqueID 188
                       Name "Outer"
                       StateSet TRUE {
                         osg::StateSet {
-                          UniqueID 1195
+                          UniqueID 189
                           Name "Yellow"
                           DataVariance DYNAMIC
                           UserDataContainer TRUE {
                             osg::DefaultUserDataContainer {
-                              UniqueID 1209
+                              UniqueID 203
                               UDC_UserObjects 1 {
                                 osg::StringValueObject {
-                                  UniqueID 1210
+                                  UniqueID 204
                                   Name "source"
                                   Value "blender"
                                 }
@@ -283,65 +273,65 @@ osg::Group {
                           }
                           AttributeList 1 {
                             osg::Material {
-                              UniqueID 1196
+                              UniqueID 190
                               Name "Yellow"
                               DataVariance DYNAMIC
                               UserDataContainer TRUE {
                                 osg::DefaultUserDataContainer {
-                                  UniqueID 1197
+                                  UniqueID 191
                                   UDC_UserObjects 11 {
                                     osg::StringValueObject {
-                                      UniqueID 1198
+                                      UniqueID 192
                                       Name "source"
                                       Value "blender"
                                     }
                                     osg::StringValueObject {
-                                      UniqueID 1199
+                                      UniqueID 193
                                       Name "DiffuseIntensity"
                                       Value "1.0"
                                     }
                                     osg::StringValueObject {
-                                      UniqueID 1200
+                                      UniqueID 194
                                       Name "DiffuseColor"
                                       Value "[ 0.776022, 0.800000, 0.000000 ]"
                                     }
                                     osg::StringValueObject {
-                                      UniqueID 1201
+                                      UniqueID 195
                                       Name "SpecularIntensity"
                                       Value "0.5"
                                     }
                                     osg::StringValueObject {
-                                      UniqueID 1202
+                                      UniqueID 196
                                       Name "SpecularColor"
                                       Value "[ 1.000000, 1.000000, 1.000000 ]"
                                     }
                                     osg::StringValueObject {
-                                      UniqueID 1203
+                                      UniqueID 197
                                       Name "SpecularHardness"
                                       Value "50"
                                     }
                                     osg::StringValueObject {
-                                      UniqueID 1204
+                                      UniqueID 198
                                       Name "Emit"
                                       Value "0.0"
                                     }
                                     osg::StringValueObject {
-                                      UniqueID 1205
+                                      UniqueID 199
                                       Name "Ambient"
                                       Value "1.0"
                                     }
                                     osg::StringValueObject {
-                                      UniqueID 1206
+                                      UniqueID 200
                                       Name "Translucency"
                                       Value "0.0"
                                     }
                                     osg::StringValueObject {
-                                      UniqueID 1207
+                                      UniqueID 201
                                       Name "DiffuseShader"
                                       Value "LAMBERT"
                                     }
                                     osg::StringValueObject {
-                                      UniqueID 1208
+                                      UniqueID 202
                                       Name "SpecularShader"
                                       Value "COOKTORR"
                                     }
@@ -375,7 +365,7 @@ osg::Group {
                           }
                       }
                       VertexData {
-                        Array TRUE ArrayID 194 Vec3fArray 48 {
+                        Array TRUE ArrayID 26 Vec3fArray 48 {
                           0.15000 -2.00000 0.00000
                           0.20000 -2.00000 0.00000
                           0.20000 -2.00000 3.00000
@@ -430,7 +420,7 @@ osg::Group {
                         Normalize 0
                       }
                       NormalData {
-                        Array TRUE ArrayID 195 Vec3fArray 48 {
+                        Array TRUE ArrayID 27 Vec3fArray 48 {
                           0.00000 -1.00000 -0.00000
                           0.00000 -1.00000 -0.00000
                           0.00000 -1.00000 -0.00000
@@ -496,38 +486,38 @@ osg::Group {
               }
             }
             osg::MatrixTransform {
-              UniqueID 1212
+              UniqueID 206
               Name "Inner"
               UpdateCallback TRUE {
                 osgAnimation::UpdateMatrixTransform {
-                  UniqueID 1213
+                  UniqueID 207
                   Name "Inner"
                   StackedTransforms 5 {
                     osgAnimation::StackedTranslateElement {
-                      UniqueID 1214
+                      UniqueID 208
                       Name "translate"
                       Translate 0.00000 0.00000 0.00000
                     }
                     osgAnimation::StackedRotateAxisElement {
-                      UniqueID 1217
+                      UniqueID 211
                       Name "euler_z"
                       Axis 0.00000 0.00000 1.00000
                       Angle 0.00000
                     }
                     osgAnimation::StackedRotateAxisElement {
-                      UniqueID 1216
+                      UniqueID 210
                       Name "euler_y"
                       Axis 0.00000 1.00000 0.00000
                       Angle 0.00000
                     }
                     osgAnimation::StackedRotateAxisElement {
-                      UniqueID 1215
+                      UniqueID 209
                       Name "euler_x"
                       Axis 1.00000 0.00000 0.00000
                       Angle 0.00000
                     }
                     osgAnimation::StackedScaleElement {
-                      UniqueID 1218
+                      UniqueID 212
                       Name "scale"
                       Scale 1.00000 1.00000 1.00000
                     }
@@ -536,15 +526,15 @@ osg::Group {
               }
               Children 1 {
                 osg::Geode {
-                  UniqueID 1222
+                  UniqueID 216
                   Name "GeodeCube"
                   Drawables 1 {
                     osgAnimation::RigGeometry {
-                      UniqueID 1221
+                      UniqueID 215
                       Name "Inner"
                       StateSet TRUE {
                         osg::StateSet {
-                          UniqueID 1195
+                          UniqueID 189
                         }
                       }
                       PrimitiveSetList 1 {
@@ -558,7 +548,7 @@ osg::Group {
                           }
                       }
                       VertexData {
-                        Array TRUE ArrayID 196 Vec3fArray 24 {
+                        Array TRUE ArrayID 28 Vec3fArray 24 {
                           0.05000 -1.00000 0.00000
                           0.15000 -1.00000 0.00000
                           0.15000 -1.00000 3.00000
@@ -589,7 +579,7 @@ osg::Group {
                         Normalize 0
                       }
                       NormalData {
-                        Array TRUE ArrayID 197 Vec3fArray 24 {
+                        Array TRUE ArrayID 29 Vec3fArray 24 {
                           0.00000 -1.00000 -0.00000
                           0.00000 -1.00000 -0.00000
                           0.00000 -1.00000 -0.00000
@@ -649,11 +639,11 @@ osg::Group {
                       }
                       SourceGeometry TRUE {
                         osg::Geometry {
-                          UniqueID 1220
+                          UniqueID 214
                           Name "Inner"
                           StateSet TRUE {
                             osg::StateSet {
-                              UniqueID 1195
+                              UniqueID 189
                             }
                           }
                           PrimitiveSetList 1 {
@@ -667,13 +657,13 @@ osg::Group {
                               }
                           }
                           VertexData {
-                            Array TRUE ArrayID 196
+                            Array TRUE ArrayID 28
                             Indices FALSE
                             Binding BIND_PER_VERTEX
                             Normalize 0
                           }
                           NormalData {
-                            Array TRUE ArrayID 197
+                            Array TRUE ArrayID 29
                             Indices FALSE
                             Binding BIND_PER_VERTEX
                             Normalize 0
