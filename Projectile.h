@@ -15,12 +15,12 @@ class ProjectileStats
 {
 public:
 	ProjectileStats();
-	ProjectileStats(TiXmlElement* xmlElement);
+	ProjectileStats(XMLElement* xmlElement);
 	ProjectileStats(Damages damages, std::string imageFilename);
 	ProjectileStats(const ProjectileStats& other);
 	~ProjectileStats(){}
 
-	void load(TiXmlElement* xmlElement);
+	void load(XMLElement* xmlElement);
 	void load(std::string xmlFilename);
 
 	static ProjectileStats loadPrototype(std::string& prototypeName);	/// Loads prototype stats for the specified type

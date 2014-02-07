@@ -25,8 +25,6 @@
 
 
 
-class TiXmlElement;
-
 /// Class for characters
 /// TODO: Should probably be called "Character".
 class Entity : public GameObject
@@ -48,9 +46,9 @@ public:
 
 	Entity();
 	Entity(std::string name, osg::Vec3 position);
-	Entity(TiXmlElement* xmlElement);
+	Entity(XMLElement* xmlElement);
 
-	virtual void load(TiXmlElement* xmlElement);
+	virtual void load(XMLElement* xmlElement);
 
 	virtual void jump();
 

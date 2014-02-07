@@ -18,7 +18,7 @@ protected:
 
 public:
 	Player(std::string name, osg::Vec3 position);
-	Player(TiXmlElement* xmlElement);
+	Player(XMLElement* xmlElement);
 
 	/// Handles moving the player according to the given input vector.
 	void processMovementControls(osg::Vec3 controlVector);

@@ -17,9 +17,9 @@ protected:
 
 public:
 	ControlledObject();
-	ControlledObject(TiXmlElement* xmlElement);
+	ControlledObject(XMLElement* xmlElement);
 	virtual ~ControlledObject();
-	void load(TiXmlElement* xmlElement);
+	void load(XMLElement* xmlElement);
 
 	void changeState(std::string& stateName);
 	std::string getCurrentStateName();

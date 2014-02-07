@@ -13,10 +13,10 @@
 
 #define PROJECTILE_SCRIPT_LOCATION "media/Projectiles/"
 
-#include "tinyxml/tinyxml.h"
+#include "tinyxml/tinyxml2.h"
 
 
-ProjectileStats::ProjectileStats(TiXmlElement* xmlElement)
+ProjectileStats::ProjectileStats(XMLElement* xmlElement)
 {
 	load(xmlElement);
 }
@@ -38,13 +38,13 @@ ProjectileStats::ProjectileStats()
 	this->imageFilename = "";
 }
 
-void ProjectileStats::load(TiXmlElement* xmlElement)
+void ProjectileStats::load(XMLElement* xmlElement)
 {
 	if(xmlElement->Attribute("source"))		/// Load from external source first, then apply changes.
 		load(xmlElement->Attribute("source"));
 
 
-	TiXmlElement* currentElement = xmlElement->FirstChildElement();
+	XMLElement* currentElement = xmlElement->FirstChildElement();
 	for( ; currentElement; currentElement = currentElement->NextSiblingElement())
 	{
 		std::string elementType = currentElement->Value();
@@ -74,18 +74,16 @@ void ProjectileStats::load(std::string xmlFilename)
 	}
 
 
-	TiXmlDocument doc(xmlFilename.c_str());
-	//bool loadOkay = doc.LoadFile();
-	bool loadOkay = doc.LoadFile(file);
-	if (!loadOkay)
+	XMLDocument doc(xmlFilename.c_str());
+	if (doc.LoadFile(file)  != tinyxml2::XML_NO_ERROR)
 	{
 		logError("Failed to load file " + xmlFilename);
-		logError(doc.ErrorDesc());
+		logError(doc.GetErrorStr1());
 	}
 
 
-	TiXmlHandle docHandle(&doc);
-	TiXmlElement* rootElement = docHandle.FirstChildElement().Element();
+	XMLHandle docHandle(&doc);
+	XMLElement* rootElement = docHandle.FirstChildElement().ToElement();
 
 	load(rootElement);
 }

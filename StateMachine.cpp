@@ -2,13 +2,13 @@
 
 #include "globals.h"
 
-#include "tinyxml/tinyxml.h"
+#include "tinyxml/tinyxml2.h"
 
 #include "AngelScriptEngine.h"
 
 
 
-State::State(GameObject* owner, TiXmlElement* xmlElement) : _onEnterFunction(NULL), _onUpdateFunction(NULL), _onExitFunction(NULL)
+State::State(GameObject* owner, XMLElement* xmlElement) : _onEnterFunction(NULL), _onUpdateFunction(NULL), _onExitFunction(NULL)
 {
 	_owner = owner;
 	load(xmlElement);
@@ -31,7 +31,7 @@ void State::onExit()
 		getScriptEngine()->runFunction(_onExitFunction, "object", _owner);
 };
 
-void State::load(TiXmlElement* xmlElement)
+void State::load(XMLElement* xmlElement)
 {
 	//if(xmlElement->Attribute("source"))		/// Load from external source first, then apply changes.
 	//	load(xmlElement->Attribute("source"));
@@ -39,7 +39,7 @@ void State::load(TiXmlElement* xmlElement)
 	if(xmlElement->Attribute("name"))
 		_name = xmlElement->Attribute("name");
 
-	TiXmlElement* currentElement = xmlElement->FirstChildElement();
+	XMLElement* currentElement = xmlElement->FirstChildElement();
 	for( ; currentElement; currentElement = currentElement->NextSiblingElement())
 	{
 		std::string elementType = currentElement->Value();

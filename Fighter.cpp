@@ -4,7 +4,7 @@
 
 #include "TemporaryText.h"
 
-#include "tinyxml/tinyxml.h"
+#include "tinyxml/tinyxml2.h"
 
 FighterStats::FighterStats()
 {
@@ -72,13 +72,13 @@ void Fighter::loadStats(std::string scriptFilename)
 	this->loadModel(_stats.modelFilename);
 }
 
-Fighter::Fighter(TiXmlElement* xmlElement) : Entity()
+Fighter::Fighter(XMLElement* xmlElement) : Entity()
 {
 	_equippedWeapon = NULL;
 	load(xmlElement);
 }
 
-void Fighter::load(TiXmlElement* xmlElement)
+void Fighter::load(XMLElement* xmlElement)
 {
 	if(xmlElement->Attribute("source"))		/// Load from external source first, then apply changes.
 		load(xmlElement->Attribute("source"));
@@ -95,7 +95,7 @@ void Fighter::load(TiXmlElement* xmlElement)
 	if(xmlElement->Attribute("maxHealth"))
 		xmlElement->QueryFloatAttribute("maxHealth", &this->_stats.maxHealth);
 
-	TiXmlElement* currentElement = xmlElement->FirstChildElement();
+	XMLElement* currentElement = xmlElement->FirstChildElement();
 	for( ; currentElement; currentElement = currentElement->NextSiblingElement())
 	{
 		std::string elementType = currentElement->Value();
@@ -131,18 +131,16 @@ void Fighter::load(std::string xmlFilename)
 	}
 
 
-	TiXmlDocument doc(xmlFilename);
-	//bool loadOkay = doc.LoadFile();
-	bool loadOkay = doc.LoadFile(file);
-	if (!loadOkay)
+	XMLDocument doc(xmlFilename.c_str());
+	if (doc.LoadFile(file)  != tinyxml2::XML_NO_ERROR)
 	{
 		logError("Failed to load file " + xmlFilename);
-		logError(doc.ErrorDesc());
+		logError(doc.GetErrorStr1());
 	}
 
 
-	TiXmlHandle docHandle(&doc);
-	TiXmlElement* rootElement = docHandle.FirstChildElement().Element();
+	XMLHandle docHandle(&doc);
+	XMLElement* rootElement = docHandle.FirstChildElement().ToElement();
 
 	load(rootElement);
 
@@ -244,8 +242,6 @@ void registerFighterStats()
 	getScriptEngine()->registerObjectProperty("FighterStats", "string modelFilename", asOFFSET(FighterStats, modelFilename));
 	getScriptEngine()->registerObjectProperty("FighterStats", "string weaponType", asOFFSET(FighterStats, weaponType));
 	getScriptEngine()->registerObjectProperty("FighterStats", "WeaponStats weaponStats", asOFFSET(FighterStats, weaponStats));
-
-	//getScriptEngine()->registerObjectMethod("FighterStats", "void setResistance(DamageType &in, float value)", asMETHODPR(FighterStats, setResistance, (DamageType&, float), void), asCALL_THISCALL);
 
 	getScriptEngine()->registerObjectMethod("FighterStats", "void setWeaponStats(WeaponStats &in)", asMETHOD(FighterStats, setWeaponStats), asCALL_THISCALL);
 

@@ -3,7 +3,7 @@
 
 #include "globals.h"
 
-#include "tinyxml/tinyxml.h"
+#include "tinyxml/tinyxml2.h"
 
 #include "AngelScriptEngine.h"
 
@@ -14,7 +14,7 @@ ControlledObject::ControlledObject()
 	_stateMachine = new StateMachine();
 }
 
-ControlledObject::ControlledObject(TiXmlElement* xmlElement) : ControlledObject()
+ControlledObject::ControlledObject(XMLElement* xmlElement) : ControlledObject()
 {
 	load(xmlElement);
 }
@@ -24,7 +24,7 @@ ControlledObject::~ControlledObject()
 	//dtor
 }
 
-void ControlledObject::load(TiXmlElement* xmlElement)
+void ControlledObject::load(XMLElement* xmlElement)
 {
 	if(xmlElement->Attribute("source"))		/// Load from external source first, then apply changes.
 		loadFromFile(xmlElement->Attribute("source"));
@@ -39,7 +39,7 @@ void ControlledObject::load(TiXmlElement* xmlElement)
 
 
 
-	TiXmlElement* currentElement = xmlElement->FirstChildElement();
+	XMLElement* currentElement = xmlElement->FirstChildElement();
 	for( ; currentElement; currentElement = currentElement->NextSiblingElement())
 	{
 		std::string elementType = currentElement->Value();

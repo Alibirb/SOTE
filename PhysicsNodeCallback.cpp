@@ -20,4 +20,23 @@ void Box2DPhysicsNodeCallback::operator()(osg::Node* node, osg::NodeVisitor* nv)
 	//std::cout << "PhysicsNodeCallback finished." << std::endl;
 }
 
+#else
+
+BulletPhysicsNodeCallback::BulletPhysicsNodeCallback(btCollisionObject *physicsBody, osg::Vec3 physicsToOsgAdjustment)
+{
+	this->physicsBody = physicsBody;
+	this->physicsToOsgAdjustment = physicsToOsgAdjustment;
+}
+
+void BulletPhysicsNodeCallback::operator()(osg::Node* node, osg::NodeVisitor* nv)
+{
+	osg::Matrix mat = osgbCollision::asOsgMatrix(physicsBody->getWorldTransform());
+
+	osg::PositionAttitudeTransform *pat = dynamic_cast<osg::PositionAttitudeTransform*>(node);
+	pat->setPosition(mat.getTrans() + physicsToOsgAdjustment);
+	pat->setAttitude(mat.getRotate());
+
+	traverse(node, nv);
+}
+
 #endif

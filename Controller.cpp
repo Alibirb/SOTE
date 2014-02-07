@@ -2,7 +2,7 @@
 
 #include "ControlledObject.h"
 
-#include "tinyxml/tinyxml.h"
+#include "tinyxml/tinyxml2.h"
 
 #ifndef USE_BOX2D_PHYSICS
 	#include "BulletCollision/CollisionDispatch/btGhostObject.h"
@@ -44,7 +44,7 @@ Controller::Controller()
 	_physicsBody->setUserPointer(userData);
 #endif
 }
-Controller::Controller(TiXmlElement* xmlElement) : Controller()
+Controller::Controller(XMLElement* xmlElement) : Controller()
 {
 	load(xmlElement);
 }
@@ -53,7 +53,7 @@ Controller::~Controller()
 {
 }
 
-void Controller::load(TiXmlElement* xmlElement)
+void Controller::load(XMLElement* xmlElement)
 {
 	if(xmlElement->Attribute("source"))		/// Load from external source first, then apply changes.
 		loadFromFile(xmlElement->Attribute("source"));
@@ -68,7 +68,7 @@ void Controller::load(TiXmlElement* xmlElement)
 
 
 
-	TiXmlElement* currentElement = xmlElement->FirstChildElement();
+	XMLElement* currentElement = xmlElement->FirstChildElement();
 	for( ; currentElement; currentElement = currentElement->NextSiblingElement())
 	{
 		std::string elementType = currentElement->Value();

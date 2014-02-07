@@ -4,18 +4,18 @@
 	<onMessage message="toggle">
 		void onMessage(ControlledObject@ self)
 		{
-			print("recieved toggle message");
+			//print("recieved toggle message");
 
-			print("Current state is " + self.getStateName());
+			//print("Current state is " + self.getStateName());
 			if(self.getStateName() == "closed")
 			{
 				self.changeState("open");
-				print("just opened");
+				//print("just opened");
 			}
 			else
 			{
 				self.changeState("closed");
-				print("just closed");
+				//print("just closed");
 			}
 		}
 	</onMessage>
@@ -23,7 +23,7 @@
 		<onEnter>
 			void onEnter(ControlledObject@ self)
 			{
-				print("opening");
+				//print("opening");
 				self.playAnimation("open");
 			}
 		</onEnter>
@@ -32,7 +32,7 @@
 		<onEnter>
 			void onEnter(ControlledObject@ self)
 			{
-				print("closing");
+				//print("closing");
 				self.playAnimation("close");
 			}
 		</onEnter>

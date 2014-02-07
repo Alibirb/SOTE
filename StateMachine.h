@@ -5,8 +5,13 @@
 
 class asIScriptFunction;
 class GameObject;
-class TiXmlElement;
 
+namespace tinyxml2
+{
+	class XMLElement;
+}
+
+using namespace tinyxml2;
 
 
 class State
@@ -19,7 +24,7 @@ protected:
 	asIScriptFunction* _onExitFunction;
 
 public:
-	State(GameObject* owner, TiXmlElement* xmlElement);
+	State(GameObject* owner, XMLElement* xmlElement);
 	virtual ~State();
 
 	virtual void onEnter();
@@ -30,7 +35,7 @@ public:
 	void setOnUpdateScriptFunction(std::string code);
 	void setOnExitScriptFunction(std::string code);
 
-	void load(TiXmlElement* xmlElement);
+	void load(XMLElement* xmlElement);
 
 	std::string& getName();
 };

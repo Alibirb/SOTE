@@ -9,7 +9,7 @@
 #include "OwnerUpdateCallback.h"
 #include "AngelScriptEngine.h"
 
-#include "tinyxml/tinyxml.h"
+#include "tinyxml/tinyxml2.h"
 
 
 struct AnimationManagerFinder : public osg::NodeVisitor
@@ -44,7 +44,7 @@ GameObject::GameObject() : _physicsBody(NULL)
 	_transformNode->addChild(_updateNode);
 }
 
-GameObject::GameObject(TiXmlElement* xmlElement) : GameObject()
+GameObject::GameObject(XMLElement* xmlElement) : GameObject()
 {
 	load(xmlElement);
 }
@@ -147,21 +147,20 @@ void GameObject::loadFromFile(std::string xmlFilename, std::string searchPath)
 	}
 
 
-	TiXmlDocument doc(xmlFilename.c_str());
-	bool loadOkay = doc.LoadFile(file);
-	if (!loadOkay)
+	XMLDocument doc(xmlFilename.c_str());
+	if (doc.LoadFile(file)  != tinyxml2::XML_NO_ERROR)
 	{
 		logError("Failed to load file " + xmlFilename);
-		logError(doc.ErrorDesc());
+		logError(doc.GetErrorStr1());
 	}
 
 
-	TiXmlHandle docHandle(&doc);
-	TiXmlElement* rootElement = docHandle.FirstChildElement().Element();
+	XMLHandle docHandle(&doc);
+	XMLElement* rootElement = docHandle.FirstChildElement().ToElement();
 
 	load(rootElement);
 }
-void GameObject::load(TiXmlElement* xmlElement)
+void GameObject::load(XMLElement* xmlElement)
 {
 	if(xmlElement->Attribute("source"))		/// Load from external source first, then apply changes.
 		loadFromFile(xmlElement->Attribute("source"));
@@ -176,10 +175,10 @@ void GameObject::load(TiXmlElement* xmlElement)
 
 
 
-	TiXmlElement* currentElement = xmlElement->FirstChildElement();
+	XMLElement* currentElement = xmlElement->FirstChildElement();
 	for( ; currentElement; currentElement = currentElement->NextSiblingElement())
 	{
-		std::string elementType = currentElement->ValueStr();
+		std::string elementType = currentElement->Value();
 		if(elementType == "geometry")
 			loadModel(currentElement->Attribute("source"));
 	}

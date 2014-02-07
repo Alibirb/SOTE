@@ -19,7 +19,7 @@ Enemy::Enemy(std::string name, osg::Vec3 position) : Fighter(name, position, "En
 	controller->getGhostObject()->setUserPointer(userData);
 #endif
 }
-Enemy::Enemy(TiXmlElement* xmlElement) : Fighter(xmlElement)
+Enemy::Enemy(XMLElement* xmlElement) : Fighter(xmlElement)
 {
 	addEnemy(this);	// put this Enemy in the enemyList.
 

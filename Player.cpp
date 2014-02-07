@@ -22,7 +22,7 @@ Player::Player(std::string name, osg::Vec3 position) : Fighter(name, position, "
 #endif
 }
 
-Player::Player(TiXmlElement* xmlElement) : Fighter(xmlElement)
+Player::Player(XMLElement* xmlElement) : Fighter(xmlElement)
 {
 	PhysicsUserData *userData = new PhysicsUserData;
 	userData->owner = this;

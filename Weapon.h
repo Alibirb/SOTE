@@ -39,10 +39,10 @@ protected:
 public:
 	Weapon(WeaponStats stats);
 	Weapon(std::string type = DEFAULT_WEAPON_TYPE);
-	Weapon(TiXmlElement* xmlElement);
+	Weapon(XMLElement* xmlElement);
 	virtual ~Weapon();
 
-	void load(TiXmlElement* xmlElement);
+	void load(XMLElement* xmlElement);
 	void load(std::string xmlFilename);
 
 	void fire();

@@ -73,9 +73,7 @@ bool MainEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIAction
 		}
 		else if(ea.getKey() == 'e')
 			getActivePlayer()->interact();
-		if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Return)
-			//if (getEnemies().size() > 0)
-				//getActivePlayer()->attack(getClosestEnemy(getActivePlayer()->getPosition(), getEnemies()));
+		if (ea.getKey() == 'j')
 			getActivePlayer()->getWeapon()->fire();
 		if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Space)
 			getActivePlayer()->jump();

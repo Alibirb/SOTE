@@ -50,7 +50,6 @@
 			<Add library="osgViewer" />
 			<Add library="osgWidget" />
 			<Add library="osgAnimation" />
-			<Add library="Box2D" />
 			<Add library="/usr/local/lib/libangelscript.a" />
 			<Add library="/usr/lib/x86_64-linux-gnu/libpthread.so" />
 			<Add library="/usr/local/Bullet2.81/lib/libBulletSoftBody.a" />
@@ -71,10 +70,6 @@
 		<Unit filename="ArchitectureNotes" />
 		<Unit filename="BaseCameraManipulator.cpp" />
 		<Unit filename="BaseCameraManipulator.h" />
-		<Unit filename="Box2DDebugDrawer.cpp" />
-		<Unit filename="Box2DDebugDrawer.h" />
-		<Unit filename="Box2DIntegration.cpp" />
-		<Unit filename="Box2DIntegration.h" />
 		<Unit filename="C++.notes" />
 		<Unit filename="ControlledObject.cpp" />
 		<Unit filename="ControlledObject.h" />
@@ -101,8 +96,6 @@
 		<Unit filename="Notes.txt" />
 		<Unit filename="OwnerUpdateCallback.cpp" />
 		<Unit filename="OwnerUpdateCallback.h" />
-		<Unit filename="PhysicsContactListener.cpp" />
-		<Unit filename="PhysicsContactListener.h" />
 		<Unit filename="PhysicsData.h" />
 		<Unit filename="PhysicsNodeCallback.cpp" />
 		<Unit filename="PhysicsNodeCallback.h" />
@@ -121,96 +114,6 @@
 		<Unit filename="TextDisplay.h" />
 		<Unit filename="ThirdPersonCameraManipulator.cpp" />
 		<Unit filename="ThirdPersonCameraManipulator.h" />
-		<Unit filename="TiledMap.cpp" />
-		<Unit filename="TiledMap.h" />
-		<Unit filename="TmxParser/Tmx.h" />
-		<Unit filename="TmxParser/TmxEllipse.cpp" />
-		<Unit filename="TmxParser/TmxEllipse.h" />
-		<Unit filename="TmxParser/TmxImage.cpp" />
-		<Unit filename="TmxParser/TmxImage.h" />
-		<Unit filename="TmxParser/TmxImageLayer.cpp" />
-		<Unit filename="TmxParser/TmxImageLayer.h" />
-		<Unit filename="TmxParser/TmxLayer.cpp" />
-		<Unit filename="TmxParser/TmxLayer.h" />
-		<Unit filename="TmxParser/TmxMap.cpp" />
-		<Unit filename="TmxParser/TmxMap.h" />
-		<Unit filename="TmxParser/TmxMapTile.h" />
-		<Unit filename="TmxParser/TmxObject.cpp" />
-		<Unit filename="TmxParser/TmxObject.h" />
-		<Unit filename="TmxParser/TmxObjectGroup.cpp" />
-		<Unit filename="TmxParser/TmxObjectGroup.h" />
-		<Unit filename="TmxParser/TmxPoint.h" />
-		<Unit filename="TmxParser/TmxPolygon.cpp" />
-		<Unit filename="TmxParser/TmxPolygon.h" />
-		<Unit filename="TmxParser/TmxPolyline.cpp" />
-		<Unit filename="TmxParser/TmxPolyline.h" />
-		<Unit filename="TmxParser/TmxPropertySet.cpp" />
-		<Unit filename="TmxParser/TmxPropertySet.h" />
-		<Unit filename="TmxParser/TmxTile.cpp" />
-		<Unit filename="TmxParser/TmxTile.h" />
-		<Unit filename="TmxParser/TmxTileset.cpp" />
-		<Unit filename="TmxParser/TmxTileset.h" />
-		<Unit filename="TmxParser/TmxUtil.cpp" />
-		<Unit filename="TmxParser/TmxUtil.h" />
-		<Unit filename="TmxParser/adler32.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="TmxParser/base64/base64.cpp" />
-		<Unit filename="TmxParser/base64/base64.h" />
-		<Unit filename="TmxParser/compress.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="TmxParser/crc32.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="TmxParser/crc32.h" />
-		<Unit filename="TmxParser/deflate.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="TmxParser/deflate.h" />
-		<Unit filename="TmxParser/gzclose.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="TmxParser/gzguts.h" />
-		<Unit filename="TmxParser/gzlib.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="TmxParser/gzread.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="TmxParser/gzwrite.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="TmxParser/infback.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="TmxParser/inffast.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="TmxParser/inffast.h" />
-		<Unit filename="TmxParser/inffixed.h" />
-		<Unit filename="TmxParser/inflate.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="TmxParser/inflate.h" />
-		<Unit filename="TmxParser/inftrees.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="TmxParser/inftrees.h" />
-		<Unit filename="TmxParser/tinyxml.h" />
-		<Unit filename="TmxParser/trees.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="TmxParser/trees.h" />
-		<Unit filename="TmxParser/uncompr.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="TmxParser/zconf.h" />
-		<Unit filename="TmxParser/zlib.h" />
-		<Unit filename="TmxParser/zutil.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="TmxParser/zutil.h" />
 		<Unit filename="TwoDimensionalCameraManipulator.cpp" />
 		<Unit filename="TwoDimensionalCameraManipulator.h" />
 		<Unit filename="Weapon.cpp" />
@@ -255,12 +158,8 @@
 		<Unit filename="scriptstdstring/scriptstdstring_utils.cpp" />
 		<Unit filename="stdvector.h" />
 		<Unit filename="tests.as" />
-		<Unit filename="tinyxml/tinystr.cpp" />
-		<Unit filename="tinyxml/tinystr.h" />
-		<Unit filename="tinyxml/tinyxml.cpp" />
-		<Unit filename="tinyxml/tinyxml.h" />
-		<Unit filename="tinyxml/tinyxmlerror.cpp" />
-		<Unit filename="tinyxml/tinyxmlparser.cpp" />
+		<Unit filename="tinyxml/tinyxml2.cpp" />
+		<Unit filename="tinyxml/tinyxml2.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />

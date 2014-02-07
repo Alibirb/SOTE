@@ -16,7 +16,13 @@
 #endif
 
 
-class TiXmlElement;
+
+namespace tinyxml2
+{
+	class XMLElement;
+}
+
+using namespace tinyxml2;
 
 /// Class for an object
 class GameObject
@@ -39,7 +45,7 @@ protected:
 
 public:
 	GameObject();
-	GameObject(TiXmlElement* xmlElement);
+	GameObject(XMLElement* xmlElement);
 	virtual ~GameObject();
 
 	virtual void setPosition(osg::Vec3 newPosition);
@@ -49,7 +55,7 @@ public:
 	osg::Vec3 worldToLocal(osg::Vec3 worldVector);
 
 	void loadFromFile(std::string xmlFilename, std::string searchPath="media/Objects/");
-	virtual void load(TiXmlElement* xmlElement);
+	virtual void load(XMLElement* xmlElement);
 	virtual void reset();	/// Reset the object.
 
 	void loadModel(std::string modelFilename);

@@ -37,22 +37,9 @@ private:
 	osg::Vec3 physicsToOsgAdjustment;	// Adjustment between the visual and physical components
 
 public:
-	BulletPhysicsNodeCallback(btCollisionObject *physicsBody, osg::Vec3 physicsToOsgAdjustment)
-	{
-		this->physicsBody = physicsBody;
-		this->physicsToOsgAdjustment = physicsToOsgAdjustment;
-	}
+	BulletPhysicsNodeCallback(btCollisionObject *physicsBody, osg::Vec3 physicsToOsgAdjustment);
 
-	virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
-	{
-		osg::Matrix mat = osgbCollision::asOsgMatrix(physicsBody->getWorldTransform());
-
-		osg::PositionAttitudeTransform *pat = dynamic_cast<osg::PositionAttitudeTransform*>(node);
-		pat->setPosition(mat.getTrans() + physicsToOsgAdjustment);
-		pat->setAttitude(mat.getRotate());
-
-		traverse(node, nv);
-	}
+	virtual void operator()(osg::Node* node, osg::NodeVisitor* nv);
 };
 
 #endif	// USE_BOX2D_PHYSICS

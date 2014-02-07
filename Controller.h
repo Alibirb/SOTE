@@ -20,9 +20,9 @@ protected:
 
 public:
 	Controller();
-	Controller(TiXmlElement* xmlElement);
+	Controller(XMLElement* xmlElement);
 	virtual ~Controller();
-	void load(TiXmlElement* xmlElement);
+	void load(XMLElement* xmlElement);
 
 	void addControlledObject(ControlledObject* object);
 

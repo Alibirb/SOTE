@@ -17,7 +17,7 @@
 
 #include "OwnerUpdateCallback.h"
 
-#include "tinyxml/tinyxml.h"
+#include "tinyxml/tinyxml2.h"
 
 #define DEFAULT_ENTITY_MODEL_NAME "humanmodelNoBones.osg"
 
@@ -175,12 +175,12 @@ Entity::Entity(std::string name, osg::Vec3 position)
 	state = awake;
 }
 
-Entity::Entity(TiXmlElement* xmlElement) : GameObject(xmlElement)
+Entity::Entity(XMLElement* xmlElement) : GameObject(xmlElement)
 {
 
 }
 
-void Entity::load(TiXmlElement* xmlElement)
+void Entity::load(XMLElement* xmlElement)
 {
 
 }

@@ -5,7 +5,7 @@
 #include "AngelScriptEngine.h"
 #include "OwnerUpdateCallback.h"
 
-#include "TmxParser/tinyxml.h"
+#include "tinyxml/tinyxml2.h"
 
 #define WEAPON_SCRIPT_LOCATION "media/Weapons/"
 
@@ -47,7 +47,7 @@ Weapon::Weapon(std::string type) : Weapon(WeaponStats::loadPrototype(type))
 {
 }
 
-Weapon::Weapon(TiXmlElement* xmlElement)
+Weapon::Weapon(XMLElement* xmlElement)
 {
 	projectileStartingTransform = new osg::PositionAttitudeTransform();
 	projectileStartingTransform->setPosition(osg::Vec3(.75,0,0));
@@ -58,7 +58,7 @@ Weapon::Weapon(TiXmlElement* xmlElement)
 	_ready = true;
 }
 
-void Weapon::load(TiXmlElement* xmlElement)
+void Weapon::load(XMLElement* xmlElement)
 {
 	if(xmlElement->Attribute("source"))		/// Load from external source first, then apply changes.
 		load(xmlElement->Attribute("source"));
@@ -67,7 +67,7 @@ void Weapon::load(TiXmlElement* xmlElement)
 		xmlElement->QueryFloatAttribute("coolDownTime", &_stats.coolDownTime);
 
 
-	TiXmlElement* currentElement = xmlElement->FirstChildElement();
+	XMLElement* currentElement = xmlElement->FirstChildElement();
 	for( ; currentElement; currentElement = currentElement->NextSiblingElement())
 	{
 		std::string elementType = currentElement->Value();
@@ -92,18 +92,16 @@ void Weapon::load(std::string xmlFilename)
 	}
 
 
-	TiXmlDocument doc(xmlFilename.c_str());
-	//bool loadOkay = doc.LoadFile();
-	bool loadOkay = doc.LoadFile(file);
-	if (!loadOkay)
+	XMLDocument doc(xmlFilename.c_str());
+	if (doc.LoadFile(file)  != tinyxml2::XML_NO_ERROR)
 	{
 		logError("Failed to load file " + xmlFilename);
-		logError(doc.ErrorDesc());
+		logError(doc.GetErrorStr1());
 	}
 
 
-	TiXmlHandle docHandle(&doc);
-	TiXmlElement* rootElement = docHandle.FirstChildElement().Element();
+	XMLHandle docHandle(&doc);
+	XMLElement* rootElement = docHandle.FirstChildElement().ToElement();
 
 	load(rootElement);
 }

@@ -7,23 +7,18 @@
 
 #include "Weapon.h"
 
-class TiXmlElement;
-
 
 class FighterStats
 {
 public:
 	FighterStats();
 	float maxHealth;
-	//std::map<DamageType, float> resistances;
 	std::map<std::string, float> resistances;
 	std::string modelFilename;
 	std::string weaponType;
 	WeaponStats weaponStats;
 
 	/// For scripting use (std::map is not exposed)
-//	float getResistance(DamageType& damType);
-//	void setResistance(DamageType& type, float value);
 	float getResistance(std::string& damType);
 	void setResistance(std::string& type, float value);
 
@@ -44,12 +39,12 @@ protected:
 
 public:
 	Fighter(std::string name, osg::Vec3 position, std::string team);
-	Fighter(TiXmlElement* xmlElement);
+	Fighter(XMLElement* xmlElement);
 	virtual ~Fighter();
-	void equipWeapon(Weapon *theWeapon);
+	void equipWeapon(Weapon* theWeapon);
 	void unequipWeapon();
 
-	void aimWeapon(Entity *theOneWhoMustDie);
+	void aimWeapon(Entity* theOneWhoMustDie);
 
 	Weapon* getWeapon();
 
@@ -58,11 +53,10 @@ public:
 	void setStats(FighterStats& newStats);
 
 	void load(std::string xmlFilename);
-	void load(TiXmlElement* xmlElement);
+	void load(XMLElement* xmlElement);
 
 	virtual void takeDamages(Damages dams);
 
-	//float getResistance(DamageType& type);
 	float getResistance(std::string type);
 	void setResistance(std::string type, float value);
 
@@ -77,7 +71,6 @@ public:
 protected:
 };
 
-//void addDamageIndicator(Fighter* entityHurt, float damageDealt, DamageType& damageType);
 void addDamageIndicator(Fighter* entityHurt, float damageDealt, std::string& damageType);
 void registerFighterStats();
 

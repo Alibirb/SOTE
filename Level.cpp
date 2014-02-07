@@ -1,6 +1,6 @@
 #include "Level.h"
 
-#include "tinyxml/tinyxml.h"
+#include "tinyxml/tinyxml2.h"
 
 #include "globals.h"
 
@@ -128,23 +128,22 @@ void Level::loadFromXml(std::string filename)
 	if(!file)
 		logError("Failed to open file " + filename);
 
-	TiXmlDocument doc(filename);
-	bool loadOkay = doc.LoadFile(file);
-	if (!loadOkay)
+	XMLDocument doc(filename.c_str());
+	if (doc.LoadFile(file)  != tinyxml2::XML_NO_ERROR)
 	{
 		logError("Failed to load level file. " + filename);
-		logError(doc.ErrorDesc());
+		logError(doc.GetErrorStr1());
 	}
 
 
-	TiXmlHandle docHandle(&doc);
-	TiXmlElement* currentElement;
-	TiXmlHandle rootHandle = TiXmlHandle(docHandle.FirstChildElement().Element());
+	XMLHandle docHandle(&doc);
+	XMLElement* currentElement;
+	XMLHandle rootHandle = XMLHandle(docHandle.FirstChildElement().ToElement());
 
-	currentElement = rootHandle.FirstChildElement().Element();
+	currentElement = rootHandle.FirstChildElement().ToElement();
 	for( ; currentElement; currentElement = currentElement->NextSiblingElement())
 	{
-		std::string elementType = currentElement->ValueStr();
+		std::string elementType = currentElement->Value();
 		if(elementType == "geometry")
 			addNode(osgDB::readNodeFile(currentElement->Attribute("source")));
 		else if(elementType == "gameObject")
@@ -170,7 +169,14 @@ void Level::loadFromXml(std::string filename)
 			setActivePlayer(name);
 		}
 		else
-			logWarning("Could not load element of type \"" + currentElement->ValueStr() + "\"");
+		{
+			std::string warning = "";
+			warning += "Could not load element of type \"";
+			warning += currentElement->Value();
+			warning += "\".";
+			logWarning(warning);
+		}
+
 
 	}
 #endif // USE_TILEMAP

@@ -6,21 +6,17 @@ Basics:
 
 TODO:
 	DoneThisCommit:
-		Clean up:
-			Removed physics stuff from Projectile.
-			Moved functions in AngelScriptEngine.h to the cpp file.
+		Switched to tinyXML2
 	Current Task:
-		Clean up.
 	Next Steps:
-		Switch to TinyXML2 to fix the whitespace bug.
-		Begin work on level editor.
+		Begin work on level editor:
+			Ability to pause the game to switch modes (even if edit mode does nothing)
+			Ability to export the current level
 		Flame jets for the demo level.
 
 
 
 	Objects:
-		Controllers and ControlledObjects--eg light switch and lamp, or switch and door.
-			ControlledObject should use a FSM
 		Some mechanism by which you can easily move between a set list of places (teleportation, taxicab, etc.). Long glides, jumps, etc. may leave you stranded otherwise.
 		Figure out how best to use AngelScript to specify object behavior (AngelScript class cannot inherit a C++ class, so it's not that simple.)
 	Scripting:
@@ -62,7 +58,6 @@ Bugs I expect to see later:
 	The functions specified in the XML files may cause issues once I have multiple objects of the same type (e.g. two kinds of ControlledObject), because they might override one another.
 
 Issues: (with other software)
-	TinyXML returns text as if it were all in one line, which causes issues when the text is AngelScript with comments (a single-line comment comments out the rest of the program).
 	Not sure how to have multiple animations on an object in Blender. See http://wiki.blender.org/index.php/Doc:2.6/Manual/Animation/Basics/Actions
 
 Things to remember to prevent bugs:
@@ -82,6 +77,7 @@ Scripting Uses:
 	AI
 	Testing purposes.
 	"You want to expose capable, but soulless actors to your scripting code. The scripting code describes what the actors should do, but the C++ code takes care of the how."	-- http://stackoverflow.com/questions/609076/the-role-of-scripting-languages-in-game-programming
+	Used to define the behavior of objects. C++ will only contain a handful of game object classes with basic functions. AngelScript is responsible for individualizing each object.
 
 Expose to scripting:
 	Camera control?--For cutscenes
@@ -130,8 +126,3 @@ Goals:
 			A few standin models.
 			Basic level, with at least one puzzle
 				Puzzle idea: hallway full of flame jets, Alex needs to go through and activate some switch to open a door for the others. Unfortunately, the switch also locked him inside the room, and the others need to find a switch to free him.
-
-
-Stuff Learned:
-	Tile maps:
-		To avoid bad edges, set filtering to "Nearest", meaning that GL shouldn't try any antialiasing.
