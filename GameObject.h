@@ -5,7 +5,6 @@
 #include <osg/ref_ptr>
 #include <osg/Node>
 #include <osg/PositionAttitudeTransform>
-#include <osgAnimation/BasicAnimationManager>
 
 #include "ImprovedAnimationManager.h"
 
@@ -27,7 +26,6 @@ protected:
 	osg::Vec3 initialPosition;
 
 	ImprovedAnimationManager* _animationManager;
-	//osgAnimation::BasicAnimationManager* _animationManager;
 	osg::ref_ptr<osg::PositionAttitudeTransform> _transformNode;
 	osg::ref_ptr<osg::Node> _modelNode;
 	osg::ref_ptr<osg::Node> _updateNode;	// Used to update the object each frame.
@@ -66,11 +64,6 @@ public:
 	bool findAnimation();
 
 	void playAnimation(std::string& animationName);
-
-/* TODO:
-	addAnimation();
-	generatePhysicsBody();	/// Should allow to specify method of generation (see osgbCollision/CollisionShapes.h)
-*/
 
 protected:
 };

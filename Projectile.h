@@ -47,8 +47,6 @@ public:
 	void setStats(ProjectileStats& stats);
 	std::string getTeam();
 
-	void checkForCollisions();
-
 	void onUpdate(float deltaTime);
 	virtual void onCollision(GameObject* other);
 

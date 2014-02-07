@@ -18,14 +18,10 @@
 
 void myTickCallback(btDynamicsWorld *world, btScalar timeStep)
 {
-  //  printf("The world just ticked by %f seconds\n", (float)timeStep);
-
 	int numManifolds = world->getDispatcher()->getNumManifolds();
 	for (int i=0;i<numManifolds;i++)
 	{
 		btPersistentManifold* contactManifold =  world->getDispatcher()->getManifoldByIndexInternal(i);
-	//	btCollisionObject* obA = static_cast<btCollisionObject*>(contactManifold->getBody0());
-	//	btCollisionObject* obB = static_cast<btCollisionObject*>(contactManifold->getBody1());
 		const btCollisionObject* obA = contactManifold->getBody0();
 		const btCollisionObject* obB = contactManifold->getBody1();
 
@@ -133,7 +129,6 @@ void Level::loadFromXml(std::string filename)
 		logError("Failed to open file " + filename);
 
 	TiXmlDocument doc(filename);
-	//bool loadOkay = doc.LoadFile();
 	bool loadOkay = doc.LoadFile(file);
 	if (!loadOkay)
 	{
@@ -174,8 +169,8 @@ void Level::loadFromXml(std::string filename)
 			addPlayer(name, new Player(currentElement));
 			setActivePlayer(name);
 		}
-		//else
-		//	logWarning("Could not load element of type \"" + currentElement->Value() + "\"");
+		else
+			logWarning("Could not load element of type \"" + currentElement->ValueStr() + "\"");
 
 	}
 #endif // USE_TILEMAP

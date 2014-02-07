@@ -13,7 +13,6 @@ class ControlledObject : public GameObject
 {
 protected:
 	StateMachine* _stateMachine;
-	std::string _channel;	/// Not currently used.
 	std::unordered_map<std::string, asIScriptFunction*> _onMessage;	/// the functions to call for each message received.
 
 public:
@@ -28,8 +27,6 @@ public:
 	void receiveMessage(std::string& message);
 
 	void setOnMessageFunction(std::string message, std::string code);
-
-
 
 };
 

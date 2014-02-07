@@ -58,8 +58,6 @@ void ControlledObject::load(TiXmlElement* xmlElement)
 		if(animation == "true")
 			findAnimation();
 	}
-	if(xmlElement->Attribute("channel"))
-		_channel = xmlElement->Attribute("channel");
 
 	if(xmlElement->Attribute("defaultState"))
 		_stateMachine->setCurrentState(xmlElement->Attribute("defaultState"));
@@ -79,7 +77,6 @@ std::string ControlledObject::getCurrentStateName()
 void ControlledObject::receiveMessage(std::string& message)
 {
 	if(_onMessage[message])
-		//getScriptEngine()->runMethod(this, _onMessage[message]);
 		getScriptEngine()->runFunction(_onMessage[message], "object", this);
 }
 
@@ -128,25 +125,13 @@ void registerControlledObject()
 
 	registerGameObject();
 
-	//getScriptEngine()->registerObjectType("GameObject", 0, asOBJ_REF | asOBJ_NOCOUNT | GetTypeTraits<GameObject>() );
 	getScriptEngine()->registerObjectType("ControlledObject", sizeof(ControlledObject), asOBJ_REF | asOBJ_NOCOUNT );
 	getScriptEngine()->registerFactoryFunction("ControlledObject", "ControlledObject@ f()", asFUNCTION(ControlledObjectFactoryFunction));
-	//getScriptEngine()->registerConstructor("GameObject", "void f(const Damages &in, const string &in)", asFUNCTION(GameObjectInitConstructor));
-//	getScriptEngine()->registerConstructor("GameObject", "void f()", asFUNCTION(GameObjectConstructor));
-//	getScriptEngine()->registerDestructor("GameObject", asFUNCTION(GameObjectDestructor));
-//	getScriptEngine()->registerConstructor("GameObject", "void f(const GameObject &in)", asFUNCTION(GameObjectCopyConstructor));
-//	getScriptEngine()->registerObjectProperty("GameObject", "Damages damages", asOFFSET(GameObject, damages));
-//	getScriptEngine()->registerObjectProperty("GameObject", "string imageFilename", asOFFSET(GameObject, imageFilename));
 
 	getScriptEngine()->registerObjectMethod("ControlledObject", "void changeState(string &in)", asMETHOD(ControlledObject, changeState), asCALL_THISCALL);
 	getScriptEngine()->registerObjectMethod("ControlledObject", "string getStateName()", asMETHOD(ControlledObject, getCurrentStateName), asCALL_THISCALL);
-getScriptEngine()->registerObjectMethod("ControlledObject", "bool findAnimation()", asMETHOD(GameObject, findAnimation), asCALL_THISCALL);
-
-
-
+	getScriptEngine()->registerObjectMethod("ControlledObject", "bool findAnimation()", asMETHOD(GameObject, findAnimation), asCALL_THISCALL);
 	getScriptEngine()->registerObjectMethod("ControlledObject", "void playAnimation(string &in)", asMETHOD(GameObject, playAnimation), asCALL_THISCALL);
-
-	//getScriptEngine()->registerFunction("GameObject loadProjectilePrototype(const string &in)", asFUNCTION(GameObject::loadPrototype));
 
 	registered = true;
 }

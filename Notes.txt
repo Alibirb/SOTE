@@ -6,18 +6,16 @@ Basics:
 
 TODO:
 	DoneThisCommit:
-		Implemented Controller and ControlledObject classes (along with a switch and door for the demo).  Also added animation and ability to embed AngelScript in XML files.
+		Clean up:
+			Removed physics stuff from Projectile.
+			Moved functions in AngelScriptEngine.h to the cpp file.
 	Current Task:
-		Implement Controller and ControlledObject classes, as well as a switch and door for the demo level.
-	Next Steps:
 		Clean up.
-			Unnecessary includes
-			Remove physics stuff from Projectile.
-			Move functions in AngelScriptEngine.h to the cpp file.
-			Change AngelScriptEngine execution methods such that they call runFunction(asIScriptFunction* func) instead of reimplementing the same code everywhere.
-			Clean up the Controller and ControlledObject classes (a lot of code changes... they've become a bit of a mess.)
+	Next Steps:
+		Switch to TinyXML2 to fix the whitespace bug.
 		Begin work on level editor.
 		Flame jets for the demo level.
+
 
 
 	Objects:
@@ -69,7 +67,6 @@ Issues: (with other software)
 
 Things to remember to prevent bugs:
 	It is NOT safe to alter the scene graph during a traversal (multi-threaded, multiple traversals happen at the same time). To ensure that doesn't happen, use the addToSceneGraph function for any new nodes, rather than adding them directly.
-	TinyXML returns text as if it were all in one line, which causes issues when the text is AngelScript with comments (a single-line comment comments out the rest of the program).
 
 
 Things to consider:
@@ -125,7 +122,6 @@ Goals:
 	First playable-- demo level with basic functionality.
 		Functionality:
 			Combat-- GOT IT!!
-			Weapon system
 			Basic enemy AI-- look for the player, and try to kill him.
 			Scripting--DONE!! (or close enough)
 			Physics

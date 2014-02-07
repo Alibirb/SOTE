@@ -3,10 +3,11 @@
 #include "globals.h"
 #include "Level.h"
 
-#include "Player.h"
-#include "Enemy.h"
-#include "TwoDimensionalCameraManipulator.h"
-#include "ThirdPersonCameraManipulator.h"
+#ifdef TOP_DOWN_2D_VIEW
+	#include "TwoDimensionalCameraManipulator.h"
+#else
+	#include "ThirdPersonCameraManipulator.h"
+#endif
 #include "AngelScriptEngine.h"
 #include "AngelScriptConsole.h"
 #include "TemporaryText.h"
@@ -15,24 +16,13 @@
 #include <osgViewer/config/SingleWindow>
 #include <osgDB/ReadFile>
 #include <osgDB/FileUtils>
-
-#include <osgGA/TrackballManipulator>
-
-#include <osgAnimation/BasicAnimationManager>
-#include <osgAnimation/MorphGeometry>
-
 #include <osgDB/WriteFile>
-
 #include <osgViewer/ViewerEventHandlers>
 
-#include <osgGA/StateSetManipulator>
 
 using namespace std;
 
-
 /// Variables declared extern in globals.h
-//osg::ref_ptr<osg::Group> root;
-//osg::ref_ptr<osg::Group> lightGroup;
 osg::Group* root;
 osg::Group* lightGroup;
 int windowWidth, windowHeight;
@@ -175,8 +165,6 @@ void addNodesToGraph()
 void runCleanup()
 {
 	removeExpiredObjects();
-	//while(!getTempTexts().empty())
-	//	delete getTempTexts().front();
 }
 
 void writeOutSceneGraph()
@@ -241,15 +229,11 @@ int main()
 	statsHandler->setKeyEventTogglesOnScreenStats( osgGA::GUIEventAdapter::KEY_F3);
 	getViewer()->addEventHandler(statsHandler);
     getViewer()->addEventHandler(new osgViewer::WindowSizeHandler());
-//	viewer.addEventHandler(new osgGA::StateSetManipulator(viewer.getCamera()->getOrCreateStateSet()));
 
 
 	getViewer()->realize();
 
-
-	//getScriptEngine()->initialize();
 	//getScriptEngine()->test();
-	//getScriptEngine()->runFile("script.as");
 	getScriptEngine()->runFile("initialize.as");
 
 
@@ -292,11 +276,7 @@ int main()
 		getViewer()->frame(elapsedTime);
 		safeToAddRemoveNodes = true;
 		addNodesToGraph();
-
-		//std::cout << "Frame" << std::endl;
 	}
-//	root = NULL;
-	//lightGroup = NULL;
 
 	return 0;
 }

@@ -103,9 +103,7 @@ void Weapon::load(std::string xmlFilename)
 
 
 	TiXmlHandle docHandle(&doc);
-	TiXmlElement* currentElement;
 	TiXmlElement* rootElement = docHandle.FirstChildElement().Element();
-	TiXmlHandle rootHandle = TiXmlHandle(docHandle.FirstChildElement().Element());
 
 	load(rootElement);
 }

@@ -85,9 +85,7 @@ void ProjectileStats::load(std::string xmlFilename)
 
 
 	TiXmlHandle docHandle(&doc);
-	TiXmlElement* currentElement;
 	TiXmlElement* rootElement = docHandle.FirstChildElement().Element();
-	TiXmlHandle rootHandle = TiXmlHandle(docHandle.FirstChildElement().Element());
 
 	load(rootElement);
 }
@@ -172,68 +170,6 @@ Projectile::Projectile(osg::Vec3 startingPosition, osg::Vec3 heading, Projectile
 
 Projectile::~Projectile()
 {
-}
-
-void Projectile::checkForCollisions()	/// NOTE: Detects overlapping bounding boxes. Not what we want, but it works for now.
-{
-	btManifoldArray   manifoldArray;
-	btBroadphasePairArray& pairArray = ((btPairCachingGhostObject*)_physicsBody)->getOverlappingPairCache()->getOverlappingPairArray();
-	int numPairs = pairArray.size();
-
-	for (int i = 0; i < numPairs; i++)
-	{
-		manifoldArray.clear();
-
-		const btBroadphasePair& pair = pairArray[i];
-
-		//unless we manually perform collision detection on this pair, the contacts are in the dynamics world paircache:
-		btBroadphasePair* collisionPair = getCurrentLevel()->getBulletWorld()->getPairCache()->findPair(pair.m_pProxy0, pair.m_pProxy1);
-		if (!collisionPair)
-			continue;
-
-		if (collisionPair->m_algorithm)
-			collisionPair->m_algorithm->getAllContactManifolds(manifoldArray);
-
-		for (int j = 0; j < manifoldArray.size(); j++)
-		{
-			btPersistentManifold* manifold = manifoldArray[j];
-
-			PhysicsUserData* dataA = (PhysicsUserData*) manifold->getBody0()->getUserPointer();
-			PhysicsUserData* dataB = (PhysicsUserData*) manifold->getBody1()->getUserPointer();
-
-			if(!dataA || !dataB)
-			{
-				logError("Physics object with no userdata.");
-				continue;
-			}
-
-			if(dataA->ownerType == "Projectile" && (dataB->ownerType == "Enemy" || dataB->ownerType == "Player") )
-			{
-				((Fighter*)dataB->owner)->onCollision((Projectile*)dataA->owner);
-				((Projectile*)dataA->owner)->onCollision((Fighter*)dataB->owner);
-			}
-			else if((dataA->ownerType == "Enemy" || dataA->ownerType == "Player") && dataB->ownerType == "Projectile")
-			{
-				((Fighter*)dataA->owner)->onCollision((Projectile*)dataB->owner);
-				((Projectile*)dataB->owner)->onCollision((Fighter*)dataA->owner);
-			}
-
-
-			btScalar directionSign = manifold->getBody0() == _physicsBody ? btScalar(-1.0) : btScalar(1.0);
-			for (int p = 0; p < manifold->getNumContacts(); p++)
-			{
-				const btManifoldPoint& pt = manifold->getContactPoint(p);
-				if (pt.getDistance() < 0.f)
-				{
-					const btVector3& ptA = pt.getPositionWorldOnA();
-					const btVector3& ptB = pt.getPositionWorldOnB();
-					const btVector3& normalOnB = pt.m_normalWorldOnB;
-					/// work here
-
-				}
-			}
-		}
-	}
 }
 
 Damages Projectile::getDamages()
