@@ -7,6 +7,8 @@
 
 #include "AngelScriptEngine.h"
 
+#include "GameObjectData.h"
+
 
 ControlledObject::ControlledObject()
 {
@@ -87,31 +89,28 @@ void ControlledObject::setOnMessageFunction(std::string message, std::string cod
 
 
 
+GameObjectData* ControlledObject::save()
+{
+	GameObjectData* dataObj = new GameObjectData("controlledObject");
+
+	saveGameObjectVariables(dataObj);
+	saveControlledObjectVariables(dataObj);
+
+	return dataObj;
+}
+
+void ControlledObject::saveControlledObjectVariables(GameObjectData* dataObj)
+{
+	dataObj->addChild(_stateMachine->save());
+}
+
+
 namespace AngelScriptWrapperFunctions
 {
-/*	void GameObjectConstructor(GameObject *memory)
-	{
-		// Initialize the pre-allocated memory by calling the object constructor with the placement-new operator
-		new(memory) GameObject();
-	}*/
 	ControlledObject* ControlledObjectFactoryFunction()
 	{
 		return new ControlledObject();
 	}
-	/*void GameObjectInitConstructor(Damages damages, std::string imageFilename, GameObject *self)
-	{
-		new(self) GameObject(damages, imageFilename);
-	}
-	void GameObjectCopyConstructor(GameObject& other, GameObject* self)
-	{
-		new(self) GameObject(other.damages, other.imageFilename);
-	}*/
-	void ControlledObjectDestructor(void *memory)
-	{
-		// Uninitialize the memory by calling the object destructor
-		((ControlledObject*)memory)->~ControlledObject();
-	}
-
 }
 
 using namespace AngelScriptWrapperFunctions;

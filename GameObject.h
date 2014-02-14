@@ -17,11 +17,12 @@
 
 
 
+class GameObjectData;
+
 namespace tinyxml2
 {
 	class XMLElement;
 }
-
 using namespace tinyxml2;
 
 /// Class for an object
@@ -43,6 +44,10 @@ protected:
 #endif
 	osg::Vec3 physicsToModelAdjustment;	/// adjustment between the visual and physical components
 
+	// Export/meta data (used for editor purposes)
+	std::string _modelFilename;
+	std::string _objectType = "gameObject";
+
 public:
 	GameObject();
 	GameObject(XMLElement* xmlElement);
@@ -58,6 +63,9 @@ public:
 	virtual void load(XMLElement* xmlElement);
 	virtual void reset();	/// Reset the object.
 
+
+	virtual GameObjectData* save();	/// Saves the object's data (should call a function to save the variables for each class the object overrides)
+
 	void loadModel(std::string modelFilename);
 	void setModelNode(osg::Node* node);
 
@@ -72,6 +80,7 @@ public:
 	void playAnimation(std::string& animationName);
 
 protected:
+	void saveGameObjectVariables(GameObjectData* data);	/// Saves the variables declared in GameObject.
 };
 
 void registerGameObject();

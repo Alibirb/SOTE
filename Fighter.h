@@ -29,6 +29,8 @@ public:
 };
 
 
+/// TODO: exporting of all Fighter data. Note: the resistances can be stored as children
+
 class Fighter : public Entity
 {
 protected:
@@ -68,7 +70,9 @@ public:
 	virtual void onCollision(GameObject* other);
 	virtual void onCollision(Projectile* projectile);
 
+	virtual GameObjectData* save();
 protected:
+	void saveFighterData(GameObjectData* dataObj);
 };
 
 void addDamageIndicator(Fighter* entityHurt, float damageDealt, std::string& damageType);

@@ -87,6 +87,8 @@
 		<Unit filename="Fighter.h" />
 		<Unit filename="GameObject.cpp" />
 		<Unit filename="GameObject.h" />
+		<Unit filename="GameObjectData.cpp" />
+		<Unit filename="GameObjectData.h" />
 		<Unit filename="ImprovedAnimationManager.cpp" />
 		<Unit filename="ImprovedAnimationManager.h" />
 		<Unit filename="Item.cpp" />

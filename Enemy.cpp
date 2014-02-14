@@ -8,6 +8,8 @@ std::list<Enemy*> enemyList;
 
 Enemy::Enemy(std::string name, osg::Vec3 position) : Fighter(name, position, "Enemy")
 {
+	_objectType = "enemy";
+
 	addEnemy(this);	// put this Enemy in the enemyList.
 
 	PhysicsUserData *userData = new PhysicsUserData;
@@ -21,6 +23,8 @@ Enemy::Enemy(std::string name, osg::Vec3 position) : Fighter(name, position, "En
 }
 Enemy::Enemy(XMLElement* xmlElement) : Fighter(xmlElement)
 {
+	_objectType = "enemy";
+
 	addEnemy(this);	// put this Enemy in the enemyList.
 
 	PhysicsUserData *userData = new PhysicsUserData;

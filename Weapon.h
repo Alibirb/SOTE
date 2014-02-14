@@ -67,8 +67,9 @@ public:
 		this->_team = team;
 	}
 
+	virtual GameObjectData* save();
 protected:
-private:
+	void saveWeaponData(GameObjectData* dataObj);
 };
 
 void registerWeaponStats();

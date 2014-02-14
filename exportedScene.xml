@@ -1,0 +1,50 @@
+<level>
+    <controller radius="5" geometry="Switch.osgt" position="0, 0, 0">
+        <function name="onInteraction">
+		void onInteraction(Controller@ self)
+		{
+			self.sendMessage("toggle");
+		}
+	</function>
+        <controlledObject geometry="SlidingDoor.osgt" position="8, 0, 0">
+            <stateMachine>
+                <state name="closed">
+                    <function name="onEnter">
+			void onEnter(ControlledObject@ self)
+			{
+				self.playAnimation("close");
+			}
+		</function>
+                </state>
+                <state name="open">
+                    <function name="onEnter">
+			void onEnter(ControlledObject@ self)
+			{
+				self.playAnimation("open");
+			}
+		</function>
+                </state>
+            </stateMachine>
+        </controlledObject>
+    </controller>
+    <fighter maxHealth="5" team="Enemy" geometry="humanmodelNoBones.osg" position="5, 5, 0">
+        <weapon coolDownTime="2.5" geometry="staff.png" position="0, 0, 1">
+            <projectile geometry="circle.png">
+                <damage amount="2" type="PURE_MAGIC"/>
+            </projectile>
+        </weapon>
+        <resistance value="0" type="ACID"/>
+        <resistance value="0" type="COLD"/>
+        <resistance value="0" type="HOT"/>
+    </fighter>
+    <fighter maxHealth="25" team="Player" geometry="humanmodelNoBones.osg" position="5, -5, -0.04">
+        <weapon coolDownTime="2.5" geometry="staff.png" position="0, 0, 1">
+            <projectile geometry="Fireball.png">
+                <damage amount="2" type="HOT"/>
+            </projectile>
+        </weapon>
+        <resistance value="0" type="ACID"/>
+        <resistance value="0" type="COLD"/>
+        <resistance value="0" type="HOT"/>
+    </fighter>
+</level>

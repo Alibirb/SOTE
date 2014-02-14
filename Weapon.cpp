@@ -4,8 +4,11 @@
 
 #include "AngelScriptEngine.h"
 #include "OwnerUpdateCallback.h"
+#include "GameObjectData.h"
 
 #include "tinyxml/tinyxml2.h"
+
+
 
 #define WEAPON_SCRIPT_LOCATION "media/Weapons/"
 
@@ -169,6 +172,36 @@ void Weapon::aimAt(osg::Vec3 target)
 
 	_transformNode->setAttitude(rotation);
 }
+
+GameObjectData* Weapon::save()
+{
+	GameObjectData* dataObj = new GameObjectData("weapon");
+
+	saveGameObjectVariables(dataObj);
+	saveWeaponData(dataObj);
+
+	return dataObj;
+}
+void Weapon::saveWeaponData(GameObjectData* dataObj)
+{
+	dataObj->addData("coolDownTime", _stats.coolDownTime);
+
+	{
+		GameObjectData* projectileData = new GameObjectData("projectile");
+		projectileData->addData("geometry", _stats.projectileStats.imageFilename);
+		for(auto damage : _stats.projectileStats.damages)
+		{
+			GameObjectData* damageData = new GameObjectData("damage");
+			damageData->addData("type", damage.type);
+			damageData->addData("amount", damage.amount);
+			projectileData->addChild(damageData);
+		}
+		dataObj->addChild(projectileData);
+	}
+
+}
+
+
 
 
 

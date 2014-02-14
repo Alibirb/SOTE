@@ -6,6 +6,7 @@
 
 #include "AngelScriptEngine.h"
 
+#include "GameObjectData.h"
 
 
 State::State(GameObject* owner, XMLElement* xmlElement) : _onEnterFunction(NULL), _onUpdateFunction(NULL), _onExitFunction(NULL)
@@ -53,16 +54,39 @@ void State::load(XMLElement* xmlElement)
 
 }
 
+GameObjectData* State::save()
+{
+	GameObjectData* dataObj = new GameObjectData("state");
+
+	saveStateVariables(dataObj);
+
+	return dataObj;
+}
+void State::saveStateVariables(GameObjectData* dataObj)
+{
+	dataObj->addData("name", _name);
+
+	if(_onEnterFunction)
+		dataObj->addScriptFunction("onEnter", _onEnterCode);
+	if(_onUpdateFunction)
+		dataObj->addScriptFunction("onUpdate", _onUpdateCode);
+	if(_onExitFunction)
+		dataObj->addScriptFunction("onExit", _onExitCode);
+}
+
 void State::setOnEnterScriptFunction(std::string code)
 {
+	_onEnterCode = code;
 	_onEnterFunction = getScriptEngine()->compileFunction("State", code.c_str(), 0, asCOMP_ADD_TO_MODULE);
 }
 void State::setOnUpdateScriptFunction(std::string code)
 {
+	_onUpdateCode = code;
 	_onUpdateFunction = getScriptEngine()->compileFunction("State", code.c_str(), 0, asCOMP_ADD_TO_MODULE);
 }
 void State::setOnExitScriptFunction(std::string code)
 {
+	_onExitCode = code;
 	_onExitFunction = getScriptEngine()->compileFunction("State", code.c_str(), 0, asCOMP_ADD_TO_MODULE);
 }
 
@@ -127,4 +151,19 @@ void StateMachine::onUpdate(float deltaTime)
 		_globalState->onUpdate(deltaTime);
 	if(_currentState)
 		_currentState->onUpdate(deltaTime);
+}
+
+GameObjectData* StateMachine::save()
+{
+	GameObjectData* dataObj = new GameObjectData("stateMachine");
+
+	saveStateMachineVariables(dataObj);
+
+	return dataObj;
+}
+
+void StateMachine::saveStateMachineVariables(GameObjectData* dataObj)
+{
+	for(auto kv : _states)
+		dataObj->addChild(kv.second->save());
 }

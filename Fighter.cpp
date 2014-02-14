@@ -1,6 +1,7 @@
 #include "Fighter.h"
 #include "Weapon.h"
 #include "AngelScriptEngine.h"
+#include "GameObjectData.h"
 
 #include "TemporaryText.h"
 
@@ -188,7 +189,31 @@ void Fighter::onCollision(GameObject* other)
 		onCollision(dynamic_cast<Projectile*>(other));
 }
 
+GameObjectData* Fighter::save()
+{
+	GameObjectData* dataObj = new GameObjectData("fighter");
 
+	saveGameObjectVariables(dataObj);
+	saveEntityVariables(dataObj);
+	saveFighterData(dataObj);
+
+	return dataObj;
+}
+void Fighter::saveFighterData(GameObjectData* dataObj)
+{
+	dataObj->addData("team", _team);
+	if(getWeapon())
+		dataObj->addChild(getWeapon()->save());
+	dataObj->addData("maxHealth", _stats.maxHealth);
+	for(auto kv : _stats.resistances)
+	{
+		GameObjectData* resistanceData = new GameObjectData("resistance");
+		resistanceData->addData("type", kv.first);
+		resistanceData->addData("value", kv.second);
+		dataObj->addChild(resistanceData);
+	}
+
+}
 
 
 void addDamageIndicator(Fighter* entityHurt, float damageDealt, std::string& damageType)
@@ -197,6 +222,10 @@ void addDamageIndicator(Fighter* entityHurt, float damageDealt, std::string& dam
 	stream << "-" << damageDealt;
 	new TemporaryText(stream.str(), entityHurt->getWorldPosition(), 2.5);
 }
+
+
+
+
 
 
 namespace AngelScriptWrapperFunctions

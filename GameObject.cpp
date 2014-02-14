@@ -8,6 +8,7 @@
 #include "Sprite.h"
 #include "OwnerUpdateCallback.h"
 #include "AngelScriptEngine.h"
+#include "GameObjectData.h"
 
 #include "tinyxml/tinyxml2.h"
 
@@ -70,6 +71,7 @@ GameObject::~GameObject()
 
 void GameObject::loadModel(std::string modelFilename)
 {
+	_modelFilename = modelFilename;
 	if(modelFilename.length() > 4 && modelFilename.substr(modelFilename.length() - 4, 4) == ".png")
 		_useSpriteAsModel = true;
 	if(_useSpriteAsModel)
@@ -190,6 +192,21 @@ void GameObject::load(XMLElement* xmlElement)
 			findAnimation();
 	}
 
+}
+
+GameObjectData* GameObject::save()
+{
+	GameObjectData* dataObj = new GameObjectData(_objectType);
+
+	saveGameObjectVariables(dataObj);
+
+	return dataObj;
+}
+void GameObject::saveGameObjectVariables(GameObjectData* dataObj)
+{
+	dataObj->addData("position", getLocalPosition());
+	dataObj->addData("geometry", _modelFilename);
+	// TODO: animation.
 }
 
 void GameObject::reset()

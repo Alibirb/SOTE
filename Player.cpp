@@ -12,6 +12,8 @@ std::unordered_map<std::string, Player*> players;	/// List of all Players, ident
 
 Player::Player(std::string name, osg::Vec3 position) : Fighter(name, position, "Player")
 {
+	_objectType = "player";
+
 	PhysicsUserData *userData = new PhysicsUserData;
 	userData->owner = this;
 	userData->ownerType = "Player";
@@ -24,6 +26,8 @@ Player::Player(std::string name, osg::Vec3 position) : Fighter(name, position, "
 
 Player::Player(XMLElement* xmlElement) : Fighter(xmlElement)
 {
+	_objectType = "player";
+
 	PhysicsUserData *userData = new PhysicsUserData;
 	userData->owner = this;
 	userData->ownerType = "Player";

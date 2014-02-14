@@ -16,6 +16,7 @@ class Player : public Fighter
 protected:
 	Controller* _willInteractWith;	/// nearest interactable object (or none if none are in range)
 
+
 public:
 	Player(std::string name, osg::Vec3 position);
 	Player(XMLElement* xmlElement);

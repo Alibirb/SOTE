@@ -5,7 +5,7 @@
 #include "tinyxml/tinyxml2.h"
 
 #ifndef USE_BOX2D_PHYSICS
-	#include "BulletCollision/CollisionDispatch/btGhostObject.h"
+#include "BulletCollision/CollisionDispatch/btGhostObject.h"
 #endif // USE_BOX2D_PHYSICS
 #include "PhysicsData.h"
 #include "PhysicsNodeCallback.h"
@@ -14,8 +14,12 @@
 
 #include "Level.h"
 
+#include "GameObjectData.h"
+
 Controller::Controller()
 {
+	_objectType = "controller";
+
 	registerController();
 
 
@@ -111,22 +115,50 @@ void Controller::sendMessage(std::string& message)
 
 void Controller::setFunction(std::string functionName, std::string code)
 {
+	_functionSources[functionName] = code;	/// Save the code so we can manipulate it if needed.
 	_functions[functionName] = getScriptEngine()->compileFunction("Controller", code.c_str(), 0, asCOMP_ADD_TO_MODULE);
 }
+
+
+GameObjectData* Controller::save()
+{
+	GameObjectData* dataObj = new GameObjectData("controller");
+
+	saveGameObjectVariables(dataObj);
+	saveControllerVariables(dataObj);
+
+	return dataObj;
+}
+
+void Controller::saveControllerVariables(GameObjectData* dataObj)
+{
+	//dataObj->addChildren((std::vector<GameObject*>)_controlled);
+	for(auto child : _controlled)
+		dataObj->addChild(child);
+	dataObj->addData("radius", _radius);
+	//dataObj->addScriptFunctions(_functions);
+	for(auto kv : _functionSources)
+		dataObj->addScriptFunction(kv.first, kv.second);
+
+}
+
+
+
+
 
 
 
 namespace AngelScriptWrapperFunctions
 {
-	Controller* ControllerFactoryFunction()
-	{
-		return new Controller();
-	}
-	void ControllerDestructor(void *memory)
-	{
-		// Uninitialize the memory by calling the object destructor
-		((Controller*)memory)->~Controller();
-	}
+Controller* ControllerFactoryFunction()
+{
+	return new Controller();
+}
+void ControllerDestructor(void *memory)
+{
+	// Uninitialize the memory by calling the object destructor
+	((Controller*)memory)->~Controller();
+}
 
 }
 

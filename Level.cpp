@@ -8,13 +8,17 @@
 #include "Enemy.h"
 #include "ControlledObject.h"
 #include "Controller.h"
+#include "PhysicsData.h"
+#include "GameObjectData.h"
 
 #include <osgDB/ReadFile>
 #include <osgDB/FileUtils>
 
 #include "osgbCollision/CollisionShapes.h"
 
-#include "PhysicsData.h"
+
+
+
 
 void myTickCallback(btDynamicsWorld *world, btScalar timeStep)
 {
@@ -148,25 +152,26 @@ void Level::loadFromXml(std::string filename)
 			addNode(osgDB::readNodeFile(currentElement->Attribute("source")));
 		else if(elementType == "gameObject")
 		{
-			new GameObject(currentElement);
+			addObject(new GameObject(currentElement));
 		}
 		else if(elementType == "controlledObject")
 		{
-			new ControlledObject(currentElement);
+			addObject(new ControlledObject(currentElement));
 		}
 		else if(elementType == "controller")
 		{
-			new Controller(currentElement);
+			addObject(new Controller(currentElement));
 		}
 		else if(elementType == "enemy")
 		{
-			new Enemy(currentElement);
+			addObject(new Enemy(currentElement));
 		}
 		else if(elementType == "player")
 		{
 			std::string name = currentElement->Attribute("name");
 			addPlayer(name, new Player(currentElement));
 			setActivePlayer(name);
+			addObject(getActivePlayer());
 		}
 		else
 		{
@@ -207,6 +212,31 @@ void Level::addNode(osg::Node* node)
 	}
 }
 #endif
+
+GameObjectData* Level::save()
+{
+	GameObjectData* data = new GameObjectData("level");
+
+	for(GameObject* object : _objects)
+		data->addChild(object);
+
+	return data;
+}
+
+void Level::saveAsXml(std::string filename)
+{
+	XMLDocument* doc = new XMLDocument(filename.c_str());
+	doc->InsertFirstChild(this->save()->toXML(doc));	// Make this the root element.
+
+	doc->SaveFile(filename.c_str());
+}
+
+void Level::addObject(GameObject* obj)
+{
+	_objects.push_back(obj);
+}
+
+
 
 Level* currentLevel;
 

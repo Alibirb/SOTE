@@ -2,16 +2,22 @@ Basics:
 	A game starring the characters from MW:ADC. Kind of a cross between an RPG and an adventure game.
 	Also developing a core system that can be reused in other games.
 
-
+NOTES:
+	OSG does have an XML parser. Might want to look into using that instead of tinyxml.
 
 TODO:
 	DoneThisCommit:
-		Switched to tinyXML2
+		Created GameObjectData class and ability to export level as XML.
 	Current Task:
+		Ability to export the current level as XML
+
 	Next Steps:
-		Begin work on level editor:
-			Ability to pause the game to switch modes (even if edit mode does nothing)
-			Ability to export the current level
+		Use GameObjectData for loading as well.
+		Weapons that attack directly, instead of using a Projectile
+		Use separate GameObjects for the level geometry.
+		Get rid of FighterStats/WeaponStats/ProjectileStats (no longer needed)
+		Improve save/XML export to allow it to link to prototypes.
+		Ability to pause the game to switch modes (even if edit mode does nothing)
 		Flame jets for the demo level.
 
 
@@ -30,7 +36,10 @@ TODO:
 	Use a game clock that's separate from the real-time clock. For debugging purposes. Allows to run the game in slow/fast motion.
 	Development cheats and features:
 		Changing game speed
-	Level should contain lighting, enemies, and other things that would be in the scene.
+	Level should serve as a container for everything in the scene.
+		Should not directly contain geometry.
+		Should contain Light objects
+	Lighting should be done with Light objects, rather than lights freely floating in the scene graph.
 	Physics fixes:
 		figure out proper collision filtering technique for ghost objects (there should be no collision response, but it still needs to be detected.)
 	Make sure it all works on Windows (with the exception of the extra mouse button support I added)
@@ -53,6 +62,9 @@ BUGS:
 	2D Stuff:
 		TiledMap does not account for maps with multiple tilesets.
 		Seg faults if the Box2D debug drawer sets the data variance to "dynamic"
+	Low Priority (it works, but might be ugly):
+		When exporting the AngelScript functions into XML, the indentation/spacing is whatever it was in the original file, which can look weird if the enclosing element is at a different indent level.
+		tinyxml2 uses SPACES INSTEAD OF TABS!! (could run a short script to convert them if desired)
 
 Bugs I expect to see later:
 	The functions specified in the XML files may cause issues once I have multiple objects of the same type (e.g. two kinds of ControlledObject), because they might override one another.
@@ -91,6 +103,7 @@ Engine features:
 			Can also define an object using another as a prototype (e.g. multiple versions of an enemy use a common base).
 		Can embed AngelScript inside the XML file, further increasing adaptability.
 			Can attach functions to an object, to be used elsewhere (e.g. a door has the functions "open()" and "close()" defined in a central location, and called in response to signals from a switch.)
+	Views a game as a collection of objects, behaviors, and relationships.
 
 
 Multiple playable characters:

@@ -23,6 +23,10 @@
 #include <iostream>
 
 
+class GameObject;
+class GameObjectData;
+
+
 void myTickCallback(btDynamicsWorld *world, btScalar timeStep);
 
 class Level
@@ -43,6 +47,9 @@ private:
 #else
 	osg::ref_ptr<osg::Node> _levelGeometry;
 #endif
+
+	std::vector<GameObject*> _objects;
+
 
 public:
 	Level(std::string filename);
@@ -79,11 +86,16 @@ public:
 #endif
 	}
 
+	virtual GameObjectData* save();	/// Saves the object's data
+
+	void saveAsXml(std::string filename);
+
 protected:
 	void loadFromXml(std::string filename);
 #ifndef USE_TILEMAP
 	void addNode(osg::Node* node);
 #endif
+	void addObject(GameObject* obj);
 
 };
 

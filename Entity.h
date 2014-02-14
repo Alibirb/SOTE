@@ -67,6 +67,10 @@ public:
 	void setAttitude(const osg::Quat& newAttitude);
 
 	virtual void onUpdate(float deltaTime)=0;
+
+	virtual GameObjectData* save();
+protected:
+	void saveEntityVariables(GameObjectData* data);	/// Saves the variables declared in Entity.
 };
 
 

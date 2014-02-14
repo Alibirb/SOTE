@@ -29,6 +29,8 @@ int windowWidth, windowHeight;
 double deltaTime;
 
 
+Level* level;
+
 
 osgAnimation::BasicAnimationManager* animationManager;
 
@@ -170,6 +172,7 @@ void runCleanup()
 void writeOutSceneGraph()
 {
 	osgDB::writeNodeFile(*root, "sceneGraph.osg");
+	level->saveAsXml("exportedScene.xml");
 }
 
 
@@ -199,7 +202,7 @@ int main()
 	windowHeight = 900;
 
 
-    Level *level = new Level("media/DemoLevel.xml");
+    level = new Level("media/DemoLevel.xml");
 
 
 
@@ -229,16 +232,12 @@ int main()
 	statsHandler->setKeyEventTogglesOnScreenStats( osgGA::GUIEventAdapter::KEY_F3);
 	getViewer()->addEventHandler(statsHandler);
     getViewer()->addEventHandler(new osgViewer::WindowSizeHandler());
-
-
 	getViewer()->realize();
 
 	//getScriptEngine()->test();
 	getScriptEngine()->runFile("initialize.as");
 
-
 	AngelScriptConsole* console = new AngelScriptConsole();
-
 
 	osg::Timer_t frame_tick = osg::Timer::instance()->tick();
 

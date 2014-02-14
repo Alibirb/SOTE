@@ -16,6 +16,7 @@
 #include <osgDB/FileUtils>
 
 #include "OwnerUpdateCallback.h"
+#include "GameObjectData.h"
 
 #include "tinyxml/tinyxml2.h"
 
@@ -24,22 +25,7 @@
 
 Entity::Entity()
 {
-	//initialPosition = position;
 	osg::Vec3 position;
-
-	//this->name = name;
-	//_transformNode->setPosition(position);
-
-/*	if(_useSpriteAsModel)
-		_modelNode = new Sprite();
-	else
-	{
-		std::string modelFilename = DEFAULT_ENTITY_MODEL_NAME;
-		_modelNode = osgDB::readNodeFile(modelFilename);
-	}
-	_modelNode->setUpdateCallback(new OwnerUpdateCallback<Entity>(this));
-
-	_transformNode->addChild(_modelNode);*/
 
 #ifdef USE_BOX2D_PHYSICS
 	box2DToOsgAdjustment = osg::Vec3(0.0, 0.0, 0.0);
@@ -240,5 +226,19 @@ void Entity::setAttitude(const osg::Quat& newAttitude)
 #ifndef USE_BOX2D_PHYSICS
 	controller->getGhostObject()->getWorldTransform().setBasis(osgbCollision::asBtMatrix3x3(osg::Matrix(newAttitude)));
 #endif
+}
+
+GameObjectData* Entity::save()
+{
+	GameObjectData* dataObj = new GameObjectData("entity");
+
+	saveGameObjectVariables(dataObj);
+	saveEntityVariables(dataObj);
+
+	return dataObj;
+}
+void Entity::saveEntityVariables(GameObjectData* dataObj)
+{
+	// TODO
 }
 

@@ -9,6 +9,8 @@ class asIScriptFunction;
 
 class Controller;
 
+class GameObjectData;
+
 class ControlledObject : public GameObject
 {
 protected:
@@ -27,6 +29,10 @@ public:
 	void receiveMessage(std::string& message);
 
 	void setOnMessageFunction(std::string message, std::string code);
+
+	virtual GameObjectData* save();
+protected:
+	void saveControlledObjectVariables(GameObjectData* dataObj);	/// Saves variables declared in ControlledObject
 
 };
 

@@ -13,6 +13,8 @@ namespace tinyxml2
 
 using namespace tinyxml2;
 
+class GameObjectData;
+
 
 class State
 {
@@ -22,6 +24,11 @@ protected:
 	asIScriptFunction* _onEnterFunction;
 	asIScriptFunction* _onUpdateFunction;
 	asIScriptFunction* _onExitFunction;
+
+	// editor data
+	std::string _onEnterCode;
+	std::string _onUpdateCode;
+	std::string _onExitCode;
 
 public:
 	State(GameObject* owner, XMLElement* xmlElement);
@@ -37,7 +44,12 @@ public:
 
 	void load(XMLElement* xmlElement);
 
+	GameObjectData* save();
+
 	std::string& getName();
+
+protected:
+	void saveStateVariables(GameObjectData* dataObj);	/// Saves the variables declared in State
 };
 
 class StateMachine
@@ -68,6 +80,10 @@ public:
 
 	void onUpdate(float deltaTime);
 
+	GameObjectData* save();
+
+protected:
+	void saveStateMachineVariables(GameObjectData* dataObj);
 };
 
 #endif // STATEMACHINE_H
