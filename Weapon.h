@@ -10,13 +10,14 @@
 class WeaponStats
 {
 public:
-	WeaponStats();
-	WeaponStats(std::string imageFilename, std::string projectileType, ProjectileStats& projectileStats, float coolDownTime);
-	static WeaponStats loadPrototype(std::string prototypeName);	/// Loads prototype stats for the specified type
 	std::string projectileType;
 	ProjectileStats projectileStats;
 	std::string imageFilename;
 	float coolDownTime;
+
+	WeaponStats();
+	WeaponStats(std::string imageFilename, std::string projectileType, ProjectileStats& projectileStats, float coolDownTime);
+	static WeaponStats loadPrototype(std::string prototypeName);	/// Loads prototype stats for the specified type
 	void setProjectileStats(ProjectileStats& stats)
 	{
 		projectileStats.imageFilename = stats.imageFilename;
@@ -40,6 +41,7 @@ public:
 	Weapon(WeaponStats stats);
 	Weapon(std::string type = DEFAULT_WEAPON_TYPE);
 	Weapon(XMLElement* xmlElement);
+	Weapon(GameObjectData* dataObj);
 	virtual ~Weapon();
 
 	void load(XMLElement* xmlElement);
@@ -68,8 +70,10 @@ public:
 	}
 
 	virtual GameObjectData* save();
+	virtual void load(GameObjectData* dataObj);
 protected:
 	void saveWeaponData(GameObjectData* dataObj);
+	void loadWeaponData(GameObjectData* dataObj);
 };
 
 void registerWeaponStats();

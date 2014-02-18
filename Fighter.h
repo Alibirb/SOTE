@@ -42,6 +42,7 @@ protected:
 public:
 	Fighter(std::string name, osg::Vec3 position, std::string team);
 	Fighter(XMLElement* xmlElement);
+	Fighter(GameObjectData* dataObj);
 	virtual ~Fighter();
 	void equipWeapon(Weapon* theWeapon);
 	void unequipWeapon();
@@ -71,8 +72,10 @@ public:
 	virtual void onCollision(Projectile* projectile);
 
 	virtual GameObjectData* save();
+	virtual void load(GameObjectData* dataObj);
 protected:
 	void saveFighterData(GameObjectData* dataObj);
+	void loadFighterData(GameObjectData* dataObj);
 };
 
 void addDamageIndicator(Fighter* entityHurt, float damageDealt, std::string& damageType);

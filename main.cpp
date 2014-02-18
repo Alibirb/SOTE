@@ -12,6 +12,8 @@
 #include "AngelScriptConsole.h"
 #include "TemporaryText.h"
 
+#include "GameObjectData.h"
+
 
 #include <osgViewer/config/SingleWindow>
 #include <osgDB/ReadFile>
@@ -171,8 +173,12 @@ void runCleanup()
 
 void writeOutSceneGraph()
 {
-	osgDB::writeNodeFile(*root, "sceneGraph.osg");
-	level->saveAsXml("exportedScene.xml");
+	osgDB::writeNodeFile(*root, "output/sceneGraph.osg");
+//	level->saveAsXml("output/exportedScene.xml");
+	level->saveAsYaml("output/exportedScene.yaml");
+
+	GameObjectData::testYamlImportExport("output/exportedScene.yaml", "output/doublyExportedScene.yaml");
+	level->reload("output/exportedScene.yaml");
 }
 
 
@@ -202,8 +208,8 @@ int main()
 	windowHeight = 900;
 
 
-    level = new Level("media/DemoLevel.xml");
-
+	//level = new Level("media/DemoLevel.xml");
+	level = new Level("media/DemoLevel.yaml");
 
 
 	osg::Light* sun = new osg::Light;

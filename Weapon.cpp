@@ -36,6 +36,7 @@ WeaponStats WeaponStats::loadPrototype(std::string prototypeName)
 
 Weapon::Weapon(WeaponStats stats)
 {
+	_objectType = "Weapon";
 	setStats(stats);
 
 	loadModel(_stats.imageFilename);
@@ -49,14 +50,27 @@ Weapon::Weapon(WeaponStats stats)
 Weapon::Weapon(std::string type) : Weapon(WeaponStats::loadPrototype(type))
 {
 }
-
 Weapon::Weapon(XMLElement* xmlElement)
 {
+	_objectType = "Weapon";
+
 	projectileStartingTransform = new osg::PositionAttitudeTransform();
 	projectileStartingTransform->setPosition(osg::Vec3(.75,0,0));
 	_transformNode->addChild(projectileStartingTransform);
 
 	load(xmlElement);
+
+	_ready = true;
+}
+Weapon::Weapon(GameObjectData* dataObj)
+{
+	_objectType = "Weapon";
+
+	projectileStartingTransform = new osg::PositionAttitudeTransform();
+	projectileStartingTransform->setPosition(osg::Vec3(.75,0,0));
+	_transformNode->addChild(projectileStartingTransform);
+
+	load(dataObj);
 
 	_ready = true;
 }
@@ -175,7 +189,7 @@ void Weapon::aimAt(osg::Vec3 target)
 
 GameObjectData* Weapon::save()
 {
-	GameObjectData* dataObj = new GameObjectData("weapon");
+	GameObjectData* dataObj = new GameObjectData(_objectType);
 
 	saveGameObjectVariables(dataObj);
 	saveWeaponData(dataObj);
@@ -185,6 +199,30 @@ GameObjectData* Weapon::save()
 void Weapon::saveWeaponData(GameObjectData* dataObj)
 {
 	dataObj->addData("coolDownTime", _stats.coolDownTime);
+
+	{
+		GameObjectData* projectileData = new GameObjectData("Projectile");
+		projectileData->addData("geometry", _stats.projectileStats.imageFilename);
+		for(auto damage : _stats.projectileStats.damages)
+		{
+			GameObjectData* damageData = new GameObjectData("damage");
+			damageData->addData("type", damage.type);
+			damageData->addData("amount", damage.amount);
+			projectileData->addChild(damageData);
+		}
+		dataObj->addChild(projectileData);
+	}
+
+}
+
+void Weapon::load(GameObjectData* dataObj)
+{
+	loadGameObjectVariables(dataObj);
+	loadWeaponData(dataObj);
+}
+void Weapon::loadWeaponData(GameObjectData* dataObj)
+{
+	/*dataObj->addData("coolDownTime", _stats.coolDownTime);
 
 	{
 		GameObjectData* projectileData = new GameObjectData("projectile");
@@ -197,6 +235,28 @@ void Weapon::saveWeaponData(GameObjectData* dataObj)
 			projectileData->addChild(damageData);
 		}
 		dataObj->addChild(projectileData);
+	}*/
+
+	_stats.coolDownTime = dataObj->getFloat("coolDownTime");
+	_stats.imageFilename = dataObj->getString("geometry");
+	for(auto child : dataObj->getChildren())
+	{
+		if(child->getType() == "Projectile")
+		{
+			ProjectileStats projectileStats;
+			projectileStats.imageFilename = child->getString("geometry");
+			for(auto child : dataObj->getChildren())
+			{
+				if(child->getType() == "damage")
+				{
+					Damage dam;
+					dam.amount = child->getFloat("amount");
+					dam.type = child->getString("type");
+					projectileStats.damages.push_back(dam);
+				}
+			}
+			_stats.projectileStats = projectileStats;
+		}
 	}
 
 }

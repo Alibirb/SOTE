@@ -14,6 +14,11 @@ State::State(GameObject* owner, XMLElement* xmlElement) : _onEnterFunction(NULL)
 	_owner = owner;
 	load(xmlElement);
 }
+State::State(GameObject* owner, GameObjectData* dataObj) : _onEnterFunction(NULL), _onUpdateFunction(NULL), _onExitFunction(NULL)
+{
+	_owner = owner;
+	load(dataObj);
+}
 State::~State(){};
 
 void State::onEnter()
@@ -56,7 +61,7 @@ void State::load(XMLElement* xmlElement)
 
 GameObjectData* State::save()
 {
-	GameObjectData* dataObj = new GameObjectData("state");
+	GameObjectData* dataObj = new GameObjectData("State");
 
 	saveStateVariables(dataObj);
 
@@ -72,6 +77,22 @@ void State::saveStateVariables(GameObjectData* dataObj)
 		dataObj->addScriptFunction("onUpdate", _onUpdateCode);
 	if(_onExitFunction)
 		dataObj->addScriptFunction("onExit", _onExitCode);
+}
+
+void State::load(GameObjectData* dataObj)
+{
+	loadStateVariables(dataObj);
+}
+void State::loadStateVariables(GameObjectData* dataObj)
+{
+	_name = dataObj->getString("name");
+
+	if(dataObj->hasFunctionSource("onEnter"))
+		setOnEnterScriptFunction(dataObj->getFunctionSource("onEnter"));
+	if(dataObj->hasFunctionSource("onUpdate"))
+		setOnUpdateScriptFunction(dataObj->getFunctionSource("onUpdate"));
+	if(dataObj->hasFunctionSource("onExit"))
+		setOnExitScriptFunction(dataObj->getFunctionSource("onExit"));
 }
 
 void State::setOnEnterScriptFunction(std::string code)
@@ -97,9 +118,9 @@ std::string& State::getName()
 
 
 
-StateMachine::StateMachine()
+StateMachine::StateMachine(GameObject* owner)
 {
-	//ctor
+	_owner = owner;
 }
 
 StateMachine::~StateMachine()
@@ -155,10 +176,9 @@ void StateMachine::onUpdate(float deltaTime)
 
 GameObjectData* StateMachine::save()
 {
-	GameObjectData* dataObj = new GameObjectData("stateMachine");
+	GameObjectData* dataObj = new GameObjectData("StateMachine");
 
 	saveStateMachineVariables(dataObj);
-
 	return dataObj;
 }
 
@@ -166,4 +186,22 @@ void StateMachine::saveStateMachineVariables(GameObjectData* dataObj)
 {
 	for(auto kv : _states)
 		dataObj->addChild(kv.second->save());
+}
+
+void StateMachine::load(GameObjectData* dataObj)
+{
+	loadStateMachineVariables(dataObj);
+}
+
+void StateMachine::loadStateMachineVariables(GameObjectData* dataObj)
+{
+	//for(auto kv : _states)
+	//	dataObj->addChild(kv.second->save());
+	for(auto child : dataObj->getChildren())
+	{
+		if(child->getType() == "State")
+			addState(new State(_owner, child), child->getString("name"));
+		else
+			logWarning("No frickin' clue what this non-State object is doing as a child of a StateMachine");
+	}
 }

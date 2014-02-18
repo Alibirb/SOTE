@@ -25,6 +25,7 @@ protected:
 public:
 	Controller();
 	Controller(XMLElement* xmlElement);
+	Controller(GameObjectData* dataObj);
 	virtual ~Controller();
 	void load(XMLElement* xmlElement);
 
@@ -37,9 +38,11 @@ public:
 	void setFunction(std::string functionName, std::string code);
 
 	virtual GameObjectData* save();
+	virtual void load(GameObjectData* dataObj);
 
 protected:
 	void saveControllerVariables(GameObjectData* dataObj);	/// Saves the variables declared in Controller
+	void loadControllerVariables(GameObjectData* dataObj);	/// Loads the variables declared in Controller
 };
 
 void registerController();

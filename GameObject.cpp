@@ -49,6 +49,10 @@ GameObject::GameObject(XMLElement* xmlElement) : GameObject()
 {
 	load(xmlElement);
 }
+GameObject::GameObject(GameObjectData* dataObj) : GameObject()
+{
+	load(dataObj);
+}
 
 GameObject::~GameObject()
 {
@@ -207,6 +211,15 @@ void GameObject::saveGameObjectVariables(GameObjectData* dataObj)
 	dataObj->addData("position", getLocalPosition());
 	dataObj->addData("geometry", _modelFilename);
 	// TODO: animation.
+}
+void GameObject::load(GameObjectData* dataObj)
+{
+	loadGameObjectVariables(dataObj);
+}
+void GameObject::loadGameObjectVariables(GameObjectData* dataObj)
+{
+	setPosition(dataObj->getVec3("position"));
+	loadModel(dataObj->getString("geometry"));
 }
 
 void GameObject::reset()

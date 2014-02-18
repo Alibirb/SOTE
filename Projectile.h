@@ -14,6 +14,9 @@
 class ProjectileStats
 {
 public:
+	Damages damages;
+	std::string imageFilename;
+
 	ProjectileStats();
 	ProjectileStats(XMLElement* xmlElement);
 	ProjectileStats(Damages damages, std::string imageFilename);
@@ -24,8 +27,7 @@ public:
 	void load(std::string xmlFilename);
 
 	static ProjectileStats loadPrototype(std::string& prototypeName);	/// Loads prototype stats for the specified type
-	Damages damages;
-	std::string imageFilename;
+
 };
 
 

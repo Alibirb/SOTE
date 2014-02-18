@@ -40,6 +40,7 @@
 			<Add directory="../Box2D_v2.3.0/Box2D" />
 			<Add directory="/home/daniel/Downloads/AngelScript/sdk" />
 			<Add directory="/usr/local/Bullet2.81/include/bullet" />
+			<Add directory="../../../Downloads/yaml-cpp-0.5.1/include" />
 		</Compiler>
 		<Linker>
 			<Add option="-pthread" />
@@ -56,6 +57,7 @@
 			<Add library="/usr/local/Bullet2.81/lib/libBulletDynamics.a" />
 			<Add library="/usr/local/Bullet2.81/lib/libBulletCollision.a" />
 			<Add library="/usr/local/Bullet2.81/lib/libLinearMath.a" />
+			<Add library="../../../Downloads/yaml-cpp-0.5.1/build/libyaml-cpp.a" />
 			<Add directory="/usr/local/lib" />
 			<Add directory="/usr/local/lib64" />
 			<Add directory="../ScumOfTheEarth" />

@@ -12,14 +12,19 @@
 
 ControlledObject::ControlledObject()
 {
+	_objectType = "ControlledObject";
 	registerControlledObject();
-	_stateMachine = new StateMachine();
+	_stateMachine = new StateMachine(this);
 }
-
 ControlledObject::ControlledObject(XMLElement* xmlElement) : ControlledObject()
 {
 	load(xmlElement);
 }
+ControlledObject::ControlledObject(GameObjectData* dataObj) : ControlledObject()
+{
+	load(dataObj);
+}
+
 
 ControlledObject::~ControlledObject()
 {
@@ -47,7 +52,7 @@ void ControlledObject::load(XMLElement* xmlElement)
 		std::string elementType = currentElement->Value();
 		if(elementType == "geometry")
 			loadModel(currentElement->Attribute("source"));
-		else if(elementType == "state")
+		else if(elementType == "State")
 			_stateMachine->addState(new State(this, currentElement), currentElement->Attribute("name"));
 		else if(elementType == "onMessage")
 			setOnMessageFunction(currentElement->Attribute("message"), currentElement->GetText());
@@ -91,18 +96,39 @@ void ControlledObject::setOnMessageFunction(std::string message, std::string cod
 
 GameObjectData* ControlledObject::save()
 {
-	GameObjectData* dataObj = new GameObjectData("controlledObject");
+	GameObjectData* dataObj = new GameObjectData(_objectType);
 
 	saveGameObjectVariables(dataObj);
 	saveControlledObjectVariables(dataObj);
 
 	return dataObj;
 }
-
 void ControlledObject::saveControlledObjectVariables(GameObjectData* dataObj)
 {
 	dataObj->addChild(_stateMachine->save());
 }
+void ControlledObject::load(GameObjectData* dataObj)
+{
+	loadGameObjectVariables(dataObj);
+	loadControlledObjectVariables(dataObj);
+}
+
+void ControlledObject::loadControlledObjectVariables(GameObjectData* dataObj)
+{
+	//dataObj->addChild(_stateMachine->save());
+	for(auto child :dataObj->getChildren())
+	{
+		if(child->getType() == "StateMachine")
+			_stateMachine->load(child);
+		else
+			logWarning("No frickin' clue what this non-stateMachine object is doing as a child of a ControlledObject");
+	}
+}
+
+
+
+
+
 
 
 namespace AngelScriptWrapperFunctions

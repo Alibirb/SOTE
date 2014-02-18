@@ -1,0 +1,52 @@
+dataType: level
+children:
+  - dataType: GameObject
+    geometry: DemoLevel.osgt
+    position: {x: 0, y: 0, z: 0}
+  - dataType: Controller
+    radius: 5
+    geometry: Switch.osgt
+    position: {x: 0, y: 0, z: 0}
+    functions:
+      onInteraction: "\n\t\tvoid onInteraction(Controller@ self)\n\t\t{\n\t\t\tself.sendMessage(\"toggle\");\n\t\t}\n\t"
+    children:
+      - dataType: ControlledObject
+        geometry: SlidingDoor.osgt
+        position: {x: 8, y: 0, z: 0}
+        children:
+          - dataType: StateMachine
+            children:
+              - dataType: State
+                name: closed
+                functions:
+                  onEnter: "\n\t\t\tvoid onEnter(ControlledObject@ self)\n\t\t\t{\n\t\t\t\tself.playAnimation(\"close\");\n\t\t\t}\n\t\t"
+              - dataType: State
+                name: open
+                functions:
+                  onEnter: "\n\t\t\tvoid onEnter(ControlledObject@ self)\n\t\t\t{\n\t\t\t\tself.playAnimation(\"open\");\n\t\t\t}\n\t\t"
+  - dataType: Enemy
+    maxHealth: 8.931343e-38
+    team: Enemy
+    geometry: humanmodelNoBones.osg
+    position: {x: 5, y: 5, z: 0}
+    children:
+      - dataType: Weapon
+        coolDownTime: 2.5
+        geometry: staff.png
+        position: {x: 0, y: 0, z: 1}
+        children:
+          - dataType: Projectile
+            geometry: circle.png
+  - dataType: Player
+    maxHealth: -3.699912e-27
+    team: Player
+    geometry: humanmodelNoBones.osg
+    position: {x: 0, y: 0.02157582, z: 2.459901}
+    children:
+      - dataType: Weapon
+        coolDownTime: 2.5
+        geometry: staff.png
+        position: {x: 0, y: 0, z: 1}
+        children:
+          - dataType: Projectile
+            geometry: Fireball.png

@@ -17,6 +17,8 @@
 #include "osgbCollision/CollisionShapes.h"
 
 
+#include "yaml-cpp/yaml.h"
+
 
 
 
@@ -114,7 +116,7 @@ Level::Level(std::string filename)
 	_physicsWorld->setInternalTickCallback(myTickCallback);
 #endif
 
-	loadFromXml(filename);
+	load(filename);
 }
 
 Level::~Level()
@@ -229,6 +231,68 @@ void Level::saveAsXml(std::string filename)
 	doc->InsertFirstChild(this->save()->toXML(doc));	// Make this the root element.
 
 	doc->SaveFile(filename.c_str());
+}
+void Level::saveAsYaml(std::string filename)
+{
+	YAML::Emitter emitter;
+	//emitter << this->save()->toYAML();
+	this->save()->toYAML(emitter);
+	//emitter << YAML::Flow << this->save()->toYAML();
+	std::ofstream fout(filename);
+	fout << emitter.c_str();
+	//fout << this->save()->toYAML();
+}
+void Level::loadFromYaml(std::string filename)
+{
+	GameObjectData* data = new GameObjectData(YAML::LoadFile(filename));
+
+	for(auto child : data->getChildren())
+	{
+		std::string elementType = child->getType();
+		if(elementType == "GameObject")
+		{
+			addObject(new GameObject(child));
+		}
+		else if(elementType == "ControlledObject")
+		{
+			addObject(new ControlledObject(child));
+		}
+		else if(elementType == "Controller")
+		{
+			addObject(new Controller(child));
+		}
+		else if(elementType == "Enemy")
+		{
+			addObject(new Enemy(child));
+		}
+		else if(elementType == "Player")
+		{
+			std::string name = child->getString("name");
+			addPlayer(name, new Player(child));
+			setActivePlayer(name);
+			addObject(getActivePlayer());
+		}
+		else
+		{
+			std::string warning = "";
+			warning += "Could not load element of type \"";
+			warning += elementType;
+			warning += "\".";
+			logWarning(warning);
+		}
+
+
+	}
+}
+void Level::load(std::string filename)
+{
+	loadFromYaml(filename);
+}
+void Level::reload(std::string filename)
+{
+	for(auto obj : _objects)
+		markForRemoval(obj, obj->_objectType);
+	loadFromYaml(filename);
 }
 
 void Level::addObject(GameObject* obj)

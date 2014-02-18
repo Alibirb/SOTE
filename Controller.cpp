@@ -18,7 +18,7 @@
 
 Controller::Controller()
 {
-	_objectType = "controller";
+	_objectType = "Controller";
 
 	registerController();
 
@@ -51,6 +51,10 @@ Controller::Controller()
 Controller::Controller(XMLElement* xmlElement) : Controller()
 {
 	load(xmlElement);
+}
+Controller::Controller(GameObjectData* dataObj) : Controller()
+{
+	load(dataObj);
 }
 
 Controller::~Controller()
@@ -122,23 +126,48 @@ void Controller::setFunction(std::string functionName, std::string code)
 
 GameObjectData* Controller::save()
 {
-	GameObjectData* dataObj = new GameObjectData("controller");
+	GameObjectData* dataObj = new GameObjectData(_objectType);
 
 	saveGameObjectVariables(dataObj);
 	saveControllerVariables(dataObj);
 
 	return dataObj;
 }
-
 void Controller::saveControllerVariables(GameObjectData* dataObj)
 {
-	//dataObj->addChildren((std::vector<GameObject*>)_controlled);
 	for(auto child : _controlled)
 		dataObj->addChild(child);
 	dataObj->addData("radius", _radius);
-	//dataObj->addScriptFunctions(_functions);
 	for(auto kv : _functionSources)
 		dataObj->addScriptFunction(kv.first, kv.second);
+}
+
+void Controller::load(GameObjectData* dataObj)
+{
+	loadGameObjectVariables(dataObj);
+	loadControllerVariables(dataObj);
+}
+void Controller::loadControllerVariables(GameObjectData* dataObj)
+{
+	/*for(auto child : _controlled)
+		dataObj->addChild(child);
+	dataObj->addData("radius", _radius);
+	for(auto kv : _functionSources)
+		dataObj->addScriptFunction(kv.first, kv.second);*/
+
+	_radius = dataObj->getFloat("radius");
+
+	for(auto kv : dataObj->getFunctionSources())
+		setFunction(kv.first, kv.second);
+
+	for(auto child : dataObj->getChildren())
+	{
+		if(child->getType() == "ControlledObject")
+			_controlled.push_back(new ControlledObject(child));
+		else
+			logWarning("No frickin' clue what this non-ControlledObject object is doing as a child of a Controller");
+
+	}
 
 }
 

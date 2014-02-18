@@ -32,6 +32,7 @@ protected:
 
 public:
 	State(GameObject* owner, XMLElement* xmlElement);
+	State(GameObject* owner, GameObjectData* dataObj);
 	virtual ~State();
 
 	virtual void onEnter();
@@ -45,11 +46,13 @@ public:
 	void load(XMLElement* xmlElement);
 
 	GameObjectData* save();
+	void load(GameObjectData* dataObj);
 
 	std::string& getName();
 
 protected:
 	void saveStateVariables(GameObjectData* dataObj);	/// Saves the variables declared in State
+	void loadStateVariables(GameObjectData* dataObj);	/// Loads the variables declared in State
 };
 
 class StateMachine
@@ -60,8 +63,10 @@ private:
 	State* _globalState;
 	std::unordered_map<std::string, State*> _states;
 
+	GameObject* _owner;
+
 public:
-	StateMachine();
+	StateMachine(GameObject* owner);
 	virtual ~StateMachine();
 	void setGlobalState(State* newGlobalState)
 	{
@@ -81,9 +86,11 @@ public:
 	void onUpdate(float deltaTime);
 
 	GameObjectData* save();
+	void load(GameObjectData* dataObj);
 
 protected:
 	void saveStateMachineVariables(GameObjectData* dataObj);
+	void loadStateMachineVariables(GameObjectData* dataObj);
 };
 
 #endif // STATEMACHINE_H

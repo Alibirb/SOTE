@@ -20,6 +20,7 @@ protected:
 public:
 	ControlledObject();
 	ControlledObject(XMLElement* xmlElement);
+	ControlledObject(GameObjectData* dataObj);
 	virtual ~ControlledObject();
 	void load(XMLElement* xmlElement);
 
@@ -31,8 +32,11 @@ public:
 	void setOnMessageFunction(std::string message, std::string code);
 
 	virtual GameObjectData* save();
+	virtual void load(GameObjectData* dataObj);
 protected:
 	void saveControlledObjectVariables(GameObjectData* dataObj);	/// Saves variables declared in ControlledObject
+	void loadControlledObjectVariables(GameObjectData* dataObj);	/// Loads variables declared in ControlledObject
+
 
 };
 

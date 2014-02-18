@@ -8,7 +8,7 @@ std::list<Enemy*> enemyList;
 
 Enemy::Enemy(std::string name, osg::Vec3 position) : Fighter(name, position, "Enemy")
 {
-	_objectType = "enemy";
+	_objectType = "Enemy";
 
 	addEnemy(this);	// put this Enemy in the enemyList.
 
@@ -23,7 +23,24 @@ Enemy::Enemy(std::string name, osg::Vec3 position) : Fighter(name, position, "En
 }
 Enemy::Enemy(XMLElement* xmlElement) : Fighter(xmlElement)
 {
-	_objectType = "enemy";
+	_objectType = "Enemy";
+
+	addEnemy(this);	// put this Enemy in the enemyList.
+
+	PhysicsUserData *userData = new PhysicsUserData;
+	userData->owner = this;
+	userData->ownerType = "Enemy";
+#ifdef USE_BOX2D_PHYSICS
+	physicsBody->SetUserData(userData);
+#else
+	controller->getGhostObject()->setUserPointer(userData);
+#endif
+	_team = "Enemy";
+	_equippedWeapon->setTeam(_team);
+}
+Enemy::Enemy(GameObjectData* dataObj) : Fighter(dataObj)
+{
+	_objectType = "Enemy";
 
 	addEnemy(this);	// put this Enemy in the enemyList.
 

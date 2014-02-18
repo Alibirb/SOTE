@@ -27,8 +27,19 @@ Fighter::Fighter(std::string name, osg::Vec3 position, std::string team) : Entit
 	this->_team = team;
 	loadStats("media/Entities/" + name + ".as");
 	equipWeapon(new Weapon(_stats.weaponStats));
-
 }
+Fighter::Fighter(XMLElement* xmlElement) : Entity()
+{
+	_equippedWeapon = NULL;
+	load(xmlElement);
+}
+Fighter::Fighter(GameObjectData* dataObj) : Entity()
+{
+	_equippedWeapon = NULL;
+	load(dataObj);
+}
+
+
 
 Fighter::~Fighter()
 {
@@ -73,11 +84,6 @@ void Fighter::loadStats(std::string scriptFilename)
 	this->loadModel(_stats.modelFilename);
 }
 
-Fighter::Fighter(XMLElement* xmlElement) : Entity()
-{
-	_equippedWeapon = NULL;
-	load(xmlElement);
-}
 
 void Fighter::load(XMLElement* xmlElement)
 {
@@ -191,7 +197,7 @@ void Fighter::onCollision(GameObject* other)
 
 GameObjectData* Fighter::save()
 {
-	GameObjectData* dataObj = new GameObjectData("fighter");
+	GameObjectData* dataObj = new GameObjectData(_objectType);
 
 	saveGameObjectVariables(dataObj);
 	saveEntityVariables(dataObj);
@@ -211,6 +217,37 @@ void Fighter::saveFighterData(GameObjectData* dataObj)
 		resistanceData->addData("type", kv.first);
 		resistanceData->addData("value", kv.second);
 		dataObj->addChild(resistanceData);
+	}
+
+}
+
+void Fighter::load(GameObjectData* dataObj)
+{
+	loadGameObjectVariables(dataObj);
+	loadEntityVariables(dataObj);
+	loadFighterData(dataObj);
+}
+void Fighter::loadFighterData(GameObjectData* dataObj)
+{
+	/*dataObj->addData("team", _team);
+	if(getWeapon())
+		dataObj->addChild(getWeapon()->save());
+	dataObj->addData("maxHealth", _stats.maxHealth);
+	for(auto kv : _stats.resistances)
+	{
+		GameObjectData* resistanceData = new GameObjectData("resistance");
+		resistanceData->addData("type", kv.first);
+		resistanceData->addData("value", kv.second);
+		dataObj->addChild(resistanceData);
+	}*/
+
+	_team = dataObj->getString("team");
+
+	for(auto child: dataObj->getChildren())
+	{
+		if(child->getType() == "Weapon")
+			equipWeapon(new Weapon(child));
+		//else if(child->getType() = "")
 	}
 
 }

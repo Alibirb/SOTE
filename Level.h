@@ -89,9 +89,14 @@ public:
 	virtual GameObjectData* save();	/// Saves the object's data
 
 	void saveAsXml(std::string filename);
+	void saveAsYaml(std::string filename);
 
+	void load(std::string filename);
+	void reload(std::string filename);
 protected:
 	void loadFromXml(std::string filename);
+	void loadFromYaml(std::string filename);
+
 #ifndef USE_TILEMAP
 	void addNode(osg::Node* node);
 #endif

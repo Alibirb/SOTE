@@ -46,11 +46,13 @@ protected:
 
 	// Export/meta data (used for editor purposes)
 	std::string _modelFilename;
-	std::string _objectType = "gameObject";
+public:
+	std::string _objectType = "GameObject";
 
 public:
 	GameObject();
 	GameObject(XMLElement* xmlElement);
+	GameObject(GameObjectData* dataObj);
 	virtual ~GameObject();
 
 	virtual void setPosition(osg::Vec3 newPosition);
@@ -65,6 +67,7 @@ public:
 
 
 	virtual GameObjectData* save();	/// Saves the object's data (should call a function to save the variables for each class the object overrides)
+	virtual void load(GameObjectData* dataObj);
 
 	void loadModel(std::string modelFilename);
 	void setModelNode(osg::Node* node);
@@ -80,7 +83,8 @@ public:
 	void playAnimation(std::string& animationName);
 
 protected:
-	void saveGameObjectVariables(GameObjectData* data);	/// Saves the variables declared in GameObject.
+	void saveGameObjectVariables(GameObjectData* dataObj);	/// Saves the variables declared in GameObject.
+	void loadGameObjectVariables(GameObjectData* dataObj);
 };
 
 void registerGameObject();

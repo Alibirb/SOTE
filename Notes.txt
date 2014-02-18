@@ -2,21 +2,19 @@ Basics:
 	A game starring the characters from MW:ADC. Kind of a cross between an RPG and an adventure game.
 	Also developing a core system that can be reused in other games.
 
-NOTES:
-	OSG does have an XML parser. Might want to look into using that instead of tinyxml.
 
 TODO:
 	DoneThisCommit:
-		Created GameObjectData class and ability to export level as XML.
+		YAML import/export
 	Current Task:
-		Ability to export the current level as XML
-
 	Next Steps:
-		Use GameObjectData for loading as well.
-		Weapons that attack directly, instead of using a Projectile
-		Use separate GameObjects for the level geometry.
-		Get rid of FighterStats/WeaponStats/ProjectileStats (no longer needed)
-		Improve save/XML export to allow it to link to prototypes.
+		Cleanup:
+			GameObject should contain the mechanism for dealing with script functions (move that stuff from Controller)
+			Get rid of Enemy class (use Fighter directly)
+			GameObject should have options for auto-creating a collision mesh
+			Get rid of FighterStats/WeaponStats/ProjectileStats (no longer needed)
+		Add Weapons that attack directly, instead of using a Projectile
+		Improve save/export to allow it to link to prototypes.
 		Ability to pause the game to switch modes (even if edit mode does nothing)
 		Flame jets for the demo level.
 

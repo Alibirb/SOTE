@@ -17,6 +17,12 @@ namespace tinyxml2
 }
 using namespace tinyxml2;
 
+namespace YAML
+{
+	class Node;
+	class Emitter;
+}
+
 class asIScriptFunction;
 
 class GameObject;
@@ -62,17 +68,33 @@ public:
 	void addScriptFunctions(std::unordered_map<std::string, asIScriptFunction*> functions);
 
 	void addScriptFunction(std::string name, std::string source);	/// saves the source code of a function.
+	void addScriptFunctions(std::unordered_map<std::string, std::string> functions);
 
-	/*TODO:
+
+
 	int getInt(std::string name);
 	float getFloat(std::string name);
 	bool getBool(std::string name);
 	std::string getString(std::string name);
-	osg::Vec3 getVector(std::string name);
-	std::vector<GameObject*> getChildren();
-	*/
+	osg::Vec3 getVec3(std::string name);
+	std::vector<GameObjectData*> getChildren();
+	std::string getFunctionSource(std::string name);
+	std::unordered_map<std::string, std::string> getFunctionSources();
+	bool hasFunctionSource(std::string name);
+	std::string getType();
+
+
 
 	XMLElement* toXML(XMLDocument* doc);
+	//void fromXML(XMLElement* element);
+
+	GameObjectData(YAML::Node node);
+	YAML::Node toYAML();
+	YAML::Emitter& toYAML(YAML::Emitter& emitter);
+
+	void fromYAML(YAML::Node node);
+
+	static void testYamlImportExport(std::string importFilename, std::string exportFilename);	/// Helper testing function. Imports a YAML file, then exports it. Check (manually) to ensure no data was lost
 
 };
 

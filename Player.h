@@ -20,6 +20,7 @@ protected:
 public:
 	Player(std::string name, osg::Vec3 position);
 	Player(XMLElement* xmlElement);
+	Player(GameObjectData* dataObj);
 
 	/// Handles moving the player according to the given input vector.
 	void processMovementControls(osg::Vec3 controlVector);

@@ -69,8 +69,10 @@ public:
 	virtual void onUpdate(float deltaTime)=0;
 
 	virtual GameObjectData* save();
+	virtual void load(GameObjectData* dataObj);
 protected:
 	void saveEntityVariables(GameObjectData* data);	/// Saves the variables declared in Entity.
+	void loadEntityVariables(GameObjectData* data);	/// Loads the variables declared in Entity.
 };
 
 

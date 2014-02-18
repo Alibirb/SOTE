@@ -242,3 +242,13 @@ void Entity::saveEntityVariables(GameObjectData* dataObj)
 	// TODO
 }
 
+void Entity::load(GameObjectData* dataObj)
+{
+	loadGameObjectVariables(dataObj);
+	loadEntityVariables(dataObj);
+}
+void Entity::loadEntityVariables(GameObjectData* dataObj)
+{
+	// TODO
+}
+

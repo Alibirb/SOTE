@@ -26,7 +26,22 @@ Player::Player(std::string name, osg::Vec3 position) : Fighter(name, position, "
 
 Player::Player(XMLElement* xmlElement) : Fighter(xmlElement)
 {
-	_objectType = "player";
+	_objectType = "Player";
+
+	PhysicsUserData *userData = new PhysicsUserData;
+	userData->owner = this;
+	userData->ownerType = "Player";
+#ifdef USE_BOX2D_PHYSICS
+	physicsBody->SetUserData(userData);
+#else
+	controller->getGhostObject()->setUserPointer(userData);
+#endif
+	_team = "Player";
+	_equippedWeapon->setTeam(_team);
+}
+Player::Player(GameObjectData* dataObj) : Fighter(dataObj)
+{
+	_objectType = "Player";
 
 	PhysicsUserData *userData = new PhysicsUserData;
 	userData->owner = this;
@@ -95,7 +110,7 @@ void Player::die()
 		GameOverYouLose();
 	}
 	else
-		logError("Not implemented.");
+		logError("Player death not implemented.");
 }
 
 void Player::onUpdate(float deltaTime)

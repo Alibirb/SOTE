@@ -103,6 +103,7 @@ Projectile::Projectile(osg::Vec3 startingPosition, osg::Vec3 heading, std::strin
 
 Projectile::Projectile(osg::Vec3 startingPosition, osg::Vec3 heading, ProjectileStats stats, std::string team)
 {
+	_objectType = "Projectile";
 	this->_team = team;
 
 	setStats(stats);
