@@ -5,7 +5,6 @@
 #include "globals.h"
 
 #include "Player.h"
-#include "Enemy.h"
 #include "ControlledObject.h"
 #include "Controller.h"
 #include "PhysicsData.h"
@@ -41,12 +40,12 @@ void myTickCallback(btDynamicsWorld *world, btScalar timeStep)
 			continue;
 		}
 
-		if(dataA->ownerType == "Projectile" && (dataB->ownerType == "Enemy" || dataB->ownerType == "Player") )
+		if(dataA->ownerType == "Projectile" && (dataB->ownerType == "Fighter" || dataB->ownerType == "Player") )
 		{
 			((Fighter*)dataB->owner)->onCollision((Projectile*)dataA->owner);
 			((Projectile*)dataA->owner)->onCollision((Fighter*)dataB->owner);
 		}
-		else if((dataA->ownerType == "Enemy" || dataA->ownerType == "Player") && dataB->ownerType == "Projectile")
+		else if((dataA->ownerType == "Fighter" || dataA->ownerType == "Player") && dataB->ownerType == "Projectile")
 		{
 			((Fighter*)dataA->owner)->onCollision((Projectile*)dataB->owner);
 			((Projectile*)dataB->owner)->onCollision((Fighter*)dataA->owner);
@@ -123,71 +122,6 @@ Level::~Level()
 {
 }
 
-void Level::loadFromXml(std::string filename)
-{
-#ifdef USE_TILEMAP
-	tiledMap = new TiledMap(mapFilename);
-	tiledMap->setPosition(osg::Vec3(0.0, 0.0, -5.0));
-#else
-
-	FILE *file = fopen(filename.c_str(), "rb");
-	if(!file)
-		logError("Failed to open file " + filename);
-
-	XMLDocument doc(filename.c_str());
-	if (doc.LoadFile(file)  != tinyxml2::XML_NO_ERROR)
-	{
-		logError("Failed to load level file. " + filename);
-		logError(doc.GetErrorStr1());
-	}
-
-
-	XMLHandle docHandle(&doc);
-	XMLElement* currentElement;
-	XMLHandle rootHandle = XMLHandle(docHandle.FirstChildElement().ToElement());
-
-	currentElement = rootHandle.FirstChildElement().ToElement();
-	for( ; currentElement; currentElement = currentElement->NextSiblingElement())
-	{
-		std::string elementType = currentElement->Value();
-		if(elementType == "geometry")
-			addNode(osgDB::readNodeFile(currentElement->Attribute("source")));
-		else if(elementType == "gameObject")
-		{
-			addObject(new GameObject(currentElement));
-		}
-		else if(elementType == "controlledObject")
-		{
-			addObject(new ControlledObject(currentElement));
-		}
-		else if(elementType == "controller")
-		{
-			addObject(new Controller(currentElement));
-		}
-		else if(elementType == "enemy")
-		{
-			addObject(new Enemy(currentElement));
-		}
-		else if(elementType == "player")
-		{
-			std::string name = currentElement->Attribute("name");
-			addPlayer(name, new Player(currentElement));
-			setActivePlayer(name);
-			addObject(getActivePlayer());
-		}
-		else
-		{
-			std::string warning = "";
-			warning += "Could not load element of type \"";
-			warning += currentElement->Value();
-			warning += "\".";
-			logWarning(warning);
-		}
-
-
-	}
-#endif // USE_TILEMAP
-}
 
 #ifndef USE_TILEMAP
 void Level::addNode(osg::Node* node)
@@ -217,7 +151,7 @@ void Level::addNode(osg::Node* node)
 
 GameObjectData* Level::save()
 {
-	GameObjectData* data = new GameObjectData("level");
+	GameObjectData* data = new GameObjectData("Level");
 
 	for(GameObject* object : _objects)
 		data->addChild(object);
@@ -225,13 +159,7 @@ GameObjectData* Level::save()
 	return data;
 }
 
-void Level::saveAsXml(std::string filename)
-{
-	XMLDocument* doc = new XMLDocument(filename.c_str());
-	doc->InsertFirstChild(this->save()->toXML(doc));	// Make this the root element.
 
-	doc->SaveFile(filename.c_str());
-}
 void Level::saveAsYaml(std::string filename)
 {
 	YAML::Emitter emitter;
@@ -261,9 +189,9 @@ void Level::loadFromYaml(std::string filename)
 		{
 			addObject(new Controller(child));
 		}
-		else if(elementType == "Enemy")
+		else if(elementType == "Fighter")
 		{
-			addObject(new Enemy(child));
+			addObject(new Fighter(child));
 		}
 		else if(elementType == "Player")
 		{
@@ -298,6 +226,10 @@ void Level::reload(std::string filename)
 void Level::addObject(GameObject* obj)
 {
 	_objects.push_back(obj);
+}
+void Level::removeObject(GameObject* obj)
+{
+	_objects.remove(obj);
 }
 
 

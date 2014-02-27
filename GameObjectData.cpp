@@ -41,6 +41,12 @@ void GameObjectData::addData(std::string name, std::string data){
 void GameObjectData::addData(std::string name, osg::Vec3 data){
 	vectors[name] = data;
 }
+void GameObjectData::addData(std::string name, GameObjectData* data) {
+	_objects[name] = data;
+}
+void GameObjectData::addData(std::string name, std::vector<GameObjectData*> data) {
+	_objectLists[name] = data;
+}
 void GameObjectData::addChild(GameObject* child){
 	_children.push_back(child->save());
 }
@@ -70,7 +76,10 @@ int GameObjectData::getInt(std::string name) {
 	return ints[name];
 }
 float GameObjectData::getFloat(std::string name) {
-	return floats[name];
+	if(floats.count(name.c_str()))
+		return floats[name];
+	else if(ints.count(name.c_str()))	// May have been stored as an int instead
+		return ints[name];
 }
 bool GameObjectData::getBool(std::string name) {
 	return bools[name];
@@ -89,6 +98,42 @@ std::string GameObjectData::getFunctionSource(std::string name) {
 }
 std::unordered_map<std::string, std::string> GameObjectData::getFunctionSources() {
 	return _scriptFunctionSource;
+}
+GameObjectData* GameObjectData::getObject(std::string name) {
+	return _objects[name];
+}
+std::vector<GameObjectData*> GameObjectData::getObjectList(std::string name) {
+	return _objectLists[name];
+}
+std::unordered_map<std::string, int> GameObjectData::getAllInts() {
+	return ints;
+}
+std::unordered_map<std::string, float> GameObjectData::getAllFloats() {
+	return floats;
+}
+std::unordered_map<std::string, bool> GameObjectData::getAllBools() {
+	return bools;
+}
+std::unordered_map<std::string, std::string> GameObjectData::getAllStrings() {
+	return strings;
+}
+std::unordered_map<std::string, osg::Vec3> GameObjectData::getAllVec3s() {
+	return vectors;
+}
+
+bool GameObjectData::hasInt(std::string name) {
+	return ints.count(name.c_str());
+}
+bool GameObjectData::hasFloat(std::string name) {
+	if(floats.count(name.c_str()))
+		return true;
+	else if(ints.count(name.c_str()))	// May have been stored as an int instead
+		return true;
+	else
+		return false;
+}
+bool GameObjectData::hasString(std::string name) {
+	return strings.count(name.c_str());
 }
 bool GameObjectData::hasFunctionSource(std::string name) {
 	return _scriptFunctionSource.count(name.c_str());
@@ -138,47 +183,6 @@ XMLElement* GameObjectData::toXML(XMLDocument* doc)
 
 }
 
-YAML::Node GameObjectData::toYAML()
-{
-	YAML::Node node;
-
-	for(auto kv : ints) {
-		node[kv.first.c_str()] = kv.second;
-	}
-	for(auto kv : floats) {
-		node[kv.first.c_str()] = kv.second;
-	}
-	for(auto kv : bools) {
-		node[kv.first.c_str()] = kv.second;
-	}
-	for(auto kv : strings) {
-		node[kv.first.c_str()] = kv.second;
-	}
-	for(auto kv : vectors)
-	{
-		// TODO: should specialize YAML convert template class for Vec3
-		// See http://code.google.com/p/yaml-cpp/wiki/Tutorial
-		osg::Vec3 theVector = kv.second;
-		YAML::Node vec3Node;
-		vec3Node["x"] = theVector.x();
-		vec3Node["y"] = theVector.y();
-		vec3Node["z"] = theVector.z();
-		node[kv.first] = vec3Node;
-	}
-	for(auto kv : _scriptFunctionSource)
-	{
-		YAML::Node codeNode;
-		codeNode["code"] = kv.second;
-		node[kv.first] = codeNode;
-	}
-
-	for(auto obj : _children) {
-		node["children"].push_back(obj->toYAML());
-	}
-
-	return node;
-}
-
 YAML::Emitter& GameObjectData::toYAML(YAML::Emitter& emitter)
 {
 	emitter << YAML::BeginMap;
@@ -218,6 +222,12 @@ YAML::Emitter& GameObjectData::toYAML(YAML::Emitter& emitter)
 		emitter << YAML::EndMap;
 		emitter << YAML::Block;
 	}
+	for(auto kv : _objects)
+	{
+		emitter << YAML::Key << kv.first.c_str();
+		emitter << YAML::Value;
+		kv.second->toYAML(emitter);
+	}
 
 	if(!_scriptFunctionSource.empty())
 	{
@@ -227,7 +237,7 @@ YAML::Emitter& GameObjectData::toYAML(YAML::Emitter& emitter)
 		for(auto kv : _scriptFunctionSource)
 		{
 			emitter << YAML::Key << kv.first;
-			emitter << YAML::Value << kv.second;
+			emitter << YAML::Value << YAML::Literal << kv.second;
 		}
 		emitter << YAML::EndMap;
 	}
@@ -288,10 +298,10 @@ void GameObjectData::fromYAML(YAML::Node node)
 		std::string key;
 		key = it->first.as<std::string>();
 		if(key == "dataType")
-			continue;	// dealt with at the start. dataType is special.
+			continue;	// dealt with at the start. dataType is stored seperately from the other properties.
 
 
-		switch(it->second.Type())
+		switch(it->second.Type())	// Check what kind of node this data is
 		{
 		case YAML::NodeType::Sequence:
 			/// Sequence, which means this node contains a list of items to be interpreted as GameObjectData
@@ -304,18 +314,20 @@ void GameObjectData::fromYAML(YAML::Node node)
 		case YAML::NodeType::Map:
 			// Map type
 
-			// Could be a Vec3
-			if(isVec3(it->second))
+
+			if(isVec3(it->second))	// Could be a Vec3
 				this->addData(key, toVec3(it->second));
-			else if(it->first.as<std::string>() == "functions")
+			else if(it->first.as<std::string>() == "functions")	// Or functions
 			{
 				for(YAML::const_iterator funcIt = it->second.begin(); funcIt != it->second.end(); ++funcIt)
 				{
 					addScriptFunction(funcIt->first.as<std::string>(), funcIt->second.as<std::string>());	/// Assuming that the function is source code, not byte code.
 				}
 			}
-			else
-				logError("Unable to determine meaning of YAML map node.");
+			else	// Probably GameObjectData then
+			{
+				addData(key, new GameObjectData(it->second));
+			}
 			break;
 		case YAML::NodeType::Scalar:
 			// Simple primitive data type

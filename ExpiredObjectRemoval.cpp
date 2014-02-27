@@ -3,7 +3,7 @@
 #include <deque>
 //#include <iostream>
 
-#include "Enemy.h"
+#include "Fighter.h"
 #include "Projectile.h"
 
 #include "TemporaryText.h"
@@ -25,8 +25,8 @@ void removeExpiredObjects()
 	{
 		// For each object in the list, cast it to the appropriate type and then delete it.
 		std::string objectType = expiredObjects.front().objectType;
-		if (objectType == "Enemy")
-			delete ((Enemy*) expiredObjects.front().object);
+		if (objectType == "Fighter")
+			delete ((Fighter*) expiredObjects.front().object);
 		else if (objectType == "Entity")
 			delete ((Entity*) expiredObjects.front().object);
 		else if (objectType == "Item")

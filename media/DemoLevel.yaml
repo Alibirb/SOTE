@@ -1,52 +1,96 @@
-dataType: level
+dataType: Level
 children:
   - dataType: GameObject
     geometry: DemoLevel.osgt
-    position: {x: 0, y: 0, z:0}
+    position: {x: 0, y: 0, z: 0}
+    mass: 0
   - dataType: Controller
     radius: 5
     geometry: Switch.osgt
     position: {x: 0, y: 0, z: 0}
     functions:
-      onInteraction: "\n\t\tvoid onInteraction(Controller@ self)\n\t\t{\n\t\t\tself.sendMessage(\"toggle\");\n\t\t}\n\t"
+      onInteraction: |
+        void onInteraction(Controller@ self)
+        {
+        	self.sendMessage("toggle");
+        }
     children:
       - dataType: ControlledObject
         geometry: SlidingDoor.osgt
         position: {x: 8, y: 0, z: 0}
+        functions:
+          onMessage_toggle: |
+            void onMessage_toggle(ControlledObject@ self)
+            {
+                if(self.getStateName() == "closed")
+                    self.changeState("open");
+                else
+                    self.changeState("closed");
+            }
         children:
           - dataType: StateMachine
+            defaultState: closed
             children:
               - dataType: State
                 name: open
                 functions:
-                  onEnter: "\n\t\t\tvoid onEnter(ControlledObject@ self)\n\t\t\t{\n\t\t\t\tself.playAnimation(\"open\");\n\t\t\t}\n\t\t"
+                  onEnter: |
+                    void onEnter(ControlledObject@ self)
+                    {
+                    	self.playAnimation("open");
+                    	print("opening");
+                    }
               - dataType: State
                 name: closed
                 functions:
-                  onEnter: "\n\t\t\tvoid onEnter(ControlledObject@ self)\n\t\t\t{\n\t\t\t\tself.playAnimation(\"close\");\n\t\t\t}\n\t\t"
-  - dataType: Enemy
-    maxHealth: 2.256409e-37
+                  onEnter: |
+                    void onEnter(ControlledObject@ self)
+                    {
+                    	self.playAnimation("close");
+                    	print("closing");
+                    }
+  - dataType: Fighter
+    maxHealth: 5.0
     team: Enemy
     geometry: humanmodelNoBones.osg
     position: {x: 5, y: 5, z: 0}
-    children:
-      - dataType: Weapon
-        coolDownTime: 2.5
-        geometry: staff.png
-        position: {x: 0, y: 0, z: 1}
+    resistances:
+      dataType: unordered_map
+      ACID: 0.0
+      COLD: 0.0
+      HOT: 0.0
+    weapon:
+      dataType: Weapon
+      coolDownTime: 2.5
+      geometry: staff.png
+      position: {x: 0, y: 0, z: 1}
+      projectile:
+        dataType: Projectile
+        geometry: circle.png
         children:
-          - dataType: Projectile
-            geometry: circle.png
+          - dataType: damage
+            amount: 2
+            type: PURE_MAGIC
   - dataType: Player
-    maxHealth: 1.356313e-19
+    maxHealth: 25.0
     team: Player
     geometry: humanmodelNoBones.osg
     position: {x: 1.774747, y: 0.1247724, z: 1.839263}
-    children:
-      - dataType: Weapon
-        coolDownTime: 2.5
-        geometry: staff.png
-        position: {x: 0, y: 0, z: 1}
+    resistances:
+      dataType: unordered_map
+      ACID: 0.0
+      COLD: 0.0
+      HOT: 0.0
+      PURE_MAGIC: 0.0
+    weapon:
+      dataType: Weapon
+      coolDownTime: 2.5
+      geometry: staff.png
+      position: {x: 0, y: 0, z: 1}
+      projectile:
+        dataType: Projectile
+        geometry: Fireball.png
         children:
-          - dataType: Projectile
-            geometry: Fireball.png
+          - dataType: damage
+            amount: 2
+            type: HOT

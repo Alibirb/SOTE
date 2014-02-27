@@ -46,9 +46,6 @@ public:
 
 	Entity();
 	Entity(std::string name, osg::Vec3 position);
-	Entity(XMLElement* xmlElement);
-
-	virtual void load(XMLElement* xmlElement);
 
 	virtual void jump();
 

@@ -113,10 +113,11 @@ public:
 	virtual bool runFile(const std::string& filePath, const char* functionName="void run()");
 
 
-
+	/// Compiles a function.
 	void addFunction(const char* sectionName, const char* code, int lineOffset, asDWORD compileFlags, asIScriptFunction** outFunc);
 
-	/// Compiles and returns the functions. Does not add to module.
+	/// Compiles and returns the function.
+	/// TODO: Do I really need this and addFunction?
 	asIScriptFunction* compileFunction(const char* sectionName, const char* code, int lineOffset, asDWORD compileFlags);
 
 	void registerFunction(const char* declaration, const asSFuncPtr &funcPointer, asDWORD callConv = asCALL_CDECL);
@@ -247,8 +248,6 @@ public:
 
 		ctx->SetObject(object);
 
-
-
 		int r = ctx->Execute();
 
 		if(r != asEXECUTION_FINISHED)
@@ -297,14 +296,9 @@ public:
 
 	void test();
 
-	/// DO NOT USE. For debugging purposes only.
-	asIScriptEngine* getInternalEngine()
-	{
-		return engine;
-	}
-
 
 protected:
+	void registerVec3();
 	void registerDefaultStuff();
 	void registerTestingStuff();
 };

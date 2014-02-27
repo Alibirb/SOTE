@@ -15,24 +15,20 @@ class ControlledObject : public GameObject
 {
 protected:
 	StateMachine* _stateMachine;
-	std::unordered_map<std::string, asIScriptFunction*> _onMessage;	/// the functions to call for each message received.
 
 public:
 	ControlledObject();
-	ControlledObject(XMLElement* xmlElement);
 	ControlledObject(GameObjectData* dataObj);
 	virtual ~ControlledObject();
-	void load(XMLElement* xmlElement);
 
 	void changeState(std::string& stateName);
 	std::string getCurrentStateName();
 
 	void receiveMessage(std::string& message);
 
-	void setOnMessageFunction(std::string message, std::string code);
-
 	virtual GameObjectData* save();
 	virtual void load(GameObjectData* dataObj);
+
 protected:
 	void saveControlledObjectVariables(GameObjectData* dataObj);	/// Saves variables declared in ControlledObject
 	void loadControlledObjectVariables(GameObjectData* dataObj);	/// Loads variables declared in ControlledObject

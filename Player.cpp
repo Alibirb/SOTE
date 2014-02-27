@@ -1,5 +1,4 @@
 #include "Player.h"
-#include "Enemy.h"
 #include "Weapon.h"
 #include "PhysicsData.h"
 #include "Controller.h"
@@ -24,21 +23,6 @@ Player::Player(std::string name, osg::Vec3 position) : Fighter(name, position, "
 #endif
 }
 
-Player::Player(XMLElement* xmlElement) : Fighter(xmlElement)
-{
-	_objectType = "Player";
-
-	PhysicsUserData *userData = new PhysicsUserData;
-	userData->owner = this;
-	userData->ownerType = "Player";
-#ifdef USE_BOX2D_PHYSICS
-	physicsBody->SetUserData(userData);
-#else
-	controller->getGhostObject()->setUserPointer(userData);
-#endif
-	_team = "Player";
-	_equippedWeapon->setTeam(_team);
-}
 Player::Player(GameObjectData* dataObj) : Fighter(dataObj)
 {
 	_objectType = "Player";
@@ -91,7 +75,7 @@ osg::Vec3 Player::getCameraTarget()
 	return this->getWorldPosition() + osg::Vec3(0, 0, 1.5);
 }
 
-void Player::attack(Enemy *theOneWhoMustDie)
+void Player::attack(Fighter *theOneWhoMustDie)
 {
 	_equippedWeapon->fire();
 }

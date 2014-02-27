@@ -48,7 +48,7 @@ private:
 	osg::ref_ptr<osg::Node> _levelGeometry;
 #endif
 
-	std::vector<GameObject*> _objects;
+	std::list<GameObject*> _objects;
 
 
 public:
@@ -88,13 +88,13 @@ public:
 
 	virtual GameObjectData* save();	/// Saves the object's data
 
-	void saveAsXml(std::string filename);
 	void saveAsYaml(std::string filename);
 
 	void load(std::string filename);
 	void reload(std::string filename);
+
+	void removeObject(GameObject* obj);
 protected:
-	void loadFromXml(std::string filename);
 	void loadFromYaml(std::string filename);
 
 #ifndef USE_TILEMAP

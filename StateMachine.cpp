@@ -2,18 +2,11 @@
 
 #include "globals.h"
 
-#include "tinyxml/tinyxml2.h"
-
 #include "AngelScriptEngine.h"
 
 #include "GameObjectData.h"
 
 
-State::State(GameObject* owner, XMLElement* xmlElement) : _onEnterFunction(NULL), _onUpdateFunction(NULL), _onExitFunction(NULL)
-{
-	_owner = owner;
-	load(xmlElement);
-}
 State::State(GameObject* owner, GameObjectData* dataObj) : _onEnterFunction(NULL), _onUpdateFunction(NULL), _onExitFunction(NULL)
 {
 	_owner = owner;
@@ -36,28 +29,6 @@ void State::onExit()
 	if(_onExitFunction)
 		getScriptEngine()->runFunction(_onExitFunction, "object", _owner);
 };
-
-void State::load(XMLElement* xmlElement)
-{
-	//if(xmlElement->Attribute("source"))		/// Load from external source first, then apply changes.
-	//	load(xmlElement->Attribute("source"));
-
-	if(xmlElement->Attribute("name"))
-		_name = xmlElement->Attribute("name");
-
-	XMLElement* currentElement = xmlElement->FirstChildElement();
-	for( ; currentElement; currentElement = currentElement->NextSiblingElement())
-	{
-		std::string elementType = currentElement->Value();
-		if(elementType == "onEnter")
-			setOnEnterScriptFunction(currentElement->GetText());
-		else if(elementType == "onUpdate")
-			setOnUpdateScriptFunction(currentElement->GetText());
-		else if(elementType == "onExit")
-			setOnExitScriptFunction(currentElement->GetText());
-	}
-
-}
 
 GameObjectData* State::save()
 {
@@ -186,6 +157,7 @@ void StateMachine::saveStateMachineVariables(GameObjectData* dataObj)
 {
 	for(auto kv : _states)
 		dataObj->addChild(kv.second->save());
+
 }
 
 void StateMachine::load(GameObjectData* dataObj)
@@ -195,8 +167,6 @@ void StateMachine::load(GameObjectData* dataObj)
 
 void StateMachine::loadStateMachineVariables(GameObjectData* dataObj)
 {
-	//for(auto kv : _states)
-	//	dataObj->addChild(kv.second->save());
 	for(auto child : dataObj->getChildren())
 	{
 		if(child->getType() == "State")
@@ -204,4 +174,6 @@ void StateMachine::loadStateMachineVariables(GameObjectData* dataObj)
 		else
 			logWarning("No frickin' clue what this non-State object is doing as a child of a StateMachine");
 	}
+	_defaultState = dataObj->getString("defaultState");
+	setCurrentState(_defaultState);
 }

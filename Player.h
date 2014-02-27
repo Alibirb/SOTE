@@ -19,7 +19,6 @@ protected:
 
 public:
 	Player(std::string name, osg::Vec3 position);
-	Player(XMLElement* xmlElement);
 	Player(GameObjectData* dataObj);
 
 	/// Handles moving the player according to the given input vector.
@@ -33,7 +32,7 @@ public:
 	/// Returns the coordinates that the camera should focus on.
 	osg::Vec3 getCameraTarget();
 
-	void attack(Enemy *theOneWhoMustDie);
+	void attack(Fighter *theOneWhoMustDie);
 
 	void die();
 

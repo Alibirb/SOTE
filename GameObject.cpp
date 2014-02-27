@@ -10,7 +10,18 @@
 #include "AngelScriptEngine.h"
 #include "GameObjectData.h"
 
-#include "tinyxml/tinyxml2.h"
+#ifdef USE_BOX2D_PHYSICS
+	#include "Box2D/Box2D.h"
+	#include "Box2DIntegration.h"
+	#include "Box2DDebugDrawer.h"
+	#include "PhysicsContactListener.h"
+#else
+	#include "btBulletDynamicsCommon.h"
+	#include "osgbCollision/Utils.h"
+	#include "osgbCollision/GLDebugDrawer.h"
+	#include "osgbCollision/CollisionShapes.h"
+#endif
+#include "PhysicsData.h"
 
 
 struct AnimationManagerFinder : public osg::NodeVisitor
@@ -45,10 +56,6 @@ GameObject::GameObject() : _physicsBody(NULL)
 	_transformNode->addChild(_updateNode);
 }
 
-GameObject::GameObject(XMLElement* xmlElement) : GameObject()
-{
-	load(xmlElement);
-}
 GameObject::GameObject(GameObjectData* dataObj) : GameObject()
 {
 	load(dataObj);
@@ -71,14 +78,14 @@ GameObject::~GameObject()
 		delete _physicsBody;
 #endif
 	}
+
+	getCurrentLevel()->removeObject(this);
 }
 
 void GameObject::loadModel(std::string modelFilename)
 {
 	_modelFilename = modelFilename;
 	if(modelFilename.length() > 4 && modelFilename.substr(modelFilename.length() - 4, 4) == ".png")
-		_useSpriteAsModel = true;
-	if(_useSpriteAsModel)
 	{
 		if(!osg::dynamic_pointer_cast<Sprite>(_modelNode))
 			setModelNode(new Sprite(modelFilename));
@@ -87,11 +94,9 @@ void GameObject::loadModel(std::string modelFilename)
 	}
 	else
 	{
-		_transformNode->removeChild(_modelNode);
-		_modelNode = osgDB::readNodeFile(modelFilename);
+		setModelNode(osgDB::readNodeFile(modelFilename));
 		if(!_modelNode)
 			logError("Could not load node file \"" + modelFilename + "\"");
-		_transformNode->addChild(_modelNode);
 	}
 }
 void GameObject::setModelNode(osg::Node* node)
@@ -99,6 +104,7 @@ void GameObject::setModelNode(osg::Node* node)
 	_transformNode->removeChild(_modelNode);
 	_modelNode = node;
 	_transformNode->addChild(_modelNode);
+	findAnimation();
 }
 
 
@@ -141,62 +147,6 @@ osg::Vec3 GameObject::worldToLocal(osg::Vec3 worldVector)	/// FIXME: May not wor
 	return localVector;
 }
 
-void GameObject::loadFromFile(std::string xmlFilename, std::string searchPath)
-{
-	FILE *file = fopen(xmlFilename.c_str(), "rb");
-	if(!file)
-	{
-		xmlFilename = searchPath + xmlFilename;
-		file = fopen(xmlFilename.c_str(), "rb");
-		if(!file)
-			logError("Failed to open file " + xmlFilename);
-	}
-
-
-	XMLDocument doc(xmlFilename.c_str());
-	if (doc.LoadFile(file)  != tinyxml2::XML_NO_ERROR)
-	{
-		logError("Failed to load file " + xmlFilename);
-		logError(doc.GetErrorStr1());
-	}
-
-
-	XMLHandle docHandle(&doc);
-	XMLElement* rootElement = docHandle.FirstChildElement().ToElement();
-
-	load(rootElement);
-}
-void GameObject::load(XMLElement* xmlElement)
-{
-	if(xmlElement->Attribute("source"))		/// Load from external source first, then apply changes.
-		loadFromFile(xmlElement->Attribute("source"));
-
-	float x, y, z;
-	xmlElement->QueryFloatAttribute("x", &x);
-	xmlElement->QueryFloatAttribute("y", &y);
-	xmlElement->QueryFloatAttribute("z", &z);
-
-	initialPosition = osg::Vec3(x, y, z);
-	setPosition(initialPosition);
-
-
-
-	XMLElement* currentElement = xmlElement->FirstChildElement();
-	for( ; currentElement; currentElement = currentElement->NextSiblingElement())
-	{
-		std::string elementType = currentElement->Value();
-		if(elementType == "geometry")
-			loadModel(currentElement->Attribute("source"));
-	}
-
-	if(xmlElement->Attribute("animation"))
-	{
-		std::string animation = xmlElement->Attribute("animation");
-		if(animation == "true")
-			findAnimation();
-	}
-
-}
 
 GameObjectData* GameObject::save()
 {
@@ -210,6 +160,9 @@ void GameObject::saveGameObjectVariables(GameObjectData* dataObj)
 {
 	dataObj->addData("position", getLocalPosition());
 	dataObj->addData("geometry", _modelFilename);
+	for(auto kv : _functionSources)
+		dataObj->addScriptFunction(kv.first, kv.second);
+
 	// TODO: animation.
 }
 void GameObject::load(GameObjectData* dataObj)
@@ -220,6 +173,11 @@ void GameObject::loadGameObjectVariables(GameObjectData* dataObj)
 {
 	setPosition(dataObj->getVec3("position"));
 	loadModel(dataObj->getString("geometry"));
+	for(auto kv : dataObj->getFunctionSources())
+		setFunction(kv.first, kv.second);
+	if(dataObj->hasFloat("mass"))
+		generateRigidBody(dataObj->getFloat("mass"));
+
 }
 
 void GameObject::reset()
@@ -256,7 +214,7 @@ bool GameObject::findAnimation()
     }
     else
 	{
-    	std::cout << "Did not find animation." << std::endl;
+    	std::cout << "Did not find any animation." << std::endl;
         //osg::notify(osg::WARN) << "no osgAnimation::AnimationManagerBase found in the subgraph, no animations available" << std::endl;
         return false;
     }
@@ -264,8 +222,38 @@ bool GameObject::findAnimation()
 
 void GameObject::playAnimation(std::string& animationName)
 {
+	if(!_animationManager)
+	{
+		logError("No animation manager found");
+		return;
+	}
 	_animationManager->play(animationName);
 	_animationManager->setPlayMode(osgAnimation::Animation::ONCE);
+}
+
+
+void GameObject::setFunction(std::string functionName, std::string code)
+{
+	_functionSources[functionName] = code;	/// Save the code so we can manipulate it if needed.
+	_functions[functionName] = getScriptEngine()->compileFunction("GameObject", code.c_str(), 0, asCOMP_ADD_TO_MODULE);
+}
+
+void GameObject::generateRigidBody(double mass)
+{
+#ifndef USE_BOX2D_PHYSICS
+	btTriangleMeshShape* shape = osgbCollision::btTriMeshCollisionShapeFromOSG(_modelNode);
+	_physicsBody = new btRigidBody(mass, new btDefaultMotionState(), shape);
+	getCurrentLevel()->getBulletWorld()->addCollisionObject(_physicsBody);
+#endif
+
+	PhysicsUserData *userData = new PhysicsUserData;
+	userData->owner = this;
+	userData->ownerType = _objectType;
+#ifdef USE_BOX2D_PHYSICS
+	physicsBody->SetUserData(userData);
+#else
+	_physicsBody->setUserPointer(userData);
+#endif
 }
 
 

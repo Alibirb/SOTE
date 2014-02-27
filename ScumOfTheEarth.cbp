@@ -79,8 +79,6 @@
 		<Unit filename="Controller.h" />
 		<Unit filename="Damage.cpp" />
 		<Unit filename="Damage.h" />
-		<Unit filename="Enemy.cpp" />
-		<Unit filename="Enemy.h" />
 		<Unit filename="Entity.cpp" />
 		<Unit filename="Entity.h" />
 		<Unit filename="ExpiredObjectRemoval.cpp" />

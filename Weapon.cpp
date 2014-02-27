@@ -6,62 +6,11 @@
 #include "OwnerUpdateCallback.h"
 #include "GameObjectData.h"
 
-#include "tinyxml/tinyxml2.h"
-
-
 
 #define WEAPON_SCRIPT_LOCATION "media/Weapons/"
 
 
-WeaponStats::WeaponStats(std::string imageFilename, std::string projectileType, ProjectileStats& projectileStats, float coolDownTime)
-{
-	this->imageFilename = imageFilename;
-	this->projectileType = projectileType;
-	this->projectileStats = projectileStats;
-	this->coolDownTime = coolDownTime;
-}
 
-WeaponStats::WeaponStats()
-{
-}
-
-WeaponStats WeaponStats::loadPrototype(std::string prototypeName)
-{
-	registerWeaponStats();
-	getScriptEngine()->runFile(WEAPON_SCRIPT_LOCATION + prototypeName + ".as", "WeaponStats loadStats()");
-	WeaponStats stats = *(new WeaponStats(*((WeaponStats*) getScriptEngine()->getReturnObject())));
-	return stats;
-	//return *((WeaponStats*) getScriptEngine()->getReturnObject());
-}
-
-Weapon::Weapon(WeaponStats stats)
-{
-	_objectType = "Weapon";
-	setStats(stats);
-
-	loadModel(_stats.imageFilename);
-
-	projectileStartingTransform = new osg::PositionAttitudeTransform();
-	projectileStartingTransform->setPosition(osg::Vec3(.75,0,0));
-	_transformNode->addChild(projectileStartingTransform);
-	_ready = true;
-}
-
-Weapon::Weapon(std::string type) : Weapon(WeaponStats::loadPrototype(type))
-{
-}
-Weapon::Weapon(XMLElement* xmlElement)
-{
-	_objectType = "Weapon";
-
-	projectileStartingTransform = new osg::PositionAttitudeTransform();
-	projectileStartingTransform->setPosition(osg::Vec3(.75,0,0));
-	_transformNode->addChild(projectileStartingTransform);
-
-	load(xmlElement);
-
-	_ready = true;
-}
 Weapon::Weapon(GameObjectData* dataObj)
 {
 	_objectType = "Weapon";
@@ -73,54 +22,6 @@ Weapon::Weapon(GameObjectData* dataObj)
 	load(dataObj);
 
 	_ready = true;
-}
-
-void Weapon::load(XMLElement* xmlElement)
-{
-	if(xmlElement->Attribute("source"))		/// Load from external source first, then apply changes.
-		load(xmlElement->Attribute("source"));
-
-	if(xmlElement->Attribute("coolDownTime"))
-		xmlElement->QueryFloatAttribute("coolDownTime", &_stats.coolDownTime);
-
-
-	XMLElement* currentElement = xmlElement->FirstChildElement();
-	for( ; currentElement; currentElement = currentElement->NextSiblingElement())
-	{
-		std::string elementType = currentElement->Value();
-		if(elementType == "geometry")
-			loadModel(currentElement->Attribute("source"));
-		else if(elementType == "projectile")
-		{
-			setProjectileStats(*(new ProjectileStats(currentElement)));
-		}
-
-	}
-}
-void Weapon::load(std::string xmlFilename)
-{
-	FILE *file = fopen(xmlFilename.c_str(), "rb");
-	if(!file)
-	{
-		xmlFilename = WEAPON_SCRIPT_LOCATION + xmlFilename;
-		file = fopen(xmlFilename.c_str(), "rb");
-		if(!file)
-			logError("Failed to open file " + xmlFilename);
-	}
-
-
-	XMLDocument doc(xmlFilename.c_str());
-	if (doc.LoadFile(file)  != tinyxml2::XML_NO_ERROR)
-	{
-		logError("Failed to load file " + xmlFilename);
-		logError(doc.GetErrorStr1());
-	}
-
-
-	XMLHandle docHandle(&doc);
-	XMLElement* rootElement = docHandle.FirstChildElement().ToElement();
-
-	load(rootElement);
 }
 
 Weapon::~Weapon()
@@ -139,11 +40,11 @@ void Weapon::fire()
 	double angle;
 	osg::Vec3 axis;
 	_transformNode->getAttitude().getRotate(angle, axis);
-	new Projectile(getWorldCoordinates(projectileStartingTransform)->getTrans(), osg::Vec3(cos(angle), sin(angle), 0), _stats.projectileStats, this->_team);
-	if(_stats.coolDownTime != 0.0)
+	new Projectile(getWorldCoordinates(projectileStartingTransform)->getTrans(), osg::Vec3(cos(angle), sin(angle), 0), _projectileData, this->_team);
+	if(_coolDownTime != 0.0)
 	{
 		_ready = false;
-		_coolDownTimeRemaining = _stats.coolDownTime;
+		_coolDownTimeRemaining = _coolDownTime;
 	}
 }
 
@@ -158,6 +59,11 @@ void Weapon::onUpdate(float deltaTime)
 			_coolDownTimeRemaining = 0.0;
 		}
 	}
+}
+
+void Weapon::setTeam(std::string team)
+{
+	this->_team = team;
 }
 
 
@@ -198,19 +104,21 @@ GameObjectData* Weapon::save()
 }
 void Weapon::saveWeaponData(GameObjectData* dataObj)
 {
-	dataObj->addData("coolDownTime", _stats.coolDownTime);
+	dataObj->addData("coolDownTime", _coolDownTime);
 
+	if(_projectileData)
 	{
-		GameObjectData* projectileData = new GameObjectData("Projectile");
-		projectileData->addData("geometry", _stats.projectileStats.imageFilename);
-		for(auto damage : _stats.projectileStats.damages)
+		/*GameObjectData* projectileData = new GameObjectData("Projectile");
+		projectileData->addData("geometry", _projectileStats.imageFilename);
+		for(auto damage : _projectileStats.damages)
 		{
 			GameObjectData* damageData = new GameObjectData("damage");
 			damageData->addData("type", damage.type);
 			damageData->addData("amount", damage.amount);
 			projectileData->addChild(damageData);
 		}
-		dataObj->addChild(projectileData);
+		dataObj->addData("projectile", projectileData);*/
+		dataObj->addData("projectile", new GameObjectData(*_projectileData));
 	}
 
 }
@@ -222,41 +130,24 @@ void Weapon::load(GameObjectData* dataObj)
 }
 void Weapon::loadWeaponData(GameObjectData* dataObj)
 {
-	/*dataObj->addData("coolDownTime", _stats.coolDownTime);
-
+	_coolDownTime = dataObj->getFloat("coolDownTime");
+	if(dataObj->getObject("projectile"))
 	{
-		GameObjectData* projectileData = new GameObjectData("projectile");
-		projectileData->addData("geometry", _stats.projectileStats.imageFilename);
-		for(auto damage : _stats.projectileStats.damages)
+		/*
+		ProjectileStats projectileStats;
+		projectileStats.imageFilename = dataObj->getObject("projectile")->getString("geometry");
+		for(auto child : dataObj->getObject("projectile")->getChildren())
 		{
-			GameObjectData* damageData = new GameObjectData("damage");
-			damageData->addData("type", damage.type);
-			damageData->addData("amount", damage.amount);
-			projectileData->addChild(damageData);
-		}
-		dataObj->addChild(projectileData);
-	}*/
-
-	_stats.coolDownTime = dataObj->getFloat("coolDownTime");
-	_stats.imageFilename = dataObj->getString("geometry");
-	for(auto child : dataObj->getChildren())
-	{
-		if(child->getType() == "Projectile")
-		{
-			ProjectileStats projectileStats;
-			projectileStats.imageFilename = child->getString("geometry");
-			for(auto child : dataObj->getChildren())
+			if(child->getType() == "damage")
 			{
-				if(child->getType() == "damage")
-				{
-					Damage dam;
-					dam.amount = child->getFloat("amount");
-					dam.type = child->getString("type");
-					projectileStats.damages.push_back(dam);
-				}
+				Damage dam;
+				dam.amount = child->getFloat("amount");
+				dam.type = child->getString("type");
+				projectileStats.damages.push_back(dam);
 			}
-			_stats.projectileStats = projectileStats;
 		}
+		_projectileStats = projectileStats;*/
+		_projectileData = new GameObjectData(*dataObj->getObject("projectile"));
 	}
 
 }
@@ -264,7 +155,7 @@ void Weapon::loadWeaponData(GameObjectData* dataObj)
 
 
 
-
+/*
 namespace AngelScriptWrapperFunctions
 {
 	void WeaponStatsConstructor(WeaponStats *memory)
@@ -314,3 +205,4 @@ void registerWeaponStats()
 
 	registered = true;
 }
+*/

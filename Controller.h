@@ -16,18 +16,11 @@ class Controller : public GameObject
 protected:
 	std::vector<ControlledObject*> _controlled;
 	float _radius = 5.0;	/// how close the player needs to be to interact with the object.
-	std::unordered_map<std::string, asIScriptFunction*> _functions;	/// script functions
-
-	// Export/meta data (used for editor purposes)
-	std::unordered_map<std::string, std::string> _functionSources;	/// source code for script functions.
-
 
 public:
 	Controller();
-	Controller(XMLElement* xmlElement);
 	Controller(GameObjectData* dataObj);
 	virtual ~Controller();
-	void load(XMLElement* xmlElement);
 
 	void addControlledObject(ControlledObject* object);
 
@@ -35,7 +28,6 @@ public:
 
 	void sendMessage(std::string& message);
 
-	void setFunction(std::string functionName, std::string code);
 
 	virtual GameObjectData* save();
 	virtual void load(GameObjectData* dataObj);

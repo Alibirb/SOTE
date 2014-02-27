@@ -15,21 +15,22 @@
 	#include "osgbCollision/Utils.h"
 #endif
 
+#include <unordered_map>
+
 
 
 class GameObjectData;
 
-namespace tinyxml2
-{
-	class XMLElement;
-}
-using namespace tinyxml2;
+
+
+class asIScriptFunction;
+
+
 
 /// Class for an object
 class GameObject
 {
 protected:
-	bool _useSpriteAsModel = false;
 	osg::Vec3 initialPosition;
 
 	ImprovedAnimationManager* _animationManager;
@@ -44,14 +45,18 @@ protected:
 #endif
 	osg::Vec3 physicsToModelAdjustment;	/// adjustment between the visual and physical components
 
+	std::unordered_map<std::string, asIScriptFunction*> _functions;	/// script functions
+
+
 	// Export/meta data (used for editor purposes)
 	std::string _modelFilename;
+	std::unordered_map<std::string, std::string> _functionSources;	/// source code for script functions.
+
 public:
 	std::string _objectType = "GameObject";
 
 public:
 	GameObject();
-	GameObject(XMLElement* xmlElement);
 	GameObject(GameObjectData* dataObj);
 	virtual ~GameObject();
 
@@ -61,8 +66,6 @@ public:
 	osg::Vec3 localToWorld(osg::Vec3 localVector);
 	osg::Vec3 worldToLocal(osg::Vec3 worldVector);
 
-	void loadFromFile(std::string xmlFilename, std::string searchPath="media/Objects/");
-	virtual void load(XMLElement* xmlElement);
 	virtual void reset();	/// Reset the object.
 
 
@@ -81,6 +84,10 @@ public:
 	bool findAnimation();
 
 	void playAnimation(std::string& animationName);
+
+	void setFunction(std::string functionName, std::string code);
+
+	void generateRigidBody(double mass);	/// Generates a rigid body to fit the geometry
 
 protected:
 	void saveGameObjectVariables(GameObjectData* dataObj);	/// Saves the variables declared in GameObject.

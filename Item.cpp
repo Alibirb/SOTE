@@ -4,7 +4,7 @@
 
 Item::Item(std::string imageFilename)
 {
-	_useSpriteAsModel = true;
+	//_useSpriteAsModel = true;
 	loadModel(imageFilename);
 }
 

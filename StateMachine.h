@@ -6,12 +6,7 @@
 class asIScriptFunction;
 class GameObject;
 
-namespace tinyxml2
-{
-	class XMLElement;
-}
 
-using namespace tinyxml2;
 
 class GameObjectData;
 
@@ -31,7 +26,6 @@ protected:
 	std::string _onExitCode;
 
 public:
-	State(GameObject* owner, XMLElement* xmlElement);
 	State(GameObject* owner, GameObjectData* dataObj);
 	virtual ~State();
 
@@ -43,8 +37,6 @@ public:
 	void setOnUpdateScriptFunction(std::string code);
 	void setOnExitScriptFunction(std::string code);
 
-	void load(XMLElement* xmlElement);
-
 	GameObjectData* save();
 	void load(GameObjectData* dataObj);
 
@@ -55,6 +47,8 @@ protected:
 	void loadStateVariables(GameObjectData* dataObj);	/// Loads the variables declared in State
 };
 
+
+
 class StateMachine
 {
 private:
@@ -64,6 +58,9 @@ private:
 	std::unordered_map<std::string, State*> _states;
 
 	GameObject* _owner;
+
+	// editor data
+	std::string _defaultState;
 
 public:
 	StateMachine(GameObject* owner);

@@ -48,10 +48,7 @@ Controller::Controller()
 	_physicsBody->setUserPointer(userData);
 #endif
 }
-Controller::Controller(XMLElement* xmlElement) : Controller()
-{
-	load(xmlElement);
-}
+
 Controller::Controller(GameObjectData* dataObj) : Controller()
 {
 	load(dataObj);
@@ -59,42 +56,6 @@ Controller::Controller(GameObjectData* dataObj) : Controller()
 
 Controller::~Controller()
 {
-}
-
-void Controller::load(XMLElement* xmlElement)
-{
-	if(xmlElement->Attribute("source"))		/// Load from external source first, then apply changes.
-		loadFromFile(xmlElement->Attribute("source"));
-
-	float x, y, z;
-	xmlElement->QueryFloatAttribute("x", &x);
-	xmlElement->QueryFloatAttribute("y", &y);
-	xmlElement->QueryFloatAttribute("z", &z);
-
-	initialPosition = osg::Vec3(x, y, z);
-	setPosition(initialPosition);
-
-
-
-	XMLElement* currentElement = xmlElement->FirstChildElement();
-	for( ; currentElement; currentElement = currentElement->NextSiblingElement())
-	{
-		std::string elementType = currentElement->Value();
-		if(elementType == "geometry")
-			loadModel(currentElement->Attribute("source"));
-		else if(elementType == "controlledObject")
-			addControlledObject(new ControlledObject(currentElement));
-		else if(elementType == "function")
-			setFunction(currentElement->Attribute("name"), currentElement->GetText());
-	}
-
-
-	if(xmlElement->Attribute("animation"))
-	{
-		std::string animation = xmlElement->Attribute("animation");
-		if(animation == "true")
-			findAnimation();
-	}
 }
 
 
@@ -117,11 +78,7 @@ void Controller::sendMessage(std::string& message)
 		object->receiveMessage(message);
 }
 
-void Controller::setFunction(std::string functionName, std::string code)
-{
-	_functionSources[functionName] = code;	/// Save the code so we can manipulate it if needed.
-	_functions[functionName] = getScriptEngine()->compileFunction("Controller", code.c_str(), 0, asCOMP_ADD_TO_MODULE);
-}
+
 
 
 GameObjectData* Controller::save()
@@ -138,8 +95,6 @@ void Controller::saveControllerVariables(GameObjectData* dataObj)
 	for(auto child : _controlled)
 		dataObj->addChild(child);
 	dataObj->addData("radius", _radius);
-	for(auto kv : _functionSources)
-		dataObj->addScriptFunction(kv.first, kv.second);
 }
 
 void Controller::load(GameObjectData* dataObj)
@@ -149,16 +104,7 @@ void Controller::load(GameObjectData* dataObj)
 }
 void Controller::loadControllerVariables(GameObjectData* dataObj)
 {
-	/*for(auto child : _controlled)
-		dataObj->addChild(child);
-	dataObj->addData("radius", _radius);
-	for(auto kv : _functionSources)
-		dataObj->addScriptFunction(kv.first, kv.second);*/
-
 	_radius = dataObj->getFloat("radius");
-
-	for(auto kv : dataObj->getFunctionSources())
-		setFunction(kv.first, kv.second);
 
 	for(auto child : dataObj->getChildren())
 	{

@@ -18,8 +18,6 @@
 #include "OwnerUpdateCallback.h"
 #include "GameObjectData.h"
 
-#include "tinyxml/tinyxml2.h"
-
 #define DEFAULT_ENTITY_MODEL_NAME "humanmodelNoBones.osg"
 
 
@@ -92,13 +90,8 @@ Entity::Entity(std::string name, osg::Vec3 position)
 	this->name = name;
 	_transformNode->setPosition(position);
 
-	if(_useSpriteAsModel)
-		_modelNode = new Sprite();
-	else
-	{
-		std::string modelFilename = DEFAULT_ENTITY_MODEL_NAME;
-		_modelNode = osgDB::readNodeFile(modelFilename);
-	}
+	std::string modelFilename = DEFAULT_ENTITY_MODEL_NAME;
+	_modelNode = osgDB::readNodeFile(modelFilename);
 	_modelNode->setUpdateCallback(new OwnerUpdateCallback<Entity>(this));
 
 	_transformNode->addChild(_modelNode);
@@ -161,15 +154,7 @@ Entity::Entity(std::string name, osg::Vec3 position)
 	state = awake;
 }
 
-Entity::Entity(XMLElement* xmlElement) : GameObject(xmlElement)
-{
 
-}
-
-void Entity::load(XMLElement* xmlElement)
-{
-
-}
 
 Entity::~Entity()
 {

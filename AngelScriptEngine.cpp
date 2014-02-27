@@ -6,7 +6,6 @@
 
 #include <osg/Vec3>
 
-#include "Enemy.h"
 #include "Player.h"
 #include "Weapon.h"
 
@@ -54,11 +53,6 @@ void printFloat(float value)
 }
 
 
-
-void createEnemy(std::string& name, osg::Vec3& position)
-{
-	new Enemy(name, position);
-}
 
 
 void MessageCallback(const asSMessageInfo *msg, void *param)
@@ -146,6 +140,17 @@ void AngelScriptEngine::returnContextToPool(asIScriptContext *ctx)
 	//ctx->Unprepare();
 }
 
+void AngelScriptEngine::registerVec3()
+{
+	registerObjectType("Vec3", sizeof(osg::Vec3), asOBJ_VALUE | GetTypeTraits<osg::Vec3>() | asOBJ_APP_CLASS_ALLFLOATS, asFUNCTION(Vec3Constructor), asFUNCTION(Vec3Destructor));
+	registerConstructor("Vec3", "void f(float, float, float)", asFUNCTION(Vec3InitConstructor));
+	registerConstructor("Vec3", "void f(const Vec3 &in)", asFUNCTION(Vec3CopyConstructor));
+	registerObjectProperty("Vec3", "float x", asOFFSET(Vec3, _v[0]));
+	registerObjectProperty("Vec3", "float y", asOFFSET(Vec3, _v[1]));
+	registerObjectProperty("Vec3", "float z", asOFFSET(Vec3, _v[2]));
+	registerObjectMethod("Vec3", "Vec3 opAdd(const Vec3 &in) const", asMETHODPR(Vec3, operator+, (const Vec3 &) const, const Vec3), asCALL_THISCALL);
+	registerObjectMethod("Vec3", "Vec3 opSub(const Vec3 &in) const", asMETHODPR(Vec3, operator-, (const Vec3 &) const, const Vec3), asCALL_THISCALL);
+}
 
 
 void AngelScriptEngine::registerDefaultStuff()
@@ -161,16 +166,8 @@ void AngelScriptEngine::registerDefaultStuff()
 	r = engine->RegisterGlobalFunction("void print(float)", asFUNCTION(printFloat), asCALL_CDECL);
 	assert(r >= 0);
 
-	registerObjectType("Vec3", sizeof(osg::Vec3), asOBJ_VALUE | GetTypeTraits<osg::Vec3>() | asOBJ_APP_CLASS_ALLFLOATS, asFUNCTION(Vec3Constructor), asFUNCTION(Vec3Destructor));
-	registerConstructor("Vec3", "void f(float, float, float)", asFUNCTION(Vec3InitConstructor));
-	registerConstructor("Vec3", "void f(const Vec3 &in)", asFUNCTION(Vec3CopyConstructor));
-	registerObjectProperty("Vec3", "float x", asOFFSET(Vec3, _v[0]));
-	registerObjectProperty("Vec3", "float y", asOFFSET(Vec3, _v[1]));
-	registerObjectProperty("Vec3", "float z", asOFFSET(Vec3, _v[2]));
-	registerObjectMethod("Vec3", "Vec3 opAdd(const Vec3 &in) const", asMETHODPR(Vec3, operator+, (const Vec3 &) const, const Vec3), asCALL_THISCALL);
-	registerObjectMethod("Vec3", "Vec3 opSub(const Vec3 &in) const", asMETHODPR(Vec3, operator-, (const Vec3 &) const, const Vec3), asCALL_THISCALL);
+	registerVec3();
 
-	registerFunction("void createEnemy(string &in, Vec3 &in)", asFUNCTION(createEnemy));
 }
 
 

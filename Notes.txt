@@ -5,18 +5,19 @@ Basics:
 
 TODO:
 	DoneThisCommit:
-		YAML import/export
-	Current Task:
-	Next Steps:
 		Cleanup:
 			GameObject should contain the mechanism for dealing with script functions (move that stuff from Controller)
-			Get rid of Enemy class (use Fighter directly)
 			GameObject should have options for auto-creating a collision mesh
+			Get rid of Enemy class (use Fighter directly)
+			Get rid of methods to load objects directly from XML.
 			Get rid of FighterStats/WeaponStats/ProjectileStats (no longer needed)
+	Current Task:
+	Next Steps:
 		Add Weapons that attack directly, instead of using a Projectile
 		Improve save/export to allow it to link to prototypes.
 		Ability to pause the game to switch modes (even if edit mode does nothing)
 		Flame jets for the demo level.
+		Expose all GameObject-derived classes to AngelScript (also exposing the type hierarchy (see http://www.angelcode.com/angelscript/sdk/docs/manual/doc_adv_class_hierarchy.html))
 
 
 
@@ -44,7 +45,7 @@ TODO:
 	Clean up:
 
 
-Extras (if I get bored):
+Extras:
 	SVG support.
 	Physics:
 		(2D) Should have two collision categories for obstacles: ground-level and body-level. Projectiles will be stopped by body-level obstacles (e.g. trees), but not ground-level (e.g. water).
@@ -61,8 +62,6 @@ BUGS:
 		TiledMap does not account for maps with multiple tilesets.
 		Seg faults if the Box2D debug drawer sets the data variance to "dynamic"
 	Low Priority (it works, but might be ugly):
-		When exporting the AngelScript functions into XML, the indentation/spacing is whatever it was in the original file, which can look weird if the enclosing element is at a different indent level.
-		tinyxml2 uses SPACES INSTEAD OF TABS!! (could run a short script to convert them if desired)
 
 Bugs I expect to see later:
 	The functions specified in the XML files may cause issues once I have multiple objects of the same type (e.g. two kinds of ControlledObject), because they might override one another.
@@ -96,10 +95,10 @@ Expose to scripting:
 
 Engine features:
 	Adaptive. Designed to minimize the amount of custom code that must be written.
-	Objects are defined with XML.
+	Objects are defined with YAML (or other serialization format).
 		Can embed in the level file, link to an external file, or both (using external file as prototype and making necessary alterations in the level file).
 			Can also define an object using another as a prototype (e.g. multiple versions of an enemy use a common base).
-		Can embed AngelScript inside the XML file, further increasing adaptability.
+		Can embed AngelScript inside the YAML file, further increasing adaptability.
 			Can attach functions to an object, to be used elsewhere (e.g. a door has the functions "open()" and "close()" defined in a central location, and called in response to signals from a switch.)
 	Views a game as a collection of objects, behaviors, and relationships.
 

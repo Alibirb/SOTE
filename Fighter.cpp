@@ -2,41 +2,36 @@
 #include "Weapon.h"
 #include "AngelScriptEngine.h"
 #include "GameObjectData.h"
+#include "PhysicsData.h"
 
 #include "TemporaryText.h"
 
-#include "tinyxml/tinyxml2.h"
 
-FighterStats::FighterStats()
-{
-}
-
-float FighterStats::getResistance(std::string& damType)
-{
-	return resistances[damType];
-}
-void FighterStats::setResistance(std::string& type, float value)
-{
-	resistances[type] = value;
-}
+std::list<Fighter*> fighterList;
 
 
 
 Fighter::Fighter(std::string name, osg::Vec3 position, std::string team) : Entity(name, position)
 {
 	this->_team = team;
-	loadStats("media/Entities/" + name + ".as");
-	equipWeapon(new Weapon(_stats.weaponStats));
-}
-Fighter::Fighter(XMLElement* xmlElement) : Entity()
-{
-	_equippedWeapon = NULL;
-	load(xmlElement);
 }
 Fighter::Fighter(GameObjectData* dataObj) : Entity()
 {
 	_equippedWeapon = NULL;
+	_objectType = "Fighter";
 	load(dataObj);
+	addFighter(this);
+
+	PhysicsUserData *userData = new PhysicsUserData;
+	userData->owner = this;
+	userData->ownerType = "Fighter";
+#ifdef USE_BOX2D_PHYSICS
+	physicsBody->SetUserData(userData);
+#else
+	controller->getGhostObject()->setUserPointer(userData);
+#endif
+	if(_equippedWeapon)
+		_equippedWeapon->setTeam(_team);
 }
 
 
@@ -44,6 +39,14 @@ Fighter::Fighter(GameObjectData* dataObj) : Entity()
 Fighter::~Fighter()
 {
 	delete _equippedWeapon;
+	fighterList.remove(this);
+}
+
+void Fighter::die()
+{
+	this->state = dead;
+	markForRemoval(this, "Fighter");	// this may not be a safe time to delete the object (for instance, if we're in the middle of running physics), so simply mark this for deletion at a safer time.
+	std::cout << this->name << " has died" << std::endl;
 }
 
 void Fighter::equipWeapon(Weapon *theWeapon)
@@ -70,88 +73,6 @@ Weapon* Fighter::getWeapon()
 	return _equippedWeapon;
 }
 
-void Fighter::setStats(FighterStats& newStats)
-{
-	this->_stats = newStats;
-}
-
-void Fighter::loadStats(std::string scriptFilename)
-{
-	registerFighterStats();
-	getScriptEngine()->runFile(scriptFilename, "FighterStats loadStats()");
-	setStats( *((FighterStats*) getScriptEngine()->getReturnObject()));
-	this->health = _stats.maxHealth;
-	this->loadModel(_stats.modelFilename);
-}
-
-
-void Fighter::load(XMLElement* xmlElement)
-{
-	if(xmlElement->Attribute("source"))		/// Load from external source first, then apply changes.
-		load(xmlElement->Attribute("source"));
-
-	float x, y, z;
-	xmlElement->QueryFloatAttribute("x", &x);
-	xmlElement->QueryFloatAttribute("y", &y);
-	xmlElement->QueryFloatAttribute("z", &z);
-
-	initialPosition = osg::Vec3(x, y, z);
-	setPosition(initialPosition);
-
-
-	if(xmlElement->Attribute("maxHealth"))
-		xmlElement->QueryFloatAttribute("maxHealth", &this->_stats.maxHealth);
-
-	XMLElement* currentElement = xmlElement->FirstChildElement();
-	for( ; currentElement; currentElement = currentElement->NextSiblingElement())
-	{
-		std::string elementType = currentElement->Value();
-		if(elementType == "geometry")
-			loadModel(currentElement->Attribute("source"));
-		else if(elementType == "resistance")
-		{
-			std::string type = currentElement->Attribute("type");
-			float value;
-			currentElement->QueryFloatAttribute("value", &value);
-			setResistance(type, value);
-		}
-		else if(elementType == "weapon")
-		{
-			if(getWeapon())
-				markForRemoval(getWeapon(), "Item");	/// If we already have a weapon, we must be trying to override it. Delete the old one.
-			equipWeapon(new Weapon(currentElement));
-		}
-
-	}
-}
-
-void Fighter::load(std::string xmlFilename)
-{
-
-	FILE *file = fopen(xmlFilename.c_str(), "rb");
-	if(!file)
-	{
-		xmlFilename = "media/Entities/" + xmlFilename;
-		file = fopen(xmlFilename.c_str(), "rb");
-		if(!file)
-			logError("Failed to open file " + xmlFilename);
-	}
-
-
-	XMLDocument doc(xmlFilename.c_str());
-	if (doc.LoadFile(file)  != tinyxml2::XML_NO_ERROR)
-	{
-		logError("Failed to load file " + xmlFilename);
-		logError(doc.GetErrorStr1());
-	}
-
-
-	XMLHandle docHandle(&doc);
-	XMLElement* rootElement = docHandle.FirstChildElement().ToElement();
-
-	load(rootElement);
-
-}
 
 void Fighter::takeDamages(Damages dams)
 {
@@ -171,17 +92,29 @@ void Fighter::takeDamages(Damages dams)
 
 float Fighter::getResistance(std::string type)
 {
-	return _stats.resistances[type];
+	return _resistances[type];
 }
 
 void Fighter::setResistance(std::string type, float value)
 {
-	_stats.setResistance(type, value);
+	_resistances[type] = value;
 }
 
 bool Fighter::isHurtByTeam(std::string otherTeam)
 {
 	return (_team.compare(otherTeam) != 0);
+}
+bool Fighter::isEnemyOf(Fighter* other)
+{
+	return (other->getTeam() != _team);
+}
+bool Fighter::isAllyOf(Fighter* other)
+{
+	return (other->getTeam() == _team);
+}
+std::string Fighter::getTeam()
+{
+	return _team;
 }
 
 void Fighter::onCollision(Projectile* projectile)
@@ -193,6 +126,18 @@ void Fighter::onCollision(GameObject* other)
 {
 	if(dynamic_cast<Projectile*>(other))
 		onCollision(dynamic_cast<Projectile*>(other));
+}
+
+void Fighter::onUpdate(float deltaTime)
+{
+	if(this->state == dead)
+		return;
+
+	aimWeapon(getClosestEnemy());
+	if(_equippedWeapon->isReady())
+	{
+		_equippedWeapon->fire();
+	}
 }
 
 GameObjectData* Fighter::save()
@@ -209,16 +154,15 @@ void Fighter::saveFighterData(GameObjectData* dataObj)
 {
 	dataObj->addData("team", _team);
 	if(getWeapon())
-		dataObj->addChild(getWeapon()->save());
-	dataObj->addData("maxHealth", _stats.maxHealth);
-	for(auto kv : _stats.resistances)
-	{
-		GameObjectData* resistanceData = new GameObjectData("resistance");
-		resistanceData->addData("type", kv.first);
-		resistanceData->addData("value", kv.second);
-		dataObj->addChild(resistanceData);
-	}
+		dataObj->addData("weapon", getWeapon()->save());
+	dataObj->addData("maxHealth", _maxHealth);
 
+	GameObjectData* resistanceData = new GameObjectData("unordered_map");
+	for(auto kv : _resistances)
+	{
+		resistanceData->addData(kv.first, kv.second);
+	}
+	dataObj->addData("resistances", resistanceData);
 }
 
 void Fighter::load(GameObjectData* dataObj)
@@ -229,27 +173,51 @@ void Fighter::load(GameObjectData* dataObj)
 }
 void Fighter::loadFighterData(GameObjectData* dataObj)
 {
-	/*dataObj->addData("team", _team);
-	if(getWeapon())
-		dataObj->addChild(getWeapon()->save());
-	dataObj->addData("maxHealth", _stats.maxHealth);
-	for(auto kv : _stats.resistances)
-	{
-		GameObjectData* resistanceData = new GameObjectData("resistance");
-		resistanceData->addData("type", kv.first);
-		resistanceData->addData("value", kv.second);
-		dataObj->addChild(resistanceData);
-	}*/
-
 	_team = dataObj->getString("team");
+	_maxHealth = dataObj->getFloat("maxHealth");
 
-	for(auto child: dataObj->getChildren())
+	if(dataObj->getObject("weapon"))
+		equipWeapon(new Weapon(dataObj->getObject("weapon")));
+	if(dataObj->getObject("resistances"))
 	{
-		if(child->getType() == "Weapon")
-			equipWeapon(new Weapon(child));
-		//else if(child->getType() = "")
+		_resistances = std::unordered_map<std::string, float>(dataObj->getObject("resistances")->getAllFloats());
 	}
 
+}
+
+Fighter* Fighter::getClosestEnemy(std::list<Fighter*> possibilities)
+{
+	Fighter* closest = NULL;
+	float shortestDistance = FLT_MAX;
+	for(Fighter* fighter : possibilities)
+	{
+		if(!fighter->isEnemyOf(this))
+			continue;
+		if(getDistance(this->getWorldPosition(), fighter->getWorldPosition()) < shortestDistance)
+		{
+			closest = fighter;
+			shortestDistance = getDistance(this->getWorldPosition(), fighter->getWorldPosition());
+		}
+	}
+
+	return closest;
+}
+Fighter* Fighter::getClosestAlly(std::list<Fighter*> possibilities)
+{
+	Fighter* closest = NULL;
+	float shortestDistance = FLT_MAX;
+	for(Fighter* fighter : possibilities)
+	{
+		if(!fighter->isAllyOf(this))
+			continue;
+		if(getDistance(this->getWorldPosition(), fighter->getWorldPosition()) < shortestDistance)
+		{
+			closest = fighter;
+			shortestDistance = getDistance(this->getWorldPosition(), fighter->getWorldPosition());
+		}
+	}
+
+	return closest;
 }
 
 
@@ -263,8 +231,18 @@ void addDamageIndicator(Fighter* entityHurt, float damageDealt, std::string& dam
 
 
 
+std::list<Fighter*> getFighters()
+{
+	return fighterList;
+}
+void addFighter(Fighter* newFighter)
+{
+	fighterList.push_back(newFighter);
+}
 
 
+
+/*
 namespace AngelScriptWrapperFunctions
 {
 	void FighterStatsConstructor(FighterStats *memory)
@@ -313,3 +291,4 @@ void registerFighterStats()
 
 	registered = true;
 }
+*/

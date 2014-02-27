@@ -11,102 +11,20 @@
 
 #include "Fighter.h"
 
+#include "GameObjectData.h"
+
 #define PROJECTILE_SCRIPT_LOCATION "media/Projectiles/"
 
-#include "tinyxml/tinyxml2.h"
 
 
-ProjectileStats::ProjectileStats(XMLElement* xmlElement)
-{
-	load(xmlElement);
-}
-
-ProjectileStats::ProjectileStats(Damages damages, std::string imageFilename)
-{
-	this->damages = damages;
-	this->imageFilename = imageFilename;
-}
-
-ProjectileStats::ProjectileStats(const ProjectileStats& other)
-{
-	this->damages = other.damages;
-	this->imageFilename = other.imageFilename;
-}
-
-ProjectileStats::ProjectileStats()
-{
-	this->imageFilename = "";
-}
-
-void ProjectileStats::load(XMLElement* xmlElement)
-{
-	if(xmlElement->Attribute("source"))		/// Load from external source first, then apply changes.
-		load(xmlElement->Attribute("source"));
 
 
-	XMLElement* currentElement = xmlElement->FirstChildElement();
-	for( ; currentElement; currentElement = currentElement->NextSiblingElement())
-	{
-		std::string elementType = currentElement->Value();
-		if(elementType == "geometry")
-			imageFilename = currentElement->Attribute("source");
-		else if(elementType == "damage")
-		{
-			Damage dam = Damage();
-			//std::string tddsd = currentElement->Attribute("type");
-			dam.type = currentElement->Attribute("type");
-			currentElement->QueryFloatAttribute("amount", &dam.amount);
-			damages.push_back(dam);
-		}
-
-	}
-}
-
-void ProjectileStats::load(std::string xmlFilename)
-{
-	FILE *file = fopen(xmlFilename.c_str(), "rb");
-	if(!file)
-	{
-		xmlFilename = PROJECTILE_SCRIPT_LOCATION + xmlFilename;
-		file = fopen(xmlFilename.c_str(), "rb");
-		if(!file)
-			logError("Failed to open file " + xmlFilename);
-	}
-
-
-	XMLDocument doc(xmlFilename.c_str());
-	if (doc.LoadFile(file)  != tinyxml2::XML_NO_ERROR)
-	{
-		logError("Failed to load file " + xmlFilename);
-		logError(doc.GetErrorStr1());
-	}
-
-
-	XMLHandle docHandle(&doc);
-	XMLElement* rootElement = docHandle.FirstChildElement().ToElement();
-
-	load(rootElement);
-}
-
-ProjectileStats ProjectileStats::loadPrototype(std::string& prototypeName)
-{
-	registerProjectileStats();
-	getScriptEngine()->runFile(PROJECTILE_SCRIPT_LOCATION + prototypeName + ".as", "ProjectileStats loadStats()");
-	//return *((ProjectileStats*) getScriptEngine()->getReturnObject());
-	ProjectileStats stats = *( new ProjectileStats(*((ProjectileStats*) getScriptEngine()->getReturnObject())));
-	return stats;
-}
-
-Projectile::Projectile(osg::Vec3 startingPosition, osg::Vec3 heading, std::string type, std::string team) : Projectile(startingPosition, heading, ProjectileStats::loadPrototype(type), team)
-{
-}
-
-Projectile::Projectile(osg::Vec3 startingPosition, osg::Vec3 heading, ProjectileStats stats, std::string team)
+Projectile::Projectile(osg::Vec3 startingPosition, osg::Vec3 heading, GameObjectData* dataObj, std::string team)
 {
 	_objectType = "Projectile";
 	this->_team = team;
 
-	setStats(stats);
+	load(dataObj);
 
 	osg::Vec3 position = startingPosition;
 	heading.normalize();
@@ -114,7 +32,7 @@ Projectile::Projectile(osg::Vec3 startingPosition, osg::Vec3 heading, Projectile
 
 	width = .25;
 	height = .25;
-	setModelNode(new Sprite(stats.imageFilename, width, height));
+	//setModelNode(new Sprite(stats.imageFilename, width, height));
 
 #ifdef USE_BOX2D_PHYSICS
 	box2DToOsgAdjustment = osg::Vec3(0.0, 0.0, 0.0);
@@ -167,19 +85,17 @@ Projectile::Projectile(osg::Vec3 startingPosition, osg::Vec3 heading, Projectile
 	setPosition(startingPosition);
 }
 
+
 Projectile::~Projectile()
 {
 }
 
 Damages Projectile::getDamages()
 {
-	return _stats.damages;
+	return _damages;
 }
 
-void Projectile::setStats(ProjectileStats& stats)
-{
-	this->_stats = stats;
-}
+
 
 std::string Projectile::getTeam()
 {
@@ -193,8 +109,6 @@ void Projectile::onUpdate(float deltaTime)
 	transform = _physicsBody->getWorldTransform();
 	transform.setOrigin(_physicsBody->getWorldTransform().getOrigin() + osgbCollision::asBtVector3(_velocity * deltaTime));
 	_physicsBody->setWorldTransform(transform);
-
-//	checkForCollisions();
 }
 void Projectile::onCollision(GameObject* other)
 {
@@ -206,7 +120,46 @@ void Projectile::onCollision(GameObject* other)
 
 }
 
+GameObjectData* Projectile::save()
+{
+	GameObjectData* dataObj =  new GameObjectData(_objectType);
+	saveGameObjectVariables(dataObj);
+	saveProjectileData(dataObj);
+	return dataObj;
+}
+void Projectile::load(GameObjectData* dataObj)
+{
+	loadGameObjectVariables(dataObj);
+	loadProjectileData(dataObj);
+}
 
+
+void Projectile::saveProjectileData(GameObjectData* dataObj)
+{
+	for(Damage damage : _damages)
+	{
+		GameObjectData* damageData = new GameObjectData("damage");
+		damageData->addData("type", damage.type);
+		damageData->addData("amount", damage.amount);
+		dataObj->addChild(damageData);
+	}
+}
+void Projectile::loadProjectileData(GameObjectData* dataObj)
+{
+	for(GameObjectData* child : dataObj->getChildren())
+	{
+		if(child->getType() == "damage")
+		{
+			Damage dam;
+			dam.type = child->getString("type");
+			dam.amount = child->getFloat("amount");
+			_damages.push_back(dam);
+		}
+	}
+}
+
+
+/*
 namespace AngelScriptWrapperFunctions
 {
 	void ProjectileStatsConstructor(ProjectileStats *memory)
@@ -255,3 +208,4 @@ void registerProjectileStats()
 
 	registered = true;
 }
+*/

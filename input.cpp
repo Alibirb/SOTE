@@ -10,7 +10,6 @@
 
 
 #include "Player.h"
-#include "Enemy.h"
 #include "Level.h"
 
 
@@ -78,8 +77,8 @@ bool MainEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIAction
 		if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Space)
 			getActivePlayer()->jump();
 		if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Shift_L)
-			if (getEnemies().size() > 0)
-				getActivePlayer()->aimWeapon(getClosestEnemy(getActivePlayer()->getWorldPosition(), getEnemies()));
+			if (getActivePlayer()->getClosestEnemy())
+				getActivePlayer()->aimWeapon(getActivePlayer()->getClosestEnemy());
 		return false;
 	}
 	case(osgGA::GUIEventAdapter::KEYUP):

@@ -41,6 +41,7 @@ class GameObjectData
 {
 private:
 	std::string objectType;
+
 	std::unordered_map<std::string, int> ints;
 	std::unordered_map<std::string, float> floats;
 	std::unordered_map<std::string, bool> bools;
@@ -51,8 +52,12 @@ private:
 	std::unordered_map<std::string, asIScriptFunction*> _scriptFunctions;
 	std::unordered_map<std::string, std::string> _scriptFunctionSource;
 
+	std::unordered_map<std::string, GameObjectData*> _objects;	/// Other objects
+	std::unordered_map<std::string, std::vector<GameObjectData*>> _objectLists;	/// Lists of objects
+
 public:
 	GameObjectData(std::string type);
+	GameObjectData(YAML::Node node);
 	virtual ~GameObjectData();
 
 	void addData(std::string name, int data);
@@ -60,6 +65,8 @@ public:
 	void addData(std::string name, bool data);
 	void addData(std::string name, std::string data);
 	void addData(std::string name, osg::Vec3 data);
+	void addData(std::string name, GameObjectData* data);
+	void addData(std::string name, std::vector<GameObjectData*> data);
 	void addChild(GameObjectData* child);
 	void addChild(GameObject* child);
 	void addChildren(std::vector<GameObject*> children);
@@ -80,18 +87,29 @@ public:
 	std::vector<GameObjectData*> getChildren();
 	std::string getFunctionSource(std::string name);
 	std::unordered_map<std::string, std::string> getFunctionSources();
+	std::unordered_map<std::string, int> getAllInts();
+	std::unordered_map<std::string, float> getAllFloats();
+	std::unordered_map<std::string, bool> getAllBools();
+	std::unordered_map<std::string, std::string> getAllStrings();
+	std::unordered_map<std::string, osg::Vec3> getAllVec3s();
+	GameObjectData* getObject(std::string name);
+	std::vector<GameObjectData*> getObjectList(std::string name);	/// get the specifed object list variable
+
+	bool hasInt(std::string name);
+	bool hasFloat(std::string name);
+	bool hasString(std::string name);
 	bool hasFunctionSource(std::string name);
+
 	std::string getType();
+
+
+	//TODO: functions to remove data? (some objects may not want to save properties from an inherited class (e.g. a Weapon doesn't need to save its location if it's equipped by a character
 
 
 
 	XMLElement* toXML(XMLDocument* doc);
-	//void fromXML(XMLElement* element);
 
-	GameObjectData(YAML::Node node);
-	YAML::Node toYAML();
 	YAML::Emitter& toYAML(YAML::Emitter& emitter);
-
 	void fromYAML(YAML::Node node);
 
 	static void testYamlImportExport(std::string importFilename, std::string exportFilename);	/// Helper testing function. Imports a YAML file, then exports it. Check (manually) to ensure no data was lost
