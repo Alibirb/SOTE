@@ -8,10 +8,11 @@ class GameObject;
 
 
 
-class GameObjectData;
+//class GameObjectData;
+#include "GameObjectData.h"
 
 
-class State
+class State : public Saveable
 {
 protected:
 	GameObject* _owner;
@@ -49,7 +50,7 @@ protected:
 
 
 
-class StateMachine
+class StateMachine : public Saveable
 {
 private:
 	State* _currentState;
@@ -74,6 +75,7 @@ public:
 	{
 		_states[stateName] = newState;
 	}
+	void changeState(const char* stateName);
 	void changeState(std::string& stateName);
 	void changeState(State* newState);
 	void revertToPreviousState();

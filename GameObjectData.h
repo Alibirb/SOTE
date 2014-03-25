@@ -25,11 +25,21 @@ namespace YAML
 
 class asIScriptFunction;
 
-class GameObject;
+//class GameObject;
+
+class GameObjectData;
+
+class Saveable
+{
+public:
+	virtual GameObjectData* save()=0;
+	virtual void load(GameObjectData* dataObj)=0;
+};
 
 
 /// NOTE: For example of how OSG deals with serialization, see osgDB/DotOsgWrapper.cpp (in writeObject)
 
+/// NOTE: See the HPL1 source for example of saving/loading
 
 /// NOTE: *sigh* I suppose I'll have to unit test this at some point.
 
@@ -48,12 +58,13 @@ private:
 	std::unordered_map<std::string, std::string> strings;
 	std::unordered_map<std::string, osg::Vec3> vectors;
 	//std::unordered_map<std::string, osg::PositionAttitudeTransform> transforms;	// TODO
-	std::vector<GameObjectData*> _children;
+	//std::vector<GameObjectData*> _children;
 	std::unordered_map<std::string, asIScriptFunction*> _scriptFunctions;
 	std::unordered_map<std::string, std::string> _scriptFunctionSource;
 
 	std::unordered_map<std::string, GameObjectData*> _objects;	/// Other objects
 	std::unordered_map<std::string, std::vector<GameObjectData*>> _objectLists;	/// Lists of objects
+	std::unordered_map<std::string, std::unordered_map<std::string, GameObjectData*>> _objectMaps;
 
 public:
 	GameObjectData(std::string type);
@@ -62,14 +73,36 @@ public:
 
 	void addData(std::string name, int data);
 	void addData(std::string name, float data);
+	void addData(std::string name, double data);
 	void addData(std::string name, bool data);
 	void addData(std::string name, std::string data);
 	void addData(std::string name, osg::Vec3 data);
 	void addData(std::string name, GameObjectData* data);
 	void addData(std::string name, std::vector<GameObjectData*> data);
-	void addChild(GameObjectData* child);
-	void addChild(GameObject* child);
-	void addChildren(std::vector<GameObject*> children);
+	void addData(std::string name, std::unordered_map<std::string, GameObjectData*> data);
+	void addData(std::string name, Saveable* data);
+	//void addData(std::string name, std::vector<Saveable*> objectList);
+
+	template<class T>
+	void addData(std::string name, std::vector<T*> objectList)
+	{
+		for(auto object : objectList)
+			_objectLists[name].push_back(object->save());
+	}
+
+	/// Add a map of objects inherting from Saveable
+	template<class T>
+	void addData(std::string name, std::unordered_map<std::string, T*> objectMap)
+	{
+		for(auto kv : objectMap)
+		{
+			_objectMaps[name][kv.first] = kv.second->save();
+		}
+	}
+
+	//void addChild(GameObjectData* child);
+	//void addChild(GameObject* child);
+	//void addChildren(std::vector<GameObject*> children);
 
 	void addScriptFunction(std::string name, asIScriptFunction* func);
 	void addScriptFunctions(std::unordered_map<std::string, asIScriptFunction*> functions);
@@ -84,7 +117,7 @@ public:
 	bool getBool(std::string name);
 	std::string getString(std::string name);
 	osg::Vec3 getVec3(std::string name);
-	std::vector<GameObjectData*> getChildren();
+	//std::vector<GameObjectData*> getChildren();
 	std::string getFunctionSource(std::string name);
 	std::unordered_map<std::string, std::string> getFunctionSources();
 	std::unordered_map<std::string, int> getAllInts();
@@ -94,6 +127,7 @@ public:
 	std::unordered_map<std::string, osg::Vec3> getAllVec3s();
 	GameObjectData* getObject(std::string name);
 	std::vector<GameObjectData*> getObjectList(std::string name);	/// get the specifed object list variable
+	std::unordered_map<std::string, GameObjectData*> getObjectMap(std::string name);
 
 	bool hasInt(std::string name);
 	bool hasFloat(std::string name);

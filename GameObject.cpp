@@ -94,8 +94,9 @@ void GameObject::loadModel(std::string modelFilename)
 	}
 	else
 	{
-		setModelNode(osgDB::readNodeFile(modelFilename));
-		if(!_modelNode)
+        if(osgDB::readNodeFile(modelFilename))
+            setModelNode(osgDB::readNodeFile(modelFilename));
+		else
 			logError("Could not load node file \"" + modelFilename + "\"");
 	}
 }
@@ -162,6 +163,16 @@ void GameObject::saveGameObjectVariables(GameObjectData* dataObj)
 	dataObj->addData("geometry", _modelFilename);
 	for(auto kv : _functionSources)
 		dataObj->addScriptFunction(kv.first, kv.second);
+
+	if(_physicsBody)
+	{
+#ifndef USE_BOX2D_PHYSICS
+		if((btRigidBody*)_physicsBody)
+			//dataObj->addData("mass", 1/((btRigidBody*)_physicsBody)->getInvMass());
+			dataObj->addData("mass", ((btRigidBody*)_physicsBody)->getInvMass());
+#endif
+	}
+
 
 	// TODO: animation.
 }

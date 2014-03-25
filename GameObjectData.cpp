@@ -32,6 +32,9 @@ void GameObjectData::addData(std::string name, int data){
 void GameObjectData::addData(std::string name, float data){
 	floats[name] = data;
 }
+void GameObjectData::addData(std::string name, double data){
+	floats[name] = data;
+}
 void GameObjectData::addData(std::string name, bool data){
 	bools[name] = data;
 }
@@ -47,7 +50,19 @@ void GameObjectData::addData(std::string name, GameObjectData* data) {
 void GameObjectData::addData(std::string name, std::vector<GameObjectData*> data) {
 	_objectLists[name] = data;
 }
-void GameObjectData::addChild(GameObject* child){
+void GameObjectData::addData(std::string name, std::unordered_map<string, GameObjectData*> data) {
+	_objectMaps[name] = data;
+}
+void GameObjectData::addData(std::string name, Saveable* data) {
+	_objects[name] = data->save();
+}
+/*
+void GameObjectData::addData(std::string name, std::vector<Saveable*> objectList) {
+	for(auto object : objectList)
+		_objectLists[name].push_back(object->save());
+}
+*/
+/*void GameObjectData::addChild(GameObject* child){
 	_children.push_back(child->save());
 }
 void GameObjectData::addChildren(std::vector<GameObject*> children){
@@ -56,7 +71,7 @@ void GameObjectData::addChildren(std::vector<GameObject*> children){
 }
 void GameObjectData::addChild(GameObjectData* child){
 	_children.push_back(child);
-}
+}*/
 void GameObjectData::addScriptFunction(std::string name, asIScriptFunction* func){
 	_scriptFunctions[name.c_str()] = func;
 }
@@ -90,9 +105,10 @@ std::string GameObjectData::getString(std::string name) {
 osg::Vec3 GameObjectData::getVec3(std::string name) {
 	return vectors[name];
 }
+/*
 std::vector<GameObjectData*> GameObjectData::getChildren() {
 	return _children;
-}
+}*/
 std::string GameObjectData::getFunctionSource(std::string name) {
 	return _scriptFunctionSource[name];
 }
@@ -105,6 +121,10 @@ GameObjectData* GameObjectData::getObject(std::string name) {
 std::vector<GameObjectData*> GameObjectData::getObjectList(std::string name) {
 	return _objectLists[name];
 }
+std::unordered_map<string, GameObjectData*> GameObjectData::getObjectMap(std::string name) {
+	return _objectMaps[name];
+}
+
 std::unordered_map<std::string, int> GameObjectData::getAllInts() {
 	return ints;
 }
@@ -175,9 +195,9 @@ XMLElement* GameObjectData::toXML(XMLDocument* doc)
 		element->InsertEndChild(codeElement);
 	}
 
-	for(auto obj : _children) {
+	/*for(auto obj : _children) {
 		element->InsertEndChild(obj->toXML(doc));
-	}
+	}*/
 
 	return element;
 
@@ -242,7 +262,32 @@ YAML::Emitter& GameObjectData::toYAML(YAML::Emitter& emitter)
 		emitter << YAML::EndMap;
 	}
 
+	for(auto kv : _objectLists)
+	{
+		emitter << YAML::Key << kv.first.c_str();
+		emitter << YAML::Value;
+		emitter << YAML::BeginSeq;
+		for(auto obj : kv.second) {
+			obj->toYAML(emitter);
+		}
+		emitter << YAML::EndSeq;
+	}
 
+	for(auto kv : _objectMaps)
+	{
+		emitter << YAML::Key << kv.first.c_str();
+		emitter << YAML::Value;
+		emitter << YAML::BeginMap;
+		for(auto kv2 : kv.second)
+		{
+			emitter << YAML::Key << kv2.first.c_str();
+			emitter << YAML::Value;
+			kv2.second->toYAML(emitter);
+		}
+		emitter << YAML::EndMap;
+	}
+
+/*
 	if(!_children.empty())
 	{
 		emitter << YAML::Key << "children";
@@ -252,7 +297,7 @@ YAML::Emitter& GameObjectData::toYAML(YAML::Emitter& emitter)
 			obj->toYAML(emitter);
 		}
 		emitter << YAML::EndSeq;
-	}
+	}*/
 
 
 	emitter << YAML::EndMap;
@@ -308,13 +353,12 @@ void GameObjectData::fromYAML(YAML::Node node)
 			for(int i = 0; i < it->second.size(); i++)
 			{
 				// Iterate through all nodes in the sequence and add them
-				this->addChild(new GameObjectData(it->second[i]));	// build the child from the node.
+				//this->addChild(new GameObjectData(it->second[i]));	// build the child from the node.
+				_objectLists[key].push_back(new GameObjectData(it->second[i]));
 			}
 			break;
 		case YAML::NodeType::Map:
 			// Map type
-
-
 			if(isVec3(it->second))	// Could be a Vec3
 				this->addData(key, toVec3(it->second));
 			else if(it->first.as<std::string>() == "functions")	// Or functions
@@ -324,9 +368,21 @@ void GameObjectData::fromYAML(YAML::Node node)
 					addScriptFunction(funcIt->first.as<std::string>(), funcIt->second.as<std::string>());	/// Assuming that the function is source code, not byte code.
 				}
 			}
-			else	// Probably GameObjectData then
+			else if(it->second["dataType"])
 			{
+				// Could be GameObjectDataŝ
 				addData(key, new GameObjectData(it->second));
+			}
+			else	// Probably a map of GameObjectData then
+			{
+				//addData(key, new GameObjectData(it->second));
+				unordered_map<string, GameObjectData*> objMap;
+				for(YAML::const_iterator objIt = it->second.begin(); objIt != it->second.end(); ++objIt)
+				{
+					objMap[objIt->first.as<std::string>()] = new GameObjectData(objIt->second);
+					//addData(objIt->first.as<std::string>(), objIt->second.as<std::string>());	/// Assuming that the function is source code, not byte code.
+				}
+				addData(key, objMap);
 			}
 			break;
 		case YAML::NodeType::Scalar:

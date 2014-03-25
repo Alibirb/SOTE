@@ -7,7 +7,7 @@
 #include "globals.h"
 
 using namespace osgGA;
-using namespace osg;
+//using namespace osg;
 
 class BaseCameraManipulator : public osgGA::CameraManipulator
 {
@@ -48,7 +48,7 @@ public:
 	 *  over +/- 90 degrees. If this happens and disallowFlipOver is true,
 	 *  manipulator is rotated by 180 degrees. More precisely, roll rotation component is changed by 180 degrees,
 	 *  making pitch once again between -90..+90 degrees limits.*/
-	void fixVerticalAxis( Vec3d& eye, Quat& rotation, bool disallowFlipOver );
+	void fixVerticalAxis( osg::Vec3d& eye, osg::Quat& rotation, bool disallowFlipOver );
 
 	void setTransformation( const osg::Vec3d& eye, const osg::Quat& rotation );
 	void getTransformation( osg::Vec3d& eye, osg::Quat& rotation ) const;

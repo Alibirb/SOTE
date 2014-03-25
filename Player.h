@@ -32,7 +32,7 @@ public:
 	/// Returns the coordinates that the camera should focus on.
 	osg::Vec3 getCameraTarget();
 
-	void attack(Fighter *theOneWhoMustDie);
+	//void attack(Fighter *theOneWhoMustDie);
 
 	void die();
 

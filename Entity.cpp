@@ -18,12 +18,18 @@
 #include "OwnerUpdateCallback.h"
 #include "GameObjectData.h"
 
+#include "StateMachine.h"
+
+#include "AngelScriptEngine.h"
+
 #define DEFAULT_ENTITY_MODEL_NAME "humanmodelNoBones.osg"
 
 
 Entity::Entity()
 {
+	registerEntity();
 	osg::Vec3 position;
+	_stateMachine = new StateMachine(this);
 
 #ifdef USE_BOX2D_PHYSICS
 	box2DToOsgAdjustment = osg::Vec3(0.0, 0.0, 0.0);
@@ -80,12 +86,14 @@ Entity::Entity()
 	_transformNode->setUpdateCallback(new BulletPhysicsNodeCallback(_physicsBody, -physicsToModelAdjustment));
 #endif
 
-	state = awake;
+//	state = awake;
 }
 
 Entity::Entity(std::string name, osg::Vec3 position)
 {
+	registerEntity();
 	initialPosition = position;
+	_stateMachine = new StateMachine(this);
 
 	this->name = name;
 	_transformNode->setPosition(position);
@@ -151,7 +159,7 @@ Entity::Entity(std::string name, osg::Vec3 position)
 	_transformNode->setUpdateCallback(new BulletPhysicsNodeCallback(_physicsBody, -physicsToModelAdjustment));
 #endif
 
-	state = awake;
+//	state = awake;
 }
 
 
@@ -213,6 +221,24 @@ void Entity::setAttitude(const osg::Quat& newAttitude)
 #endif
 }
 
+StateMachine* Entity::getStateMachine() {
+	return _stateMachine;
+}
+
+void Entity::changeState(std::string& stateName)
+{
+	_stateMachine->changeState(stateName);
+}
+std::string Entity::getCurrentStateName()
+{
+	return _stateMachine->getStateName();
+}
+void Entity::returnToPreviousState()
+{
+	_stateMachine->revertToPreviousState();
+}
+
+
 GameObjectData* Entity::save()
 {
 	GameObjectData* dataObj = new GameObjectData("entity");
@@ -224,7 +250,8 @@ GameObjectData* Entity::save()
 }
 void Entity::saveEntityVariables(GameObjectData* dataObj)
 {
-	// TODO
+	// TODO: maxSpeed
+	dataObj->addData("stateMachine", _stateMachine->save());
 }
 
 void Entity::load(GameObjectData* dataObj)
@@ -234,6 +261,46 @@ void Entity::load(GameObjectData* dataObj)
 }
 void Entity::loadEntityVariables(GameObjectData* dataObj)
 {
-	// TODO
+	// TODO: maxSpeed
+	if(dataObj->getObject("stateMachine"))
+		_stateMachine->load(dataObj->getObject("stateMachine"));
 }
+
+
+
+
+
+namespace AngelScriptWrapperFunctions
+{
+	Entity* EntityFactoryFunction()
+	{
+		return new Entity();
+	}
+}
+
+using namespace AngelScriptWrapperFunctions;
+
+
+void registerEntity()
+{
+	static bool registered = false;
+	if(registered)
+		return;
+
+	registerGameObject();
+
+	getScriptEngine()->registerObjectType("Entity", sizeof(Entity), asOBJ_REF | asOBJ_NOCOUNT );
+	getScriptEngine()->registerFactoryFunction("Entity", "Entity@ f()", asFUNCTION(EntityFactoryFunction));
+
+	getScriptEngine()->registerObjectMethod("Entity", "bool findAnimation()", asMETHOD(GameObject, findAnimation), asCALL_THISCALL);
+	getScriptEngine()->registerObjectMethod("Entity", "void playAnimation(string &in)", asMETHOD(GameObject, playAnimation), asCALL_THISCALL);
+
+	getScriptEngine()->registerObjectMethod("Entity", "void changeState(string &in)", asMETHOD(Entity, changeState), asCALL_THISCALL);
+	getScriptEngine()->registerObjectMethod("Entity", "string getStateName()", asMETHOD(Entity, getCurrentStateName), asCALL_THISCALL);
+	getScriptEngine()->registerObjectMethod("Entity", "void returnToPreviousState()", asMETHOD(Entity, returnToPreviousState), asCALL_THISCALL);
+
+	registered = true;
+}
+
+
 

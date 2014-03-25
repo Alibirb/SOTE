@@ -5,20 +5,23 @@ Basics:
 
 TODO:
 	DoneThisCommit:
-		Cleanup:
-			GameObject should contain the mechanism for dealing with script functions (move that stuff from Controller)
-			GameObject should have options for auto-creating a collision mesh
-			Get rid of Enemy class (use Fighter directly)
-			Get rid of methods to load objects directly from XML.
-			Get rid of FighterStats/WeaponStats/ProjectileStats (no longer needed)
+		Revised attack system:
+			Added Attack class
+		Made Entities use a StateMachine.
 	Current Task:
+		Revise attack system. Add Attack class.
 	Next Steps:
-		Add Weapons that attack directly, instead of using a Projectile
-		Improve save/export to allow it to link to prototypes.
-		Ability to pause the game to switch modes (even if edit mode does nothing)
+		Improve import/export to allow it to link to prototypes.
+		Make a class to wrap around the physics stuff
+			Should also expose the physics info to the object files.
+		Add mechanism for key bindings
+		Ability to pause the game to switch between edit and play modes (even if edit mode does nothing)
 		Flame jets for the demo level.
 		Expose all GameObject-derived classes to AngelScript (also exposing the type hierarchy (see http://www.angelcode.com/angelscript/sdk/docs/manual/doc_adv_class_hierarchy.html))
-
+	Minor Tasks:
+		logError and logWarning should allow multiple parameters.
+	Under consideration:
+		Perhaps GameObjectData getter methods should use pass-by-reference so you can just pass in the variable you want to assign.
 
 
 	Objects:
@@ -32,23 +35,15 @@ TODO:
 	Stuff for first playable
 	Input:
 		Should be able to register a function to be executed on key press/release. Function will likely be in AngelScript.
-	Use a game clock that's separate from the real-time clock. For debugging purposes. Allows to run the game in slow/fast motion.
+	Use a game clock that's separate from the real-time clock. For debugging purposes. Allows the game to run in slow/fast motion.
 	Development cheats and features:
 		Changing game speed
-	Level should serve as a container for everything in the scene.
-		Should not directly contain geometry.
-		Should contain Light objects
 	Lighting should be done with Light objects, rather than lights freely floating in the scene graph.
 	Physics fixes:
 		figure out proper collision filtering technique for ghost objects (there should be no collision response, but it still needs to be detected.)
 	Make sure it all works on Windows (with the exception of the extra mouse button support I added)
 	Clean up:
 
-
-Extras:
-	SVG support.
-	Physics:
-		(2D) Should have two collision categories for obstacles: ground-level and body-level. Projectiles will be stopped by body-level obstacles (e.g. trees), but not ground-level (e.g. water).
 
 BUGS:
 	input handler does not respond to releasing a key if Ctrl is pressed. Most likely due to the way OSG reports the button. I think it's a different value if a modkey is pressed.
@@ -58,13 +53,10 @@ BUGS:
 	Lighting needs work. Should figure out how to ensure every surface is lit.
 	Collision checking (in Level) may call onCollision() multiple times for the same pair of objects if they have multiple manifolds, or if Bullet takes multiple simulation steps for one rendering step.
 	Doors open, but do not close (not sure how to have multiple animations in Bullet, so currently they can have an open animation or a closing animation, but not both.)
-	2D Stuff:
-		TiledMap does not account for maps with multiple tilesets.
-		Seg faults if the Box2D debug drawer sets the data variance to "dynamic"
 	Low Priority (it works, but might be ugly):
 
 Bugs I expect to see later:
-	The functions specified in the XML files may cause issues once I have multiple objects of the same type (e.g. two kinds of ControlledObject), because they might override one another.
+
 
 Issues: (with other software)
 	Not sure how to have multiple animations on an object in Blender. See http://wiki.blender.org/index.php/Doc:2.6/Manual/Animation/Basics/Actions
@@ -86,11 +78,8 @@ Scripting Uses:
 	AI
 	Testing purposes.
 	"You want to expose capable, but soulless actors to your scripting code. The scripting code describes what the actors should do, but the C++ code takes care of the how."	-- http://stackoverflow.com/questions/609076/the-role-of-scripting-languages-in-game-programming
-	Used to define the behavior of objects. C++ will only contain a handful of game object classes with basic functions. AngelScript is responsible for individualizing each object.
-
-Expose to scripting:
-	Camera control?--For cutscenes
-	The basics: enemies, player, et cetera
+	Used to define the behavior of objects. C++ will only contain a handful of game object classes. AngelScript is responsible for determing the properties and behavior of each object.
+	scene definition (movement, special effects, camera, sounds, etc.)
 
 
 Engine features:
@@ -102,26 +91,6 @@ Engine features:
 			Can attach functions to an object, to be used elsewhere (e.g. a door has the functions "open()" and "close()" defined in a central location, and called in response to signals from a switch.)
 	Views a game as a collection of objects, behaviors, and relationships.
 
-
-Multiple playable characters:
-	I'll likely be working on this thing for a long time, so I'd like to be able to put all my main characters in it. Show off my best character-creation and dialog skills. And just enjoy it more.
-	Each character is unique. They all have their own powers, and even different play experiences.
-		Luce:
-			After doing something really awful, everyone insists he gets a morality meter. Which he does. It ranges from blue to orange.
-			Sees extended information on enemies.
-			Has hallucinations.
-			Can drive people insane by showing them The Truth.
-			Entertaining dialog options.
-			Has lots of useful knowledge (codes and passwords), which he will only use after having enough "fun". Basically, you need to be sadistic in order to use his abilities. There's almost always some option to torture someone, though, so there's not a large effect on gameplay.
-		Alex:
-			Breathes fire.
-			Immune to fire.
-			Healing.
-		Tanner:
-			Adorable.
-			Can nap to recover energy.
-			Kittenriffic.
-	Probably a good idea. Even if it doesn't work for the final game, it will allow me to experiment with all the characters, and see who people like playing as.
 
 
 Goals:

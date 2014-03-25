@@ -41,6 +41,8 @@
 			<Add directory="/home/daniel/Downloads/AngelScript/sdk" />
 			<Add directory="/usr/local/Bullet2.81/include/bullet" />
 			<Add directory="../../../Downloads/yaml-cpp-0.5.1/include" />
+			<Add directory="/usr/include/bullet" />
+			<Add directory="/usr/lib/x86_64-linux-gnu" />
 		</Compiler>
 		<Linker>
 			<Add option="-pthread" />
@@ -52,12 +54,12 @@
 			<Add library="osgWidget" />
 			<Add library="osgAnimation" />
 			<Add library="/usr/local/lib/libangelscript.a" />
-			<Add library="/usr/lib/x86_64-linux-gnu/libpthread.so" />
-			<Add library="/usr/local/Bullet2.81/lib/libBulletSoftBody.a" />
-			<Add library="/usr/local/Bullet2.81/lib/libBulletDynamics.a" />
-			<Add library="/usr/local/Bullet2.81/lib/libBulletCollision.a" />
-			<Add library="/usr/local/Bullet2.81/lib/libLinearMath.a" />
-			<Add library="../../../Downloads/yaml-cpp-0.5.1/build/libyaml-cpp.a" />
+			<Add library="pthread" />
+			<Add library="BulletSoftBody" />
+			<Add library="BulletDynamics" />
+			<Add library="BulletCollision" />
+			<Add library="LinearMath" />
+			<Add library="yaml-cpp" />
 			<Add directory="/usr/local/lib" />
 			<Add directory="/usr/local/lib64" />
 			<Add directory="../ScumOfTheEarth" />
@@ -70,6 +72,8 @@
 		<Unit filename="AngelScriptEngine.cpp" />
 		<Unit filename="AngelScriptEngine.h" />
 		<Unit filename="ArchitectureNotes" />
+		<Unit filename="Attack.cpp" />
+		<Unit filename="Attack.h" />
 		<Unit filename="BaseCameraManipulator.cpp" />
 		<Unit filename="BaseCameraManipulator.h" />
 		<Unit filename="C++.notes" />
@@ -120,22 +124,16 @@
 		<Unit filename="TwoDimensionalCameraManipulator.h" />
 		<Unit filename="Weapon.cpp" />
 		<Unit filename="Weapon.h" />
+		<Unit filename="WritingAndDesign/Ideas" />
 		<Unit filename="globals.h" />
 		<Unit filename="initialize.as" />
 		<Unit filename="input.cpp" />
 		<Unit filename="input.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="media/DemoLevel.xml" />
-		<Unit filename="media/Entities/Golem.as" />
-		<Unit filename="media/Entities/Human.as" />
-		<Unit filename="media/Entities/Player.as" />
+		<Unit filename="media/DemoLevel.yaml" />
 		<Unit filename="media/Objects/SlidingDoor.xml" />
 		<Unit filename="media/Objects/Switch.xml" />
-		<Unit filename="media/Projectiles/Fireball.as" />
-		<Unit filename="media/Projectiles/Magic.as" />
-		<Unit filename="media/Projectiles/Rock.as" />
-		<Unit filename="media/Weapons/Staff.as" />
-		<Unit filename="media/Weapons/Throwing.as" />
 		<Unit filename="osgNotes" />
 		<Unit filename="osgbCollision/Chart.cpp" />
 		<Unit filename="osgbCollision/Chart.h" />
@@ -158,6 +156,7 @@
 		<Unit filename="scriptstdstring/scriptstdstring.cpp" />
 		<Unit filename="scriptstdstring/scriptstdstring.h" />
 		<Unit filename="scriptstdstring/scriptstdstring_utils.cpp" />
+		<Unit filename="scriptstl.h" />
 		<Unit filename="stdvector.h" />
 		<Unit filename="tests.as" />
 		<Unit filename="tinyxml/tinyxml2.cpp" />

@@ -9,13 +9,17 @@
 
 std::list<Fighter*> fighterList;
 
-
+Fighter::Fighter()
+{
+	registerFighter();
+}
 
 Fighter::Fighter(std::string name, osg::Vec3 position, std::string team) : Entity(name, position)
 {
+	registerFighter();
 	this->_team = team;
 }
-Fighter::Fighter(GameObjectData* dataObj) : Entity()
+Fighter::Fighter(GameObjectData* dataObj) : Fighter()
 {
 	_equippedWeapon = NULL;
 	_objectType = "Fighter";
@@ -44,7 +48,7 @@ Fighter::~Fighter()
 
 void Fighter::die()
 {
-	this->state = dead;
+//	this->state = dead;
 	markForRemoval(this, "Fighter");	// this may not be a safe time to delete the object (for instance, if we're in the middle of running physics), so simply mark this for deletion at a safer time.
 	std::cout << this->name << " has died" << std::endl;
 }
@@ -73,11 +77,29 @@ Weapon* Fighter::getWeapon()
 	return _equippedWeapon;
 }
 
+Attack* Fighter::getCurrentAttack()
+{
+	return _currentAttack;
+}
+
+void Fighter::attack(Fighter* target)
+{
+	_stateMachine->changeState("attacking");
+	_currentAttack->useOn(target);
+}
+
+void Fighter::useBestAttackOn(Fighter* target)
+{
+	// TODO: actually check which attack is best.
+	if(target && _attacks.front())
+		_currentAttack = _attacks.front();
+	attack(target);
+}
 
 void Fighter::takeDamages(Damages dams)
 {
-	if(this->state == dead)
-		return;
+//	if(this->state == dead)
+//		return;
 	for(Damage dam : dams)
 	{
 		if(dam.amount * (1.0 - this->getResistance(dam.type) ) > 0)
@@ -130,14 +152,21 @@ void Fighter::onCollision(GameObject* other)
 
 void Fighter::onUpdate(float deltaTime)
 {
-	if(this->state == dead)
-		return;
+//	if(this->state == dead)
+//		return;
 
-	aimWeapon(getClosestEnemy());
+	/*aimWeapon(getClosestEnemy());
 	if(_equippedWeapon->isReady())
 	{
-		_equippedWeapon->fire();
-	}
+		//_equippedWeapon->fire();
+		//if(getClosestEnemy() && _attacks.front())
+		//	_attacks.front()->useOn(getClosestEnemy());
+		if(getClosestEnemy())
+			useBestAttackOn(getClosestEnemy());
+	}*/
+	_stateMachine->onUpdate(deltaTime);
+	if(_currentAttack)
+		_currentAttack->onUpdate(deltaTime);
 }
 
 GameObjectData* Fighter::save()
@@ -163,6 +192,14 @@ void Fighter::saveFighterData(GameObjectData* dataObj)
 		resistanceData->addData(kv.first, kv.second);
 	}
 	dataObj->addData("resistances", resistanceData);
+
+
+	std::vector<GameObjectData*> attackData;
+	for(Attack* attack : _attacks)
+	{
+		attackData.push_back(attack->save());
+	}
+	dataObj->addData("attacks", attackData);
 }
 
 void Fighter::load(GameObjectData* dataObj)
@@ -181,6 +218,12 @@ void Fighter::loadFighterData(GameObjectData* dataObj)
 	if(dataObj->getObject("resistances"))
 	{
 		_resistances = std::unordered_map<std::string, float>(dataObj->getObject("resistances")->getAllFloats());
+	}
+
+	if(!dataObj->getObjectList("attacks").empty())
+	{
+		for(auto data : dataObj->getObjectList("attacks"))
+			_attacks.push_back(new Attack(data));
 	}
 
 }
@@ -292,3 +335,50 @@ void registerFighterStats()
 	registered = true;
 }
 */
+
+
+
+namespace AngelScriptWrapperFunctions
+{
+	Fighter* FighterFactoryFunction()
+	{
+		return new Fighter();
+	}
+}
+
+using namespace AngelScriptWrapperFunctions;
+
+
+void registerFighter()
+{
+	static bool registered = false;
+	if(registered)
+		return;
+
+	registerEntity();
+	registerAttack();
+
+	getScriptEngine()->registerObjectType("Fighter", sizeof(Fighter), asOBJ_REF | asOBJ_NOCOUNT );
+	getScriptEngine()->registerFactoryFunction("Fighter", "Fighter@ f()", asFUNCTION(FighterFactoryFunction));
+
+	getScriptEngine()->registerListType<Fighter*>("FighterList", "Fighter@");
+	getScriptEngine()->registerFunction("FighterList getFighters()", asFUNCTION(getFighters), asCALL_CDECL);
+
+	getScriptEngine()->registerObjectMethod("Fighter", "Fighter@ getClosestEnemy(FighterList = getFighters())", asMETHOD(Fighter, getClosestEnemy), asCALL_THISCALL);
+	getScriptEngine()->registerObjectMethod("Fighter", "void useBestAttackOn(Fighter@)", asMETHOD(Fighter, useBestAttackOn), asCALL_THISCALL);
+	getScriptEngine()->registerObjectMethod("Fighter", "Attack@ getCurrentAttack()", asMETHOD(Fighter, getCurrentAttack), asCALL_THISCALL);
+
+	getScriptEngine()->registerObjectMethod("Fighter", "bool findAnimation()", asMETHOD(GameObject, findAnimation), asCALL_THISCALL);
+	getScriptEngine()->registerObjectMethod("Fighter", "void playAnimation(string &in)", asMETHOD(GameObject, playAnimation), asCALL_THISCALL);
+
+
+	getScriptEngine()->registerObjectMethod("Fighter", "void changeState(string &in)", asMETHOD(Fighter, changeState), asCALL_THISCALL);
+	getScriptEngine()->registerObjectMethod("Fighter", "string getStateName()", asMETHOD(Fighter, getCurrentStateName), asCALL_THISCALL);
+	getScriptEngine()->registerObjectMethod("Fighter", "void returnToPreviousState()", asMETHOD(Fighter, returnToPreviousState), asCALL_THISCALL);
+
+
+	registered = true;
+}
+
+
+

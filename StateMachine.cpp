@@ -89,7 +89,7 @@ std::string& State::getName()
 
 
 
-StateMachine::StateMachine(GameObject* owner)
+StateMachine::StateMachine(GameObject* owner) : _globalState(NULL)
 {
 	_owner = owner;
 }
@@ -109,6 +109,19 @@ void StateMachine::setCurrentState(std::string stateName)
 	_currentState = _states[stateName];
 }
 
+void StateMachine::changeState(const char* stateName)
+{
+	if(!_states[stateName])
+	{
+		std::string errorMessage = "Could not find state '";
+		errorMessage += stateName;
+		errorMessage += "'.";
+		logError(errorMessage);
+		return;
+	}
+
+	changeState(_states[stateName]);
+}
 void StateMachine::changeState(std::string& stateName)
 {
 	if(!_states[stateName])
@@ -155,9 +168,8 @@ GameObjectData* StateMachine::save()
 
 void StateMachine::saveStateMachineVariables(GameObjectData* dataObj)
 {
-	for(auto kv : _states)
-		dataObj->addChild(kv.second->save());
-
+	dataObj->addData("states", _states);
+	dataObj->addData("defaultState", _defaultState);
 }
 
 void StateMachine::load(GameObjectData* dataObj)
@@ -167,13 +179,19 @@ void StateMachine::load(GameObjectData* dataObj)
 
 void StateMachine::loadStateMachineVariables(GameObjectData* dataObj)
 {
-	for(auto child : dataObj->getChildren())
+	/*for(auto child : dataObj->getObjectList("states"))
 	{
 		if(child->getType() == "State")
 			addState(new State(_owner, child), child->getString("name"));
 		else
 			logWarning("No frickin' clue what this non-State object is doing as a child of a StateMachine");
+	}*/
+	for(auto kv : dataObj->getObjectMap("states"))
+	{
+		addState(new State(_owner, kv.second), kv.first);
 	}
+
+
 	_defaultState = dataObj->getString("defaultState");
 	setCurrentState(_defaultState);
 }

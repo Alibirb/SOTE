@@ -24,6 +24,8 @@
 #endif
 
 
+#include "StateMachine.h"
+
 
 /// Class for characters
 /// TODO: Should probably be called "Character".
@@ -31,29 +33,24 @@ class Entity : public GameObject
 {
 protected:
 	float maxSpeed = 6.0f;
+	StateMachine* _stateMachine;
 
 public:
 	std::string name;
+
 #ifndef USE_BOX2D_PHYSICS
 	btKinematicCharacterController* controller;
 #endif
 
-	enum State {
-		awake, napping, dead
-	};
-
-	State state;
-
 	Entity();
 	Entity(std::string name, osg::Vec3 position);
+	virtual ~Entity();
 
 	virtual void jump();
 
 	virtual void resetPosition() {
 		this->setPosition(initialPosition);
 	}
-
-	virtual ~Entity();
 
 	virtual void setPosition(osg::Vec3 newPosition);
 
@@ -63,15 +60,21 @@ public:
 	const osg::Quat& getAttitude();
 	void setAttitude(const osg::Quat& newAttitude);
 
-	virtual void onUpdate(float deltaTime)=0;
+	virtual void onUpdate(float deltaTime){};
+
+	StateMachine* getStateMachine();
+	void changeState(std::string& stateName);
+	std::string getCurrentStateName();
+	void returnToPreviousState();
 
 	virtual GameObjectData* save();
 	virtual void load(GameObjectData* dataObj);
+
 protected:
 	void saveEntityVariables(GameObjectData* data);	/// Saves the variables declared in Entity.
 	void loadEntityVariables(GameObjectData* data);	/// Loads the variables declared in Entity.
 };
 
-
+void registerEntity();
 
 #endif /* ENTITY_H_ */

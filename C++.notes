@@ -29,9 +29,9 @@ Pointers/references:
 
 
 STL containers:
-	list
+	list	// doubly-linked list
 	deque
-	vector
+	vector	// basically an ArrayList
 	map	// uses a tree
 		unordered_map	// uses hash table. Faster, but uses more memory
 	set:	store unique elements following a specific order.

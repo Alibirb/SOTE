@@ -1,6 +1,6 @@
 #include "AngelScriptEngine.h"
-#include "add_on/scriptstdstring/scriptstdstring.h"
-#include "add_on/scriptarray/scriptarray.h"
+#include "scriptstdstring/scriptstdstring.h"
+#include "scriptarray/scriptarray.h"
 
 #include "stdvector.h"
 
@@ -452,14 +452,14 @@ void AngelScriptEngine::registerConstructor(const char *obj, const char *declara
 
 		}
 }
-
+/*
 /// Register a list contructor.
 void AngelScriptEngine::registerListConstructor(const char *obj, const char *declaration, const asSFuncPtr &funcPointer)
 {
 	int r = engine->RegisterObjectBehaviour(obj, asBEHAVE_LIST_CONSTRUCT, declaration, funcPointer, asCALL_CDECL_OBJLAST);
 	assert( r >= 0 );
 }
-
+*/
 /// Register a property of an object.
 /// for byteOffset, use asOFFSET(ClassName, propertyName).
 void AngelScriptEngine::registerObjectProperty(const char *obj, const char *declaration, int byteOffset)

@@ -6,6 +6,7 @@
 
 
 #include "Weapon.h"
+#include "Attack.h"
 
 
 class Fighter;
@@ -14,15 +15,17 @@ std::list<Fighter*> getFighters();
 class Fighter : public Entity
 {
 protected:
-	Weapon *_equippedWeapon;
+	Weapon* _equippedWeapon;
 	float health = 10.0;
-	//FighterStats _stats;
 	std::string _team;
+	std::vector<Attack*> _attacks;
+	Attack* _currentAttack;	/// currently-selected attack
 
 	std::unordered_map<std::string, float> _resistances;
 	float _maxHealth;
 
 public:
+	Fighter();
 	Fighter(std::string name, osg::Vec3 position, std::string team);
 	Fighter(GameObjectData* dataObj);
 	virtual ~Fighter();
@@ -31,11 +34,15 @@ public:
 	void aimWeapon(Entity* theOneWhoMustDie);
 	Weapon* getWeapon();
 
+	Attack* getCurrentAttack();
+
 	virtual void takeDamages(Damages dams);
 
 	float getResistance(std::string type);
 	void setResistance(std::string type, float value);
 
+	virtual void attack(Fighter* target);
+	virtual void useBestAttackOn(Fighter* target);
 
 	virtual void die();	/// Perform any actions to be taken when the Fighter is killed (mark for removal, change state to "dead", etc.)
 
@@ -69,5 +76,6 @@ void addDamageIndicator(Fighter* entityHurt, float damageDealt, std::string& dam
 
 void addFighter(Fighter* newFighter);
 
+void registerFighter();
 
 #endif // FIGHTER_H

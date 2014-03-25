@@ -57,7 +57,8 @@ GameObjectData* ControlledObject::save()
 }
 void ControlledObject::saveControlledObjectVariables(GameObjectData* dataObj)
 {
-	dataObj->addChild(_stateMachine->save());
+	//dataObj->addChild(_stateMachine->save());
+	dataObj->addData("stateMachine", _stateMachine->save());
 }
 void ControlledObject::load(GameObjectData* dataObj)
 {
@@ -68,13 +69,15 @@ void ControlledObject::load(GameObjectData* dataObj)
 void ControlledObject::loadControlledObjectVariables(GameObjectData* dataObj)
 {
 	//dataObj->addChild(_stateMachine->save());
-	for(auto child :dataObj->getChildren())
+	/*for(auto child :dataObj->getChildren())
 	{
 		if(child->getType() == "StateMachine")
 			_stateMachine->load(child);
 		else
 			logWarning("No frickin' clue what this non-stateMachine object is doing as a child of a ControlledObject");
-	}
+	}*/
+	if(dataObj->getObject("stateMachine"))
+		_stateMachine->load(dataObj->getObject("stateMachine"));
 }
 
 

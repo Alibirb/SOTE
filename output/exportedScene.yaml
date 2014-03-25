@@ -1,10 +1,12 @@
 dataType: Level
 children:
   - dataType: GameObject
+    mass: 0
     geometry: DemoLevel.osgt
     position: {x: 0, y: 0, z: 0}
   - dataType: Controller
     radius: 5
+    mass: 4.573278e-41
     geometry: Switch.osgt
     position: {x: 0, y: 0, z: 0}
     functions:
@@ -14,10 +16,36 @@ children:
         	self.sendMessage("toggle");
         }
         
-    children:
+    controlled:
       - dataType: ControlledObject
         geometry: SlidingDoor.osgt
         position: {x: 8, y: 0, z: 0}
+        stateMachine:
+          dataType: StateMachine
+          defaultState: closed
+          states:
+            closed:
+              dataType: State
+              name: closed
+              functions:
+                onEnter: |
+                  void onEnter(ControlledObject@ self)
+                  {
+                  	self.playAnimation("close");
+                  	print("closing");
+                  }
+                  
+            open:
+              dataType: State
+              name: open
+              functions:
+                onEnter: |
+                  void onEnter(ControlledObject@ self)
+                  {
+                  	self.playAnimation("open");
+                   	print("opening");
+                  }
+                  
         functions:
           onMessage_toggle: |
             void onMessage_toggle(ControlledObject@ self)
@@ -28,39 +56,17 @@ children:
                     self.changeState("closed");
             }
             
-        children:
-          - dataType: StateMachine
-            children:
-              - dataType: State
-                name: closed
-                functions:
-                  onEnter: |
-                    void onEnter(ControlledObject@ self)
-                    {
-                    	self.playAnimation("close");
-                    	print("closing");
-                    }
-                    
-              - dataType: State
-                name: open
-                functions:
-                  onEnter: |
-                    void onEnter(ControlledObject@ self)
-                    {
-                    	self.playAnimation("open");
-                    	print("opening");
-                    }
-                    
   - dataType: Fighter
     maxHealth: 5
+    mass: -32.07
     team: Enemy
     geometry: humanmodelNoBones.osg
     position: {x: 5, y: 5, z: 0}
     resistances:
       dataType: unordered_map
+      ACID: 0
       HOT: 0
       COLD: 0
-      ACID: 0
     weapon:
       dataType: Weapon
       coolDownTime: 2.5
@@ -69,20 +75,55 @@ children:
       projectile:
         dataType: Projectile
         geometry: circle.png
-        position: {x: 0, y: 0, z: 0}
-        children:
+        damages:
+          - dataType: damage
+            amount: 2
+            type: PURE_MAGIC
+    stateMachine:
+      dataType: StateMachine
+      defaultState: idle
+      states:
+        attacking:
+          dataType: State
+          name: attacking
+          functions:
+            onUpdate: |
+              void onUpdate(Fighter@ self)
+              {
+                if(self.getCurrentAttack().done())
+                	self.returnToPreviousState();
+              }
+              
+        idle:
+          dataType: State
+          name: idle
+          functions:
+            onUpdate: |
+              void onUpdate(Fighter@ self)
+              {
+                if(self.getClosestEnemy() !is null)
+                  self.useBestAttackOn(self.getClosestEnemy());
+                else
+                	print("No nearby enemies");
+              }
+              
+    attacks:
+      - dataType: Attack
+        duration: 2.5
+        damages:
           - dataType: damage
             amount: 2
             type: PURE_MAGIC
   - dataType: Player
     maxHealth: 25
+    mass: 4.573278e-41
     team: Player
     geometry: humanmodelNoBones.osg
-    position: {x: 2.970551, y: 0.3979353, z: -0.04000026}
+    position: {x: 2.870505, y: 0.2013114, z: -0.04000008}
     resistances:
       dataType: unordered_map
-      COLD: 0
       HOT: 0
+      COLD: 0
       ACID: 0
       PURE_MAGIC: 0
     weapon:
@@ -93,8 +134,40 @@ children:
       projectile:
         dataType: Projectile
         geometry: Fireball.png
-        position: {x: 0, y: 0, z: 0}
-        children:
+        damages:
+          - dataType: damage
+            amount: 2
+            type: HOT
+    stateMachine:
+      dataType: StateMachine
+      defaultState: idle
+      states:
+        attacking:
+          dataType: State
+          name: attacking
+          functions:
+            onUpdate: |
+              void onUpdate(Fighter@ self)
+              {
+                if(self.getCurrentAttack().done())
+                	self.returnToPreviousState();
+              }
+              
+        idle:
+          dataType: State
+          name: idle
+          functions:
+            onUpdate: |
+              void onUpdate(Fighter@ self)
+              {
+                //if(self.getClosestEnemy())
+                 // self.useBestAttackOn(self.getClosestEnemy());
+              }
+              
+    attacks:
+      - dataType: Attack
+        duration: 2
+        damages:
           - dataType: damage
             amount: 2
             type: HOT

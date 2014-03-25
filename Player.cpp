@@ -74,11 +74,11 @@ osg::Vec3 Player::getCameraTarget()
 {
 	return this->getWorldPosition() + osg::Vec3(0, 0, 1.5);
 }
-
+/*
 void Player::attack(Fighter *theOneWhoMustDie)
 {
 	_equippedWeapon->fire();
-}
+}*/
 
 bool Player::isActivePlayer()
 {
@@ -87,7 +87,7 @@ bool Player::isActivePlayer()
 
 void Player::die()
 {
-	this->state = dead;
+//	this->state = dead;
 	if(getPlayers().size() == 1)
 	{
 		// Last Player. Game Over

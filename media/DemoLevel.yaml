@@ -14,7 +14,7 @@ children:
         {
         	self.sendMessage("toggle");
         }
-    children:
+    controlled:
       - dataType: ControlledObject
         geometry: SlidingDoor.osgt
         position: {x: 8, y: 0, z: 0}
@@ -27,28 +27,30 @@ children:
                 else
                     self.changeState("closed");
             }
-        children:
-          - dataType: StateMachine
-            defaultState: closed
-            children:
-              - dataType: State
-                name: open
-                functions:
-                  onEnter: |
-                    void onEnter(ControlledObject@ self)
-                    {
-                    	self.playAnimation("open");
-                    	print("opening");
-                    }
-              - dataType: State
-                name: closed
-                functions:
-                  onEnter: |
-                    void onEnter(ControlledObject@ self)
-                    {
-                    	self.playAnimation("close");
-                    	print("closing");
-                    }
+        stateMachine:
+          dataType: StateMachine
+          defaultState: closed
+          states:
+            open:
+              dataType: State
+              name: open
+              functions:
+                onEnter: |
+                  void onEnter(ControlledObject@ self)
+                  {
+                  	self.playAnimation("open");
+                   	print("opening");
+                  }
+            closed:
+              dataType: State
+              name: closed
+              functions:
+                onEnter: |
+                  void onEnter(ControlledObject@ self)
+                  {
+                  	self.playAnimation("close");
+                  	print("closing");
+                  }
   - dataType: Fighter
     maxHealth: 5.0
     team: Enemy
@@ -67,10 +69,43 @@ children:
       projectile:
         dataType: Projectile
         geometry: circle.png
-        children:
+        damages:
           - dataType: damage
             amount: 2
             type: PURE_MAGIC
+    attacks:
+      - dataType: Attack
+        damages:
+          - dataType: damage
+            amount: 2
+            type: PURE_MAGIC
+        duration: 2.5
+    stateMachine:
+      dataType: StateMachine
+      defaultState: idle
+      states:
+        idle:
+          dataType: State
+          name: idle
+          functions:
+            onUpdate: |
+              void onUpdate(Fighter@ self)
+              {
+                if(self.getClosestEnemy() !is null)
+                  self.useBestAttackOn(self.getClosestEnemy());
+                else
+                	print("No nearby enemies");
+              }
+        attacking:
+          dataType: State
+          name: attacking
+          functions:
+            onUpdate: |
+              void onUpdate(Fighter@ self)
+              {
+                if(self.getCurrentAttack().done())
+                	self.returnToPreviousState();
+              }
   - dataType: Player
     maxHealth: 25.0
     team: Player
@@ -90,7 +125,38 @@ children:
       projectile:
         dataType: Projectile
         geometry: Fireball.png
-        children:
+        damages:
           - dataType: damage
             amount: 2
             type: HOT
+    attacks:
+      - dataType: Attack
+        damages:
+          - dataType: damage
+            amount: 2
+            type: HOT
+        duration: 2
+    stateMachine:
+      dataType: StateMachine
+      defaultState: idle
+      states:
+        idle:
+          dataType: State
+          name: idle
+          functions:
+            onUpdate: |
+              void onUpdate(Fighter@ self)
+              {
+                //if(self.getClosestEnemy())
+                 // self.useBestAttackOn(self.getClosestEnemy());
+              }
+        attacking:
+          dataType: State
+          name: attacking
+          functions:
+            onUpdate: |
+              void onUpdate(Fighter@ self)
+              {
+                if(self.getCurrentAttack().done())
+                	self.returnToPreviousState();
+              }

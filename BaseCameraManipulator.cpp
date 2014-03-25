@@ -1,5 +1,6 @@
 
 #include "BaseCameraManipulator.h"
+using namespace osg;
 
 
 void BaseCameraManipulator::setCenter(osg::Vec3 newCenter)

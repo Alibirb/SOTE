@@ -92,8 +92,10 @@ GameObjectData* Controller::save()
 }
 void Controller::saveControllerVariables(GameObjectData* dataObj)
 {
-	for(auto child : _controlled)
-		dataObj->addChild(child);
+
+	//for(auto child : _controlled)
+	//	dataObj->addChild(child);
+	dataObj->addData("controlled", _controlled);
 	dataObj->addData("radius", _radius);
 }
 
@@ -106,7 +108,8 @@ void Controller::loadControllerVariables(GameObjectData* dataObj)
 {
 	_radius = dataObj->getFloat("radius");
 
-	for(auto child : dataObj->getChildren())
+	//for(auto child : dataObj->getChildren())
+	for(auto child : dataObj->getObjectList("controlled"))
 	{
 		if(child->getType() == "ControlledObject")
 			_controlled.push_back(new ControlledObject(child));

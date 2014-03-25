@@ -18,8 +18,8 @@
 #endif
 
 #include <angelscript.h>
-#include "add_on/scriptbuilder/scriptbuilder.h"
-#include "add_on/scripthelper/scripthelper.h"
+#include "scriptbuilder/scriptbuilder.h"
+#include "scripthelper/scripthelper.h"
 
 
 #ifdef __linux__
@@ -36,6 +36,8 @@
 #include "globals.h"
 
 #include "stdvector.h"
+
+#include "scriptstl.h"
 
 using namespace std;
 
@@ -144,7 +146,7 @@ public:
 	void registerConstructor(const char* obj, const char* declaration, const asSFuncPtr &funcPointer);
 
 	/// Register a list contructor.
-	void registerListConstructor(const char* obj, const char* declaration, const asSFuncPtr &funcPointer);
+//	void registerListConstructor(const char* obj, const char* declaration, const asSFuncPtr &funcPointer);
 
 	/// Register a property of an object.
 	/// for byteOffset, use asOFFSET(ClassName, propertyName).
@@ -153,10 +155,19 @@ public:
 	/// Register a method of an object
 	void registerObjectMethod(const char* obj, const char* declaration, const asSFuncPtr &funcPointer, asDWORD callConv );
 
+	/// Register an std::vector type.
+	/// vectorName is the name of the new vector type
+	/// typeName is the name of the type that the vector holds
 	template<typename T>
 	void registerVector(std::string vectorName, std::string typeName)
 	{
 		RegisterVector<T>(vectorName, typeName, engine);
+	}
+
+	template<typename T>
+	void registerListType(std::string listName, std::string typeName)
+	{
+		RegisterScriptList<T>(listName.c_str(), typeName.c_str(), engine);
 	}
 
 

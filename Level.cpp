@@ -153,8 +153,15 @@ GameObjectData* Level::save()
 {
 	GameObjectData* data = new GameObjectData("Level");
 
+	//for(GameObject* object : _objects)
+	//	data->addChild(object);
+//	data->addData("children", _objects);
+	std::vector<GameObject*> objectVector;
+
 	for(GameObject* object : _objects)
-		data->addChild(object);
+		objectVector.push_back(object);
+
+	data->addData("children", objectVector);
 
 	return data;
 }
@@ -174,7 +181,8 @@ void Level::loadFromYaml(std::string filename)
 {
 	GameObjectData* data = new GameObjectData(YAML::LoadFile(filename));
 
-	for(auto child : data->getChildren())
+	for(auto child : data->getObjectList("children"))
+	//for(auto child : data->getChildren())
 	{
 		std::string elementType = child->getType();
 		if(elementType == "GameObject")
@@ -218,6 +226,8 @@ void Level::load(std::string filename)
 }
 void Level::reload(std::string filename)
 {
+	std::cout << "reloading" << std::endl;
+
 	for(auto obj : _objects)
 		markForRemoval(obj, obj->_objectType);
 	loadFromYaml(filename);

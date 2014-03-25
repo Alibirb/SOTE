@@ -15,11 +15,65 @@
 #include "GameObjectData.h"
 
 
-#include <osgViewer/config/SingleWindow>
+//#include <osgViewer/config/SingleWindow>
+/// could not find the config directory in the openSUSE repo, so I copied the essentials here instead.
+namespace osgViewer
+{
+class SingleWindow : public ViewConfig
+{
+public:
+    SingleWindow():_x(0),_y(0),_width(-1),_height(-1),_screenNum(0),_windowDecoration(true),_overrideRedirect(false) {}
+    SingleWindow(int x, int y, int width, int height, unsigned int screenNum=0):_x(x),_y(y),_width(width),_height(height),_screenNum(screenNum),_windowDecoration(true),_overrideRedirect(false) {}
+    SingleWindow(const SingleWindow& rhs, const osg::CopyOp& copyop=osg::CopyOp::SHALLOW_COPY):ViewConfig(rhs,copyop),_x(rhs._x),_y(rhs._y),_width(rhs._width),_height(rhs._height),_screenNum(rhs._screenNum),_windowDecoration(rhs._windowDecoration), _overrideRedirect(rhs._overrideRedirect) {}
+
+    META_Object(osgViewer,SingleWindow);
+
+    virtual void configure(osgViewer::View& view) const;
+
+	void setX(int x) { _x = x; }
+	int getX() const { return _x; }
+
+	void setY(int y) { _y = y; }
+    int getY() const { return _y; }
+
+	void setWidth(int w) { _width = w; }
+	int getWidth() const { return _width; }
+
+	void setHeight(int h) { _height = h; }
+	int getHeight() const { return _height; }
+
+	void setScreenNum(unsigned int sn) { _screenNum = sn; }
+	unsigned int getScreenNum() const { return _screenNum; }
+
+	void setWindowDecoration(bool wd) { _windowDecoration = wd; }
+	bool getWindowDecoration() const { return _windowDecoration; }
+
+	void setOverrideRedirect(bool override) { _overrideRedirect = override; }
+	bool getOverrideRedirect() const { return _overrideRedirect; }
+
+protected:
+    int _x, _y, _width, _height;
+    unsigned int _screenNum;
+    bool _windowDecoration;
+    bool _overrideRedirect;
+};
+
+}
+
+
+
 #include <osgDB/ReadFile>
 #include <osgDB/FileUtils>
 #include <osgDB/WriteFile>
 #include <osgViewer/ViewerEventHandlers>
+
+
+#include <stdio.h>
+#ifdef WINDOWS
+    #include <direct.h>
+#else
+    #include <unistd.h>
+#endif
 
 
 using namespace std;
@@ -145,22 +199,22 @@ void GameOverYouLose()
 }
 
 bool safeToAddRemoveNodes;
-std::deque<std::pair<Node*,Group*>> nodesToAdd;
+std::deque<std::pair<osg::Node*,osg::Group*>> nodesToAdd;
 
-void addToSceneGraph(Node* node, Group* parent)
+void addToSceneGraph(osg::Node* node, osg::Group* parent)
 {
 	if(safeToAddRemoveNodes)
 		parent->addChild(node);
 	else
 	{
-		nodesToAdd.push_back(std::pair<Node*,Group*>(node, parent));
+		nodesToAdd.push_back(std::pair<osg::Node*,osg::Group*>(node, parent));
 	}
 }
 void addNodesToGraph()
 {
 	while(!nodesToAdd.empty())
 	{
-		std::pair<Node*,Group*> nodeAndParent = nodesToAdd.front();
+		std::pair<osg::Node*,osg::Group*> nodeAndParent = nodesToAdd.front();
 		nodeAndParent.second->addChild(nodeAndParent.first);
 		nodesToAdd.pop_front();
 	}
@@ -177,7 +231,9 @@ void writeOutSceneGraph()
 	level->saveAsYaml("output/exportedScene.yaml");
 
 	GameObjectData::testYamlImportExport("output/exportedScene.yaml", "output/doublyExportedScene.yaml");
+
 	level->reload("output/exportedScene.yaml");
+	//level->reload("media/DemoLevel.yaml");
 }
 
 
@@ -197,10 +253,14 @@ int main()
 	root->addChild(lightGroup);
 	safeToAddRemoveNodes = true;
 
+	char currentDirectory[FILENAME_MAX];
+	getcwd(currentDirectory, sizeof(currentDirectory));
+	std::cout << currentDirectory << std::endl;
+
 	//  Set up asset search paths
 	osgDB::FilePathList pathList = osgDB::getDataFilePathList();
-	pathList.push_back("/home/daniel/Documents/C++/ScumOfTheEarth/media/");
-	pathList.push_back("/home/daniel/Documents/C++/ScumOfTheEarth/");
+	pathList.push_back(std::string(currentDirectory) + "/media/");
+	pathList.push_back(std::string(currentDirectory) + "/");
 	osgDB::setDataFilePathList(pathList);
 
 	windowWidth = 1600;
@@ -254,6 +314,9 @@ int main()
 	addNodesToGraph();
 
 	double elapsedTime = 0.0;	// Elapsed time, in seconds, that the game has been running for.
+
+
+	//writeOutSceneGraph();
 
 	while(!getViewer()->done())
 	{

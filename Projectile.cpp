@@ -136,17 +136,22 @@ void Projectile::load(GameObjectData* dataObj)
 
 void Projectile::saveProjectileData(GameObjectData* dataObj)
 {
+	std::vector<GameObjectData*> damageDataVector;
 	for(Damage damage : _damages)
 	{
 		GameObjectData* damageData = new GameObjectData("damage");
 		damageData->addData("type", damage.type);
 		damageData->addData("amount", damage.amount);
-		dataObj->addChild(damageData);
+		//dataObj->addChild(damageData);
+		damageDataVector.push_back(damageData);
 	}
+	dataObj->addData("damages", damageDataVector);
+
 }
 void Projectile::loadProjectileData(GameObjectData* dataObj)
 {
-	for(GameObjectData* child : dataObj->getChildren())
+	//for(GameObjectData* child : dataObj->getChildren())
+	for(GameObjectData* child : dataObj->getObjectList("damages"))
 	{
 		if(child->getType() == "damage")
 		{

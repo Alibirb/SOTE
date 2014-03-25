@@ -19,7 +19,9 @@
 
 
 
-class GameObjectData;
+//class GameObjectData;
+
+#include "GameObjectData.h"
 
 
 
@@ -28,7 +30,7 @@ class asIScriptFunction;
 
 
 /// Class for an object
-class GameObject
+class GameObject : public Saveable
 {
 protected:
 	osg::Vec3 initialPosition;
