@@ -12,7 +12,9 @@
 #include "Player.h"
 #include "Level.h"
 
+#include "BaseCameraManipulator.h"
 
+#include "Editor.h"
 
 
 
@@ -39,7 +41,7 @@ bool MainEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIAction
 		}
 		else
 		{
-			getActivePlayer()->processMovementControls(osg::Vec3(0,0,0));	// Send empty controls to player. FIXME: ugly.
+			getActivePlayer()->processMovementControls(osg::Vec3(0,0,0));	// Send empty controls to player. FIXME: should pause the game instead.
 
 		}
 	}
@@ -54,33 +56,46 @@ bool MainEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIAction
 			std::cout << "Cleanup finished" << std::endl;
 		}
 
-		if(_inputMode != InputMode::Standard)
-			return false;	// In non-standard input mode, we still track keystate, but nothing gets triggered.
+		switch(_inputMode)
+		{
+		case InputMode::Standard:
+			if (ea.getKey() == 'r')
+			{
+				getViewer()->getCameraManipulator()->home(ea, aa);
+				getActivePlayer()->resetPosition();
+			}
+			else if (ea.getKey() == 'p')
+			{
+				getCurrentLevel()->getDebugDrawer()->setEnabled(!getCurrentLevel()->getDebugDrawer()->getEnabled());
+			}
+			else if (ea.getKey() == 'o')
+			{
+				writeOutSceneGraph();
+			}
+			else if(ea.getKey() == 'e')
+				getActivePlayer()->interact();
+			if (ea.getKey() == 'q')
+				if(getActivePlayer()->getClosestEnemy())
+					getActivePlayer()->useBestAttackOn(getActivePlayer()->getClosestEnemy());
+			if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Space)
+				getActivePlayer()->jump();
+			if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Shift_L)
+				if (getActivePlayer()->getClosestEnemy())
+					getActivePlayer()->aimWeapon(getActivePlayer()->getClosestEnemy());
+			if(ea.getKey() == osgGA::GUIEventAdapter::KEY_F1)
+			{
+				getEditor()->setMode(Editor::Edit);
+			}
+			break;
+		case InputMode::Editor:
+			if(ea.getKey() == osgGA::GUIEventAdapter::KEY_F1)
+			{
+				getEditor()->setMode(Editor::Play);
+			}
+			break;
+		}
 
-		if (ea.getKey() == 'r')
-		{
-			getViewer()->getCameraManipulator()->home(ea, aa);
-			getActivePlayer()->resetPosition();
-		}
-		else if (ea.getKey() == 'p')
-		{
-			getCurrentLevel()->getDebugDrawer()->setEnabled(!getCurrentLevel()->getDebugDrawer()->getEnabled());
-		}
-		else if (ea.getKey() == 'o')
-		{
-			writeOutSceneGraph();
-		}
-		else if(ea.getKey() == 'e')
-			getActivePlayer()->interact();
-		if (ea.getKey() == 'j')
-			//getActivePlayer()->getWeapon()->fire();
-			if(getActivePlayer()->getClosestEnemy())
-				getActivePlayer()->useBestAttackOn(getActivePlayer()->getClosestEnemy());
-		if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Space)
-			getActivePlayer()->jump();
-		if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Shift_L)
-			if (getActivePlayer()->getClosestEnemy())
-				getActivePlayer()->aimWeapon(getActivePlayer()->getClosestEnemy());
+
 		return false;
 	}
 	case(osgGA::GUIEventAdapter::KEYUP):
@@ -92,6 +107,12 @@ bool MainEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIAction
 		return false;
 	}
 }
+
+void MainEventHandler::setInputMode(InputMode newMode) {
+	std::cout << "Changing from inputmode " << _inputMode << " to " << newMode << "." << std::endl;
+	_inputMode = newMode;
+}
+
 
 MainEventHandler* getMainEventHandler()
 {

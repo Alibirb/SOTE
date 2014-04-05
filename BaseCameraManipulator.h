@@ -2,12 +2,11 @@
 #define BASECAMERAMANIPULATOR_H
 
 
-#include "osgGA/CameraManipulator"
-#include "osg/Quat"
+#include <osgGA/CameraManipulator>
+#include <osg/Quat>
 #include "globals.h"
 
 using namespace osgGA;
-//using namespace osg;
 
 class BaseCameraManipulator : public osgGA::CameraManipulator
 {
@@ -27,6 +26,8 @@ protected:
 
 	float _windowCenterX;
 	float _windowCenterY;
+
+	bool _active = true;	/// Whether the manipulator should react to input events
 
 public:
 	void setCenter(osg::Vec3 newCenter);
@@ -80,6 +81,8 @@ public:
 	virtual void setRotation(double azimuth, double zenith);
 
 	void centerMousePointer(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+
+	void setActive(bool active);
 
 
 protected:

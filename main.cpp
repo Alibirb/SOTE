@@ -1,7 +1,10 @@
 #include <iostream>
 
+#include <GL/glew.h>
+
 #include "globals.h"
 #include "Level.h"
+#include "Player.h"
 
 #ifdef TOP_DOWN_2D_VIEW
 	#include "TwoDimensionalCameraManipulator.h"
@@ -67,6 +70,10 @@ protected:
 #include <osgDB/WriteFile>
 #include <osgViewer/ViewerEventHandlers>
 
+#include "CEGUIStuff.h"
+
+
+#include "Editor.h"
 
 #include <stdio.h>
 #ifdef WINDOWS
@@ -200,6 +207,7 @@ void GameOverYouLose()
 
 bool safeToAddRemoveNodes;
 std::deque<std::pair<osg::Node*,osg::Group*>> nodesToAdd;
+std::deque<std::pair<osg::Node*,osg::Group*>> nodesToRemove;
 
 void addToSceneGraph(osg::Node* node, osg::Group* parent)
 {
@@ -210,13 +218,29 @@ void addToSceneGraph(osg::Node* node, osg::Group* parent)
 		nodesToAdd.push_back(std::pair<osg::Node*,osg::Group*>(node, parent));
 	}
 }
-void addNodesToGraph()
+void removeFromSceneGraph(osg::Node* node, osg::Group* parent)
+{
+	if(safeToAddRemoveNodes)
+		parent->removeChild(node);
+	else
+	{
+		nodesToRemove.push_back(std::pair<osg::Node*,osg::Group*>(node, parent));
+	}
+}
+
+void addAndRemoveQueuedNodes()
 {
 	while(!nodesToAdd.empty())
 	{
 		std::pair<osg::Node*,osg::Group*> nodeAndParent = nodesToAdd.front();
 		nodeAndParent.second->addChild(nodeAndParent.first);
 		nodesToAdd.pop_front();
+	}
+	while(!nodesToRemove.empty())
+	{
+		std::pair<osg::Node*,osg::Group*> nodeAndParent = nodesToRemove.front();
+		nodeAndParent.second->removeChild(nodeAndParent.first);
+		nodesToRemove.pop_front();
 	}
 }
 
@@ -295,8 +319,9 @@ int main()
 	osgViewer::StatsHandler* statsHandler = new osgViewer::StatsHandler();
 	statsHandler->setKeyEventTogglesOnScreenStats( osgGA::GUIEventAdapter::KEY_F3);
 	getViewer()->addEventHandler(statsHandler);
-    getViewer()->addEventHandler(new osgViewer::WindowSizeHandler());
+    //getViewer()->addEventHandler(new osgViewer::WindowSizeHandler());
 	getViewer()->realize();
+	getViewer()->getCamera()->getGraphicsContext()->makeCurrent();
 
 	//getScriptEngine()->test();
 	getScriptEngine()->runFile("initialize.as");
@@ -311,10 +336,20 @@ int main()
 		fps[i] = 60;
 	float fpsTotal = 60.0 * fpsArrayLength;
 
-	addNodesToGraph();
+/*
+	glewInit();
+	osg::ref_ptr<osg::Geode> geode = new osg::Geode;
+    osg::ref_ptr<CEGUIDrawable> cd = new CEGUIDrawable();
+    geode->addDrawable(cd.get());
+    addToSceneGraph(geode);*/
+
+
+	getEditor()->setupDefaultWindows();
+	getEditor()->setMode(Editor::Play);
+
+	addAndRemoveQueuedNodes();
 
 	double elapsedTime = 0.0;	// Elapsed time, in seconds, that the game has been running for.
-
 
 	//writeOutSceneGraph();
 
@@ -341,8 +376,10 @@ int main()
 		safeToAddRemoveNodes = false;
 		getViewer()->frame(elapsedTime);
 		safeToAddRemoveNodes = true;
-		addNodesToGraph();
+		addAndRemoveQueuedNodes();
 	}
 
 	return 0;
 }
+
+

@@ -28,7 +28,6 @@ AngelScriptConsole::AngelScriptConsole() : osgWidget::Input("console", "", 50)
 	wm->addChild(box);
 
 	camera = wm->createParentOrthoCamera();
-//	root->addChild(camera);
 	addToSceneGraph(camera);
 
 	viewer->addEventHandler(new osgWidget::MouseHandler(wm));

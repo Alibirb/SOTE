@@ -33,6 +33,8 @@ double Attack::getTimeRemaining()
 
 void Attack::useOn(Fighter* target)
 {
+	if(_inUse)
+		return;	// Already in use. Wait for attack to end.
 	_inUse = true;
 	_timeRemaining = _duration;
 	//if(target->isHurtByTeam(getTeam()))

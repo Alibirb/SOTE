@@ -26,7 +26,7 @@
   * ALTERED SOURCE:
   *
   * The original file was outdated and needed bug fixes to compile with latest version of AngelScript and C++11
-  *  Added space between
+  *
   */
 
 #ifndef SCRIPTSTL_H

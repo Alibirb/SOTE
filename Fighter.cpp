@@ -9,7 +9,7 @@
 
 std::list<Fighter*> fighterList;
 
-Fighter::Fighter()
+Fighter::Fighter() : _currentAttack(NULL)
 {
 	registerFighter();
 }

@@ -97,10 +97,7 @@ void Player::die()
 		logError("Player death not implemented.");
 }
 
-void Player::onUpdate(float deltaTime)
-{
 
-}
 
 void Player::onCollision(GameObject* other)
 {

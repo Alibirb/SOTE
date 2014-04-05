@@ -12,7 +12,7 @@
 #include "Controller.h"
 #include "TemporaryText.h"
 
-
+#include "globals.h"
 
 struct ObjectInfo
 {

@@ -107,7 +107,7 @@ children:
                 	self.returnToPreviousState();
               }
   - dataType: Player
-    maxHealth: 25.0
+    maxHealth: 100.0
     team: Player
     geometry: humanmodelNoBones.osg
     position: {x: 1.774747, y: 0.1247724, z: 1.839263}

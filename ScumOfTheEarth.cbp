@@ -14,6 +14,7 @@
 				<Compiler>
 					<Add option="-pg" />
 					<Add option="-g" />
+					<Add directory="include" />
 				</Compiler>
 				<Linker>
 					<Add option="-pg" />
@@ -26,6 +27,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add directory="include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -43,6 +45,7 @@
 			<Add directory="../../../Downloads/yaml-cpp-0.5.1/include" />
 			<Add directory="/usr/include/bullet" />
 			<Add directory="/usr/lib/x86_64-linux-gnu" />
+			<Add directory="/usr/local/include/cegui-0" />
 		</Compiler>
 		<Linker>
 			<Add option="-pthread" />
@@ -60,11 +63,17 @@
 			<Add library="BulletCollision" />
 			<Add library="LinearMath" />
 			<Add library="yaml-cpp" />
+			<Add library="/usr/local/lib64/libCEGUIBase-0.so" />
+			<Add library="/usr/local/lib64/libCEGUICommonDialogs-0.so" />
+			<Add library="GL" />
+			<Add library="CEGUIOpenGLRenderer-0" />
+			<Add library="GLEW" />
 			<Add directory="/usr/local/lib" />
 			<Add directory="/usr/local/lib64" />
 			<Add directory="../ScumOfTheEarth" />
 			<Add directory="../Box2D_v2.3.0/Box2D/Box2D" />
 			<Add directory="tinyxml" />
+			<Add directory="/usr/local/lib64/cegui-0" />
 		</Linker>
 		<Unit filename="AngelScript.notes" />
 		<Unit filename="AngelScriptConsole.cpp" />
@@ -77,12 +86,16 @@
 		<Unit filename="BaseCameraManipulator.cpp" />
 		<Unit filename="BaseCameraManipulator.h" />
 		<Unit filename="C++.notes" />
+		<Unit filename="CEGUIStuff.cpp" />
+		<Unit filename="CEGUIStuff.h" />
 		<Unit filename="ControlledObject.cpp" />
 		<Unit filename="ControlledObject.h" />
 		<Unit filename="Controller.cpp" />
 		<Unit filename="Controller.h" />
 		<Unit filename="Damage.cpp" />
 		<Unit filename="Damage.h" />
+		<Unit filename="Editor.cpp" />
+		<Unit filename="Editor.h" />
 		<Unit filename="Entity.cpp" />
 		<Unit filename="Entity.h" />
 		<Unit filename="ExpiredObjectRemoval.cpp" />
@@ -118,6 +131,8 @@
 		<Unit filename="TemporaryText.h" />
 		<Unit filename="TextDisplay.cpp" />
 		<Unit filename="TextDisplay.h" />
+		<Unit filename="TextEditor.cpp" />
+		<Unit filename="TextEditor.h" />
 		<Unit filename="ThirdPersonCameraManipulator.cpp" />
 		<Unit filename="ThirdPersonCameraManipulator.h" />
 		<Unit filename="TwoDimensionalCameraManipulator.cpp" />

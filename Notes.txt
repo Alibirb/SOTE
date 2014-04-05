@@ -1,27 +1,31 @@
 Basics:
-	A game starring the characters from MW:ADC. Kind of a cross between an RPG and an adventure game.
+	A game starring the characters from MW:ADC.
 	Also developing a core system that can be reused in other games.
 
 
 TODO:
 	DoneThisCommit:
-		Revised attack system:
-			Added Attack class
-		Made Entities use a StateMachine.
+		Basic editor functionality:
+			key to switch between edit and play modes.	DONE!!
+			text editor window
 	Current Task:
-		Revise attack system. Add Attack class.
+
 	Next Steps:
+		Focus on getting the demo level/prototype done so I actually know where this is all going.
+			Flame jets for the demo level.
+			multiple characters
+
 		Improve import/export to allow it to link to prototypes.
 		Make a class to wrap around the physics stuff
 			Should also expose the physics info to the object files.
 		Add mechanism for key bindings
-		Ability to pause the game to switch between edit and play modes (even if edit mode does nothing)
-		Flame jets for the demo level.
 		Expose all GameObject-derived classes to AngelScript (also exposing the type hierarchy (see http://www.angelcode.com/angelscript/sdk/docs/manual/doc_adv_class_hierarchy.html))
 	Minor Tasks:
 		logError and logWarning should allow multiple parameters.
+		Use a namespace for all my classes
 	Under consideration:
 		Perhaps GameObjectData getter methods should use pass-by-reference so you can just pass in the variable you want to assign.
+		the MainEventHandler should probably act as an event dispatcher that determines what object handles the events
 
 
 	Objects:
@@ -41,8 +45,10 @@ TODO:
 	Lighting should be done with Light objects, rather than lights freely floating in the scene graph.
 	Physics fixes:
 		figure out proper collision filtering technique for ghost objects (there should be no collision response, but it still needs to be detected.)
-	Make sure it all works on Windows (with the exception of the extra mouse button support I added)
+	Make sure it all works on Windows
+	Figure out what to do about YAML's hatred of tabs (either put a hack into the text editor so it treats spaces like tabs, or alter yaml-cpp so it allows tabs)
 	Clean up:
+
 
 
 BUGS:
@@ -53,6 +59,7 @@ BUGS:
 	Lighting needs work. Should figure out how to ensure every surface is lit.
 	Collision checking (in Level) may call onCollision() multiple times for the same pair of objects if they have multiple manifolds, or if Bullet takes multiple simulation steps for one rendering step.
 	Doors open, but do not close (not sure how to have multiple animations in Bullet, so currently they can have an open animation or a closing animation, but not both.)
+	In the text editor, pressing the Delete key inserts a character.
 	Low Priority (it works, but might be ugly):
 
 Bugs I expect to see later:
@@ -104,4 +111,4 @@ Goals:
 			Enemies-- at least two types.
 			A few standin models.
 			Basic level, with at least one puzzle
-				Puzzle idea: hallway full of flame jets, Alex needs to go through and activate some switch to open a door for the others. Unfortunately, the switch also locked him inside the room, and the others need to find a switch to free him.
+				Puzzle idea: hallway full of flame jets, Alex needs to go through and activate some switch to open a door for the others. Unfortunately, the switch also locks him inside the room, and the others need to find another switch to free him.

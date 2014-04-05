@@ -33,8 +33,6 @@ public:
 		setCenter(getActivePlayer()->getCameraTarget());
 	}
 
-
-
 	void zoom(float deltaZoom);
 
 	void updateProjectionMatrix();

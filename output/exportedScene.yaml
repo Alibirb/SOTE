@@ -6,7 +6,7 @@ children:
     position: {x: 0, y: 0, z: 0}
   - dataType: Controller
     radius: 5
-    mass: 4.573278e-41
+    mass: 4.559265e-41
     geometry: Switch.osgt
     position: {x: 0, y: 0, z: 0}
     functions:
@@ -58,7 +58,7 @@ children:
             
   - dataType: Fighter
     maxHealth: 5
-    mass: -32.07
+    mass: 0
     team: Enemy
     geometry: humanmodelNoBones.osg
     position: {x: 5, y: 5, z: 0}
@@ -115,11 +115,11 @@ children:
             amount: 2
             type: PURE_MAGIC
   - dataType: Player
-    maxHealth: 25
-    mass: 4.573278e-41
+    maxHealth: 100
+    mass: 4.559265e-41
     team: Player
     geometry: humanmodelNoBones.osg
-    position: {x: 2.870505, y: 0.2013114, z: -0.04000008}
+    position: {x: -5.302323, y: 0.9317778, z: -0.04001904}
     resistances:
       dataType: unordered_map
       HOT: 0

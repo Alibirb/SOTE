@@ -1,6 +1,8 @@
 
 #include "BaseCameraManipulator.h"
+
 using namespace osg;
+
 
 
 void BaseCameraManipulator::setCenter(osg::Vec3 newCenter)
@@ -152,6 +154,8 @@ bool BaseCameraManipulator::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIA
 
 	if( ea.getHandled() )	// The below events should only be handled by one event handler, so if the event's already been handled by something else, bail out.
 		return false;
+	if(!_active)
+		return false;
 
 	switch( ea.getEventType() )
 	{
@@ -212,3 +216,8 @@ bool BaseCameraManipulator::handleResize(const osgGA::GUIEventAdapter& ea, osgGA
 	getDebugDisplayer()->updateProjection();	// The text displayer also needs to update itself.
 	return false;
 }
+
+void BaseCameraManipulator::setActive(bool active) {
+	_active = active;
+}
+

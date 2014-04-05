@@ -57,6 +57,7 @@ void runCleanup();	/// Cleans up before the program exits.
 /// Adds a node to the graph as a child of the specified parent, if it's safe to do so (not during a scene graph traversal).
 /// If it's not safe, puts the node on a list of additions, and adds it once it's safe.
 void addToSceneGraph(osg::Node* node, osg::Group* parent=root);
+void removeFromSceneGraph(osg::Node* node, osg::Group* parent=root);
 
 void writeOutSceneGraph();
 

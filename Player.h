@@ -36,7 +36,7 @@ public:
 
 	void die();
 
-	void onUpdate(float deltaTime);
+	//void onUpdate(float deltaTime);
 	void onCollision(Controller* controller);
 	void onCollision(GameObject* other);
 
