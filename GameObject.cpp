@@ -20,8 +20,10 @@
 	#include "osgbCollision/Utils.h"
 	#include "osgbCollision/GLDebugDrawer.h"
 	#include "osgbCollision/CollisionShapes.h"
+	#include "osgbDynamics/MotionState.h"
 #endif
 #include "PhysicsData.h"
+#include "PhysicsNodeCallback.h"
 
 
 struct AnimationManagerFinder : public osg::NodeVisitor
@@ -45,11 +47,12 @@ struct AnimationManagerFinder : public osg::NodeVisitor
 
 
 
-GameObject::GameObject() : _physicsBody(NULL)
+GameObject::GameObject() : _physicsBody(NULL), _collisionShapeGenerationMethod("none")
 {
 	registerGameObject();
 
-	_transformNode = new osg::PositionAttitudeTransform();
+	//_transformNode = new osg::PositionAttitudeTransform();
+	_transformNode = new ImprovedMatrixTransform();
 	addToSceneGraph(_transformNode);
 	_updateNode = new osg::Node();
 	_updateNode->addUpdateCallback(new OwnerUpdateCallback<GameObject>(this));	/// NOTE: Due to virtual inheritance, should be able to remove the template-ness of OwnerUpdateCallback.
@@ -117,9 +120,27 @@ void GameObject::setPosition(osg::Vec3 newPosition)
 #ifdef USE_BOX2D_PHYSICS
 		// TODO
 #else
+		osg::Vec3 localToWorldAdjustment = getWorldPosition() - getLocalPosition();
 		btTransform transform;
 		transform = _physicsBody->getWorldTransform();
-		transform.setOrigin(osgbCollision::asBtVector3(newPosition + physicsToModelAdjustment));	/// FIXME: should convert to world coordinates.
+		transform.setOrigin(osgbCollision::asBtVector3(localToWorldAdjustment + newPosition + physicsToModelAdjustment));	/// FIXME: should convert to world coordinates.
+		_physicsBody->setWorldTransform(transform);
+#endif // USE_BOX2D_PHYSICS
+	}
+}
+void GameObject::setRotation(osg::Quat newRotation)
+{
+	this->_transformNode->setAttitude(newRotation);
+	if(_physicsBody)
+	{
+#ifdef USE_BOX2D_PHYSICS
+		// TODO
+#else
+		btTransform transform;
+		transform = _physicsBody->getWorldTransform();
+		//transform.setOrigin(osgbCollision::asBtVector3(newPosition + physicsToModelAdjustment));	/// FIXME: should convert to world coordinates.
+		btVector4 vector4 = osgbCollision::asBtVector4(newRotation.asVec4());
+		transform.setRotation(btQuaternion(vector4.x(), vector4.y(), vector4.z(), vector4.w()));
 		_physicsBody->setWorldTransform(transform);
 #endif // USE_BOX2D_PHYSICS
 	}
@@ -132,6 +153,14 @@ osg::Vec3 GameObject::getLocalPosition()
 osg::Vec3 GameObject::getWorldPosition()
 {
 	return getWorldCoordinates(_transformNode)->getTrans();
+}
+osg::Quat GameObject::getLocalRotation()
+{
+	return _transformNode->getAttitude();
+}
+osg::Quat GameObject::getWorldRotation()
+{
+	return getWorldCoordinates(_transformNode)->getRotate();
 }
 osg::Vec3 GameObject::localToWorld(osg::Vec3 localVector)	/// FIXME: does not seem to work.
 {
@@ -160,7 +189,10 @@ GameObjectData* GameObject::save()
 void GameObject::saveGameObjectVariables(GameObjectData* dataObj)
 {
 	dataObj->addData("position", getLocalPosition());
+	dataObj->addData("rotation", getLocalRotation());
 	dataObj->addData("geometry", _modelFilename);
+	//dataObj->addData("autoGenerateCollisionBody", _autoGenerateCollisionBody);
+	dataObj->addData("physicsBodyGeneration", _collisionShapeGenerationMethod);
 	for(auto kv : _functionSources)
 		dataObj->addScriptFunction(kv.first, kv.second);
 
@@ -168,8 +200,13 @@ void GameObject::saveGameObjectVariables(GameObjectData* dataObj)
 	{
 #ifndef USE_BOX2D_PHYSICS
 		if((btRigidBody*)_physicsBody)
-			//dataObj->addData("mass", 1/((btRigidBody*)_physicsBody)->getInvMass());
-			dataObj->addData("mass", ((btRigidBody*)_physicsBody)->getInvMass());
+		{
+			if(((btRigidBody*)_physicsBody)->getInvMass() == 0)
+				dataObj->addData("mass", 0.0);
+			else
+				dataObj->addData("mass", 1.0/((btRigidBody*)_physicsBody)->getInvMass());
+			//dataObj->addData("mass", ((btRigidBody*)_physicsBody)->getInvMass());
+		}
 #endif
 	}
 
@@ -183,11 +220,15 @@ void GameObject::load(GameObjectData* dataObj)
 void GameObject::loadGameObjectVariables(GameObjectData* dataObj)
 {
 	setPosition(dataObj->getVec3("position"));
+	setRotation(dataObj->getQuat("rotation"));
 	loadModel(dataObj->getString("geometry"));
 	for(auto kv : dataObj->getFunctionSources())
 		setFunction(kv.first, kv.second);
-	if(dataObj->hasFloat("mass"))
-		generateRigidBody(dataObj->getFloat("mass"));
+	_collisionShapeGenerationMethod = dataObj->getString("physicsBodyGeneration");
+	if(!dataObj->hasString("physicsBodyGeneration") || _collisionShapeGenerationMethod == "")
+		_collisionShapeGenerationMethod = "none";
+	if(_collisionShapeGenerationMethod != "none")
+		generateRigidBody(dataObj->getFloat("mass"), _collisionShapeGenerationMethod);
 
 }
 
@@ -249,12 +290,53 @@ void GameObject::setFunction(std::string functionName, std::string code)
 	_functions[functionName] = getScriptEngine()->compileFunction("GameObject", code.c_str(), 0, asCOMP_ADD_TO_MODULE);
 }
 
-void GameObject::generateRigidBody(double mass)
+void GameObject::generateRigidBody(double mass, std::string generationMethod)
 {
 #ifndef USE_BOX2D_PHYSICS
-	btTriangleMeshShape* shape = osgbCollision::btTriMeshCollisionShapeFromOSG(_modelNode);
-	_physicsBody = new btRigidBody(mass, new btDefaultMotionState(), shape);
-	getCurrentLevel()->getBulletWorld()->addCollisionObject(_physicsBody);
+	btCollisionShape* shape;
+	if(generationMethod == "triangleMeshShape")
+		shape = osgbCollision::btTriMeshCollisionShapeFromOSG(_modelNode);
+	else if(generationMethod == "convexHullShape")
+		shape = osgbCollision::btConvexHullCollisionShapeFromOSG(_modelNode);
+	else if(generationMethod == "boxShape")
+		shape = osgbCollision::btBoxCollisionShapeFromOSG(_modelNode);
+	else
+		std::cout << "Could not determine collision shape generation method for \"" << generationMethod << "\"." << std::endl;
+
+
+
+	/*
+	btTransform transform = btTransform();
+	transform.setIdentity();
+	transform.setOrigin(osgbCollision::asBtVector3(getWorldPosition() + physicsToModelAdjustment));
+	btVector4 vector4 = osgbCollision::asBtVector4(getWorldRotation().asVec4());
+	transform.setRotation(btQuaternion(vector4.x(), vector4.y(), vector4.z(), vector4.w()));
+	btVector3 localInertia;
+	shape->calculateLocalInertia(mass, localInertia);
+	_physicsBody = new btRigidBody(mass, new btDefaultMotionState(transform), shape, localInertia);
+	getCurrentLevel()->getBulletWorld()->addRigidBody((btRigidBody*)_physicsBody);
+	_transformNode->setUpdateCallback(new BulletPhysicsNodeCallback(_physicsBody, -physicsToModelAdjustment));
+	*/
+
+	btTransform transform = btTransform();
+	transform.setIdentity();
+	transform.setOrigin(osgbCollision::asBtVector3(getWorldPosition() + physicsToModelAdjustment));
+	btVector4 vector4 = osgbCollision::asBtVector4(getWorldRotation().asVec4());
+	transform.setRotation(btQuaternion(vector4.x(), vector4.y(), vector4.z(), vector4.w()));
+	btVector3 localInertia;
+	shape->calculateLocalInertia(mass, localInertia);
+
+	osgbDynamics::MotionState* motionState = new osgbDynamics::MotionState();
+	motionState->setTransform(_transformNode);
+	motionState->setWorldTransform(transform);
+	//osg::Matrix* parentTransform = getWorldCoordinates(_transformNode);
+	//motionState->setParentTransform(*parentTransform);
+
+
+	_physicsBody = new btRigidBody(mass, motionState, shape, localInertia);
+	getCurrentLevel()->getBulletWorld()->addRigidBody((btRigidBody*)_physicsBody);
+	//_transformNode->setUpdateCallback(new BulletPhysicsNodeCallback(_physicsBody, -physicsToModelAdjustment));
+
 #endif
 
 	PhysicsUserData *userData = new PhysicsUserData;
@@ -267,7 +349,12 @@ void GameObject::generateRigidBody(double mass)
 #endif
 }
 
-
+#ifndef USING_BOX2D_PHYSICS
+btCollisionObject* GameObject::getPhysicsBody()
+{
+	return _physicsBody;
+}
+#endif
 
 
 namespace AngelScriptWrapperFunctions

@@ -2,13 +2,17 @@ dataType: Level
 children:
   - dataType: GameObject
     mass: 0
+    physicsBodyGeneration: triangleMeshShape
     geometry: DemoLevel.osgt
     position: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
   - dataType: Controller
-    mass: 4.559265e-41
-    radius: 5
+    radius: 3
+    physicsBodyGeneration: none
+    mass: inf
     geometry: Switch.osgt
-    position: {x: 0, y: 0, z: 0}
+    position: {x: 0, y: 28, z: 0}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
     functions:
       onInteraction: |
         void onInteraction(Controller@ self)
@@ -18,34 +22,46 @@ children:
         
     controlled:
       - dataType: ControlledObject
-        geometry: SlidingDoor.osgt
-        position: {x: 8, y: 0, z: 0}
+        mass: 0
+        geometry: SlidingDoorOuter.osgt
+        physicsBodyGeneration: convexHullShape
+        position: {x: 0, y: 8, z: 0}
+        rotation: {x: 0, y: 0, z: 0, w: 1}
         stateMachine:
           dataType: StateMachine
           defaultState: closed
           states:
-            open:
-              dataType: State
-              name: open
-              functions:
-                onEnter: |
-                  void onEnter(ControlledObject@ self)
-                  {
-                  	self.playAnimation("open");
-                   	print("opening");
-                  }
-                  
             closed:
               dataType: State
               name: closed
               functions:
                 onEnter: |
-                  void onEnter(ControlledObject@ self)
+                  void onEnter(Door@ self)
                   {
-                  	self.playAnimation("close");
+                  	//self.playAnimation("close");
+                  	self.close();
                   	print("closing");
                   }
                   
+            open:
+              dataType: State
+              name: open
+              functions:
+                onEnter: |
+                  void onEnter(Door@ self)
+                  {
+                  	//self.playAnimation("open");
+                  	self.open();
+                   	print("opening");
+                  }
+                  
+        innerPart:
+          dataType: GameObject
+          mass: 10
+          physicsBodyGeneration: convexHullShape
+          geometry: SlidingDoorInner.osgt
+          position: {x: 13.62702, y: 7.995718, z: -1769.149}
+          rotation: {x: -0.1967860783155117, y: -0.03090490478351619, z: 0.8133684432224331, w: 0.5465819482420412}
         functions:
           onMessage_toggle: |
             void onMessage_toggle(ControlledObject@ self)
@@ -58,27 +74,12 @@ children:
             
   - dataType: Fighter
     maxHealth: 5
-    mass: 0
-    geometry: humanmodelNoBones.osg
+    physicsBodyGeneration: none
     team: Enemy
+    mass: inf
+    geometry: humanmodelNoBones.osg
     position: {x: 5, y: 5, z: 0}
-    weapon:
-      dataType: Weapon
-      coolDownTime: 2.5
-      geometry: staff.png
-      position: {x: 0, y: 0, z: 1}
-      projectile:
-        dataType: Projectile
-        geometry: circle.png
-        damages:
-          - dataType: damage
-            amount: 2
-            type: PURE_MAGIC
-    resistances:
-      dataType: unordered_map
-      HOT: 0
-      COLD: 0
-      ACID: 0
+    rotation: {x: 0, y: 0, z: 0, w: 1}
     stateMachine:
       dataType: StateMachine
       defaultState: idle
@@ -107,6 +108,25 @@ children:
                 	self.returnToPreviousState();
               }
               
+    weapon:
+      dataType: Weapon
+      coolDownTime: 2.5
+      physicsBodyGeneration: none
+      geometry: staff.png
+      position: {x: 0, y: 0, z: 1}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      projectile:
+        dataType: Projectile
+        geometry: circle.png
+        damages:
+          - dataType: damage
+            amount: 2
+            type: PURE_MAGIC
+    resistances:
+      dataType: unordered_map
+      ACID: 0
+      COLD: 0
+      HOT: 0
     attacks:
       - dataType: Attack
         duration: 2.5
@@ -116,15 +136,19 @@ children:
             type: PURE_MAGIC
   - dataType: Player
     maxHealth: 100
-    mass: 4.559265e-41
-    geometry: humanmodelNoBones.osg
+    physicsBodyGeneration: none
+    mass: inf
     team: Player
-    position: {x: -5.302323, y: 0.9317778, z: -0.04001904}
+    geometry: humanmodelNoBones.osg
+    position: {x: 1.089267, y: 7.294517, z: -0.04000688}
+    rotation: {x: 0, y: 0, z: 0.9988047198267813, w: -0.04887874437570024}
     weapon:
       dataType: Weapon
       coolDownTime: 2.5
+      physicsBodyGeneration: none
       geometry: staff.png
       position: {x: 0, y: 0, z: 1}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
       projectile:
         dataType: Projectile
         geometry: Fireball.png
@@ -132,6 +156,12 @@ children:
           - dataType: damage
             amount: 2
             type: HOT
+    resistances:
+      dataType: unordered_map
+      PURE_MAGIC: 0
+      ACID: 0
+      COLD: 0
+      HOT: 0
     stateMachine:
       dataType: StateMachine
       defaultState: idle
@@ -158,12 +188,6 @@ children:
                 	self.returnToPreviousState();
               }
               
-    resistances:
-      dataType: unordered_map
-      PURE_MAGIC: 0
-      HOT: 0
-      COLD: 0
-      ACID: 0
     attacks:
       - dataType: Attack
         duration: 2

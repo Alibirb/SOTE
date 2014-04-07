@@ -2,13 +2,17 @@ dataType: Level
 children:
   - dataType: GameObject
     mass: 0
+    physicsBodyGeneration: triangleMeshShape
     geometry: DemoLevel.osgt
     position: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
   - dataType: Controller
-    radius: 5
-    mass: 4.559265e-41
+    radius: 3
+    mass: inf
+    physicsBodyGeneration: none
     geometry: Switch.osgt
-    position: {x: 0, y: 0, z: 0}
+    position: {x: 0, y: 28, z: 0}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
     functions:
       onInteraction: |
         void onInteraction(Controller@ self)
@@ -18,32 +22,44 @@ children:
         
     controlled:
       - dataType: ControlledObject
-        geometry: SlidingDoor.osgt
-        position: {x: 8, y: 0, z: 0}
+        mass: 0
+        physicsBodyGeneration: convexHullShape
+        geometry: SlidingDoorOuter.osgt
+        position: {x: 0, y: 8, z: 0}
+        rotation: {x: 0, y: 0, z: 0, w: 1}
+        innerPart:
+          dataType: GameObject
+          mass: 10
+          physicsBodyGeneration: convexHullShape
+          geometry: SlidingDoorInner.osgt
+          position: {x: 13.62702, y: 7.995718, z: -1769.149}
+          rotation: {x: -0.1967860783155117, y: -0.03090490478351619, z: 0.8133684432224331, w: 0.5465819482420412}
         stateMachine:
           dataType: StateMachine
           defaultState: closed
           states:
-            closed:
-              dataType: State
-              name: closed
-              functions:
-                onEnter: |
-                  void onEnter(ControlledObject@ self)
-                  {
-                  	self.playAnimation("close");
-                  	print("closing");
-                  }
-                  
             open:
               dataType: State
               name: open
               functions:
                 onEnter: |
-                  void onEnter(ControlledObject@ self)
+                  void onEnter(Door@ self)
                   {
-                  	self.playAnimation("open");
+                  	//self.playAnimation("open");
+                  	self.open();
                    	print("opening");
+                  }
+                  
+            closed:
+              dataType: State
+              name: closed
+              functions:
+                onEnter: |
+                  void onEnter(Door@ self)
+                  {
+                  	//self.playAnimation("close");
+                  	self.close();
+                  	print("closing");
                   }
                   
         functions:
@@ -58,20 +74,24 @@ children:
             
   - dataType: Fighter
     maxHealth: 5
-    mass: 0
+    mass: inf
     team: Enemy
+    physicsBodyGeneration: none
     geometry: humanmodelNoBones.osg
     position: {x: 5, y: 5, z: 0}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
     resistances:
       dataType: unordered_map
+      COLD: 0
       ACID: 0
       HOT: 0
-      COLD: 0
     weapon:
       dataType: Weapon
       coolDownTime: 2.5
+      physicsBodyGeneration: none
       geometry: staff.png
       position: {x: 0, y: 0, z: 1}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
       projectile:
         dataType: Projectile
         geometry: circle.png
@@ -116,21 +136,25 @@ children:
             type: PURE_MAGIC
   - dataType: Player
     maxHealth: 100
-    mass: 4.559265e-41
+    mass: inf
     team: Player
+    physicsBodyGeneration: none
     geometry: humanmodelNoBones.osg
-    position: {x: -5.302323, y: 0.9317778, z: -0.04001904}
+    position: {x: 1.089267, y: 7.294517, z: -0.04000688}
+    rotation: {x: 0, y: 0, z: 0.9988047198267813, w: -0.04887874437570024}
     resistances:
       dataType: unordered_map
       HOT: 0
-      COLD: 0
       ACID: 0
+      COLD: 0
       PURE_MAGIC: 0
     weapon:
       dataType: Weapon
       coolDownTime: 2.5
+      physicsBodyGeneration: none
       geometry: staff.png
       position: {x: 0, y: 0, z: 1}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
       projectile:
         dataType: Projectile
         geometry: Fireball.png

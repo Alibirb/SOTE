@@ -16,6 +16,8 @@
 
 #include "GameObjectData.h"
 
+#include "Door.h"
+
 Controller::Controller()
 {
 	_objectType = "Controller";
@@ -32,10 +34,21 @@ Controller::Controller()
 	transform.setIdentity();
 	transform.setOrigin(osgbCollision::asBtVector3(position + physicsToModelAdjustment));
 
+	if(_physicsBody)
+	{
+#ifdef USE_BOX2D_PHYSICS
+		getCurrentLevel()->getPhysicsWorld()->DestroyBody(physicsBody);
+#else
+		getCurrentLevel()->getBulletWorld()->removeCollisionObject(_physicsBody);
+		delete _physicsBody;
+#endif
+	}
+
 	_physicsBody = new btPairCachingGhostObject();
 	_physicsBody->setWorldTransform(transform);
 	_physicsBody->setCollisionShape(shape);
 	getCurrentLevel()->getBulletWorld()->addCollisionObject(_physicsBody, btBroadphaseProxy::SensorTrigger, btBroadphaseProxy::AllFilter);
+	_physicsBody->setCollisionFlags(_physicsBody->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
 
 	_transformNode->setUpdateCallback(new BulletPhysicsNodeCallback(_physicsBody, -physicsToModelAdjustment));
 
@@ -49,9 +62,48 @@ Controller::Controller()
 #endif
 }
 
-Controller::Controller(GameObjectData* dataObj) : Controller()
+Controller::Controller(GameObjectData* dataObj)
 {
+	_objectType = "Controller";
+
+	registerController();
+
 	load(dataObj);
+
+	//osg::Vec3 position;
+
+	physicsToModelAdjustment = osg::Vec3(0, 0, 0);
+	btSphereShape* shape = new btSphereShape(_radius/2);
+
+	btTransform transform = btTransform();
+	transform.setIdentity();
+	transform.setOrigin(osgbCollision::asBtVector3(getWorldPosition() + physicsToModelAdjustment));
+
+	if(_physicsBody)
+	{
+#ifdef USE_BOX2D_PHYSICS
+		getCurrentLevel()->getPhysicsWorld()->DestroyBody(physicsBody);
+#else
+		getCurrentLevel()->getBulletWorld()->removeCollisionObject(_physicsBody);
+		delete _physicsBody;
+#endif
+	}
+
+	_physicsBody = new btPairCachingGhostObject();
+	_physicsBody->setWorldTransform(transform);
+	_physicsBody->setCollisionShape(shape);
+	getCurrentLevel()->getBulletWorld()->addCollisionObject(_physicsBody, btBroadphaseProxy::SensorTrigger, btBroadphaseProxy::AllFilter);
+	_physicsBody->setCollisionFlags(_physicsBody->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+	_transformNode->setUpdateCallback(new BulletPhysicsNodeCallback(_physicsBody, -physicsToModelAdjustment));
+
+	PhysicsUserData *userData = new PhysicsUserData;
+	userData->owner = this;
+	userData->ownerType = "Controller";
+#ifdef USE_BOX2D_PHYSICS
+	physicsBody->SetUserData(userData);
+#else
+	_physicsBody->setUserPointer(userData);
+#endif
 }
 
 Controller::~Controller()
@@ -113,6 +165,8 @@ void Controller::loadControllerVariables(GameObjectData* dataObj)
 	{
 		if(child->getType() == "ControlledObject")
 			_controlled.push_back(new ControlledObject(child));
+		if(child->getType() == "Door")
+			_controlled.push_back(new Door(child));
 		else
 			logWarning("No frickin' clue what this non-ControlledObject object is doing as a child of a Controller");
 

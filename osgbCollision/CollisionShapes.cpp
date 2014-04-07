@@ -23,13 +23,13 @@
 #include <BulletCollision/CollisionShapes/btShapeHull.h>
 
 #include "CollisionShapes.h"
-//#include "ComputeShapeVisitor.h"
+#include "ComputeShapeVisitor.h"
 #include "ComputeTriMeshVisitor.h"
-//#include "ComputeCylinderVisitor.h"
-//#include "CollectVerticesVisitor.h"
-//#include <osgwTools/ForceFlattenTransforms.h>
+#include "ComputeCylinderVisitor.h"
+#include "CollectVerticesVisitor.h"
+#include "../osgwTools/ForceFlattenTransforms.h"
 #include "Utils.h"
-//#include <osgwTools/Shapes.h>
+#include "../osgwTools/Shapes.h"
 
 #include <osg/ComputeBoundsVisitor>
 #include <osg/ShapeDrawable>
@@ -42,15 +42,23 @@
 #include <iostream>
 
 
+
 namespace osgbCollision
 {
 
 
 btSphereShape* btSphereCollisionShapeFromOSG( osg::Node* node )
 {
-    osg::BoundingSphere sphere = node->getBound();
-    float radius = sphere.radius();
-
+    osg::ComputeBoundsVisitor cbv;
+    node->accept( cbv );
+    const osg::BoundingBox bb( cbv.getBoundingBox() );
+    osg::Vec3 ext( bb._max - bb._min );
+    ext = ext * 0.5;
+    float radius = 0.;
+    for( size_t i = 0; i < 3; ++i )
+    {
+        radius = std::max( radius, ext[ i ] );
+    }
     btSphereShape* shape = new btSphereShape( radius );
 
     return( shape );
@@ -68,11 +76,11 @@ btBoxShape* btBoxCollisionShapeFromOSG( osg::Node* node, const osg::BoundingBox*
         bbox = visitor.getBoundingBox();
     }
 
-    btBoxShape* shape = new btBoxShape( btVector3( ( bbox.xMax() - bbox.xMin() ) / 2.0,
-        ( bbox.yMax() - bbox.yMin() ) / 2.0, ( bbox.zMax() - bbox.zMin() ) / 2.0 ) );
+    btBoxShape* shape = new btBoxShape( btVector3( ( bbox.xMax() - bbox.xMin() ) * 0.5,
+        ( bbox.yMax() - bbox.yMin() ) * 0.5, ( bbox.zMax() - bbox.zMin() ) * 0.5 ) );
     return( shape );
 }
-/*
+
 btCylinderShape* btCylinderCollisionShapeFromOSG( osg::Node* node, AXIS axis )
 {
     ComputeCylinderVisitor visitor;
@@ -112,7 +120,7 @@ btCylinderShape* btCylinderCollisionShapeFromOSG( osg::Node* node, AXIS axis )
     }
     return( shape );
 }
-*/
+
 btTriangleMeshShape* btTriMeshCollisionShapeFromOSG( osg::Node* node )
 {
     ComputeTriMeshVisitor visitor;
@@ -160,7 +168,7 @@ btConvexTriangleMeshShape* btConvexTriMeshCollisionShapeFromOSG( osg::Node* node
     btConvexTriangleMeshShape* meshShape = new btConvexTriangleMeshShape( mesh );
     return( meshShape );
 }
-/*
+
 btConvexHullShape* btConvexHullCollisionShapeFromOSG( osg::Node* node )
 {
     CollectVerticesVisitor cvv;
@@ -178,7 +186,7 @@ btConvexHullShape* btConvexHullCollisionShapeFromOSG( osg::Node* node )
     btScalar* btvp = btverts;
 
     osg::Vec3Array::const_iterator itr;
-    for( itr = v->begin(); itr != v->end(); itr++ )
+    for( itr = v->begin(); itr != v->end(); ++itr )
     {
         const osg::Vec3& s( *itr );
         *btvp++ = (btScalar)( s[ 0 ] );
@@ -493,8 +501,8 @@ osg::Node* osgNodeFromBtCollisionShape( const btConvexHullShape* hull, const btT
 {
     btShapeHull sh( hull );
     sh.buildHull( btScalar( 0. ) );
-	int nVerts( sh.numVertices () );
-	int nIdx( sh.numIndices() );
+        int nVerts( sh.numVertices () );
+        int nIdx( sh.numIndices() );
     if( (nVerts <= 0) || (nIdx <= 0) )
         return( NULL );
 
@@ -549,29 +557,32 @@ osg::Geometry* osgGeometryFromBtCollisionShape( const btSphereShape* btSphere )
 
 osg::Geometry* osgGeometryFromBtCollisionShape( const btCylinderShape* btCylinder )
 {
+    const osg::Vec3 defaultOrientation( 0., 0., 1. );
+    osg::Matrix m;
     double length;
-    osg::Vec3 orientation;
     const btVector3 halfExtents( btCylinder->getHalfExtentsWithMargin() );
     switch( btCylinder->getUpAxis() )
     {
         case X:
-            orientation.set( 1., 0., 0. );
+            m = osg::Matrix::rotate( defaultOrientation, osg::Vec3( 1., 0., 0. ) );
             length = halfExtents.getX();
             break;
         case Y:
-            orientation.set( 0., 1., 0. );
+            m = osg::Matrix::rotate( defaultOrientation, osg::Vec3( 0., 1., 0. ) );
             length = halfExtents.getY();
             break;
         case Z:
-            orientation.set( 0., 0., 1. );
+            // Leave m set to the identity matrix.
             length = halfExtents.getZ();
             break;
     }
     const double radius( btCylinder->getRadius() );
 
-    return( osgwTools::makeOpenCylinder( orientation, length, radius, radius ) );
+    return( osgwTools::makeOpenCylinder( m, length, radius, radius ) );
 }
-*/
+
 
 // osgbCollision
 }
+
+

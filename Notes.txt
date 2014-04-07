@@ -5,15 +5,17 @@ Basics:
 
 TODO:
 	DoneThisCommit:
-		Basic editor functionality:
-			key to switch between edit and play modes.	DONE!!
-			text editor window
+		Got the door animation working properly
+			open/close animation now used Bullet constraints
+			fixed the character controller colliding with ghost objects.
 	Current Task:
+		Get the door animation working properly (open and close, and should affect the physics body)
 
 	Next Steps:
 		Focus on getting the demo level/prototype done so I actually know where this is all going.
-			Flame jets for the demo level.
+			flame jets
 			multiple characters
+			add to the level.
 
 		Improve import/export to allow it to link to prototypes.
 		Make a class to wrap around the physics stuff
@@ -26,6 +28,12 @@ TODO:
 	Under consideration:
 		Perhaps GameObjectData getter methods should use pass-by-reference so you can just pass in the variable you want to assign.
 		the MainEventHandler should probably act as an event dispatcher that determines what object handles the events
+	Much later (after I've made the prototype)
+		Possibly create my own data storage language:
+			uses {} to denote elements (with matching-brace highlighting, it's much clearer than having to follow the indentation like in YAML)
+			allows references to an element in a different file (like what I was doing with XML before)
+				may not be a language feature, could just be part of GameObjectData's loading process
+			C and C++ style comments
 
 
 	Objects:
@@ -53,13 +61,12 @@ TODO:
 
 BUGS:
 	input handler does not respond to releasing a key if Ctrl is pressed. Most likely due to the way OSG reports the button. I think it's a different value if a modkey is pressed.
-	The ghost object for the switch stops the player's movement.
 	Console does not appear until window is resized
 	Weapons do not point in the correct direction (rotated relative to the owner)
 	Lighting needs work. Should figure out how to ensure every surface is lit.
 	Collision checking (in Level) may call onCollision() multiple times for the same pair of objects if they have multiple manifolds, or if Bullet takes multiple simulation steps for one rendering step.
-	Doors open, but do not close (not sure how to have multiple animations in Bullet, so currently they can have an open animation or a closing animation, but not both.)
 	In the text editor, pressing the Delete key inserts a character.
+	Can easily push through doors.
 	Low Priority (it works, but might be ugly):
 
 Bugs I expect to see later:
@@ -79,6 +86,9 @@ Things to consider:
 Useful notes:
 	Entity systems:
 		Rationalization for entities instead of traditional class-based system is that in most applications, the behavior of objects doesn't change, but in games, an object could change roles (e.g. an enemy is stunned and no longer attacks). An entity-component system allows behavior to be changed during runtime simply by adding and removing components.
+	Quaternions:
+		[w, x, y, z] = [cos(a/2), sin(a/2) * nx, sin(a/2)* ny, sin(a/2) * nz]
+			where a=angle of rotation, {nx,ny,nz} is axis of rotation.
 
 Scripting Uses:
 	Input?--so that options can be set more easily. In addition to the standard key bindings, it'll also be possible to define custom controls that depend on more than a single binding.

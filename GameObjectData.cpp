@@ -44,6 +44,9 @@ void GameObjectData::addData(std::string name, std::string data){
 void GameObjectData::addData(std::string name, osg::Vec3 data){
 	vectors[name] = data;
 }
+void GameObjectData::addData(std::string name, osg::Quat data){
+	_quats[name] = data;
+}
 void GameObjectData::addData(std::string name, GameObjectData* data) {
 	_objects[name] = data;
 }
@@ -105,10 +108,9 @@ std::string GameObjectData::getString(std::string name) {
 osg::Vec3 GameObjectData::getVec3(std::string name) {
 	return vectors[name];
 }
-/*
-std::vector<GameObjectData*> GameObjectData::getChildren() {
-	return _children;
-}*/
+osg::Quat GameObjectData::getQuat(std::string name) {
+	return _quats[name];
+}
 std::string GameObjectData::getFunctionSource(std::string name) {
 	return _scriptFunctionSource[name];
 }
@@ -139,6 +141,9 @@ std::unordered_map<std::string, std::string> GameObjectData::getAllStrings() {
 }
 std::unordered_map<std::string, osg::Vec3> GameObjectData::getAllVec3s() {
 	return vectors;
+}
+std::unordered_map<std::string, osg::Quat> GameObjectData::getAllQuats() {
+	return _quats;
 }
 
 bool GameObjectData::hasInt(std::string name) {
@@ -242,6 +247,23 @@ YAML::Emitter& GameObjectData::toYAML(YAML::Emitter& emitter)
 		emitter << YAML::EndMap;
 		emitter << YAML::Block;
 	}
+	for(auto kv : _quats)
+	{
+		// TODO: should specialize YAML convert template class for Quat
+		// See http://code.google.com/p/yaml-cpp/wiki/Tutorial
+		osg::Quat theQuat = kv.second;
+
+		emitter << YAML::Key << kv.first.c_str();
+		emitter << YAML::Value;
+		emitter << YAML::Flow;
+		emitter << YAML::BeginMap;
+		emitter << YAML::Key << "x" << YAML::Value << theQuat.x();
+		emitter << YAML::Key << "y" << YAML::Value << theQuat.y();
+		emitter << YAML::Key << "z" << YAML::Value << theQuat.z();
+		emitter << YAML::Key << "w" << YAML::Value << theQuat.w();
+		emitter << YAML::EndMap;
+		emitter << YAML::Block;
+	}
 	for(auto kv : _objects)
 	{
 		emitter << YAML::Key << kv.first.c_str();
@@ -328,6 +350,22 @@ osg::Vec3 toVec3(YAML::Node node)
 	return vec;
 }
 
+bool isQuat(YAML::Node node)
+{
+	if(node.size() != 4)
+		return false;
+	if(!node["x"] || !node["y"] || !node["z"] || !node["w"])
+		return false;
+	return true;
+}
+osg::Quat toQuat(YAML::Node node)
+{
+	osg::Quat quat;
+	quat.set(node["x"].as<double>(), node["y"].as<double>(), node["z"].as<double>(), node["w"].as<double>());
+	return quat;
+}
+
+
 
 void GameObjectData::fromYAML(YAML::Node node)
 {
@@ -359,7 +397,9 @@ void GameObjectData::fromYAML(YAML::Node node)
 			break;
 		case YAML::NodeType::Map:
 			// Map type
-			if(isVec3(it->second))	// Could be a Vec3
+			if(isQuat(it->second))	// Could be a Quat
+				this->addData(key, toQuat(it->second));
+			else if(isVec3(it->second))	// Could be a Vec3
 				this->addData(key, toVec3(it->second));
 			else if(it->first.as<std::string>() == "functions")	// Or functions
 			{
@@ -392,19 +432,19 @@ void GameObjectData::fromYAML(YAML::Node node)
 			{
 				float value = it->second.as<float>();
 				this->addData(key, value);
-			//} catch (const YAML::BadConversion& e) {
-			} catch (YAML::TypedBadConversion<float>& e) {
+			} catch (YAML::TypedBadConversion<float>& e)
+			{
 				try
 				{
-					int value = it->second.as<int>();
+					bool value = it->second.as<bool>();
 					this->addData(key, value);
-				//} catch (const YAML::BadConversion& e) {
-				} catch (YAML::TypedBadConversion<int>& e) {
+				} catch (YAML::TypedBadConversion<bool>& e)
+				{
 					try
 					{
 						this->addData(key, it->second.as<std::string>());
-					//} catch (const YAML::BadConversion& e) {
-					} catch (YAML::TypedBadConversion<std::string>& e) {
+					} catch (YAML::TypedBadConversion<std::string>& e)
+					{
 						std::cout << "How did it not convert to string?" << std::endl;
 					}
 				}

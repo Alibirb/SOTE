@@ -6,6 +6,7 @@
 #include <vector>
 
 #include <osg/Vec3>
+#include <osg/Quat>
 
 
 
@@ -42,6 +43,7 @@ public:
 /// NOTE: See the HPL1 source for example of saving/loading
 
 /// NOTE: *sigh* I suppose I'll have to unit test this at some point.
+/// TODO: use preprocessor macros to define these getter/setter methods, if possible
 
 
 /// Class for a GameObject to store/retrieve its data
@@ -57,6 +59,7 @@ private:
 	std::unordered_map<std::string, bool> bools;
 	std::unordered_map<std::string, std::string> strings;
 	std::unordered_map<std::string, osg::Vec3> vectors;
+	std::unordered_map<std::string, osg::Quat> _quats;
 	//std::unordered_map<std::string, osg::PositionAttitudeTransform> transforms;	// TODO
 	//std::vector<GameObjectData*> _children;
 	std::unordered_map<std::string, asIScriptFunction*> _scriptFunctions;
@@ -77,6 +80,7 @@ public:
 	void addData(std::string name, bool data);
 	void addData(std::string name, std::string data);
 	void addData(std::string name, osg::Vec3 data);
+	void addData(std::string name, osg::Quat data);
 	void addData(std::string name, GameObjectData* data);
 	void addData(std::string name, std::vector<GameObjectData*> data);
 	void addData(std::string name, std::unordered_map<std::string, GameObjectData*> data);
@@ -117,6 +121,7 @@ public:
 	bool getBool(std::string name);
 	std::string getString(std::string name);
 	osg::Vec3 getVec3(std::string name);
+	osg::Quat getQuat(std::string name);
 	//std::vector<GameObjectData*> getChildren();
 	std::string getFunctionSource(std::string name);
 	std::unordered_map<std::string, std::string> getFunctionSources();
@@ -125,6 +130,7 @@ public:
 	std::unordered_map<std::string, bool> getAllBools();
 	std::unordered_map<std::string, std::string> getAllStrings();
 	std::unordered_map<std::string, osg::Vec3> getAllVec3s();
+	std::unordered_map<std::string, osg::Quat> getAllQuats();
 	GameObjectData* getObject(std::string name);
 	std::vector<GameObjectData*> getObjectList(std::string name);	/// get the specifed object list variable
 	std::unordered_map<std::string, GameObjectData*> getObjectMap(std::string name);

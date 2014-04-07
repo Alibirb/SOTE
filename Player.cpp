@@ -9,7 +9,7 @@ std::unordered_map<std::string, Player*> players;	/// List of all Players, ident
 
 
 
-Player::Player(std::string name, osg::Vec3 position) : Fighter(name, position, "Player")
+Player::Player(std::string name, osg::Vec3 position) : Fighter(name, position, "Player") , _willInteractWith(NULL)
 {
 	_objectType = "player";
 
@@ -23,7 +23,7 @@ Player::Player(std::string name, osg::Vec3 position) : Fighter(name, position, "
 #endif
 }
 
-Player::Player(GameObjectData* dataObj) : Fighter(dataObj)
+Player::Player(GameObjectData* dataObj) : Fighter(dataObj) , _willInteractWith(NULL)
 {
 	_objectType = "Player";
 
@@ -36,7 +36,8 @@ Player::Player(GameObjectData* dataObj) : Fighter(dataObj)
 	controller->getGhostObject()->setUserPointer(userData);
 #endif
 	_team = "Player";
-	_equippedWeapon->setTeam(_team);
+	if(_equippedWeapon)
+		_equippedWeapon->setTeam(_team);
 }
 
 void Player::processMovementControls(osg::Vec3 controlVector)
@@ -108,6 +109,7 @@ void Player::onCollision(GameObject* other)
 }
 void Player::onCollision(Controller* controller)
 {
+	/// TODO: should check whether it's closer to this Controller than it is to current Controller
 	_willInteractWith = controller;
 }
 

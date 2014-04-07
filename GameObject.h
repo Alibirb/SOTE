@@ -18,15 +18,12 @@
 #include <unordered_map>
 
 
-
-//class GameObjectData;
-
 #include "GameObjectData.h"
 
+#include "ImprovedMatrixTransform.h"
 
 
 class asIScriptFunction;
-
 
 
 /// Class for an object
@@ -36,7 +33,8 @@ protected:
 	osg::Vec3 initialPosition;
 
 	ImprovedAnimationManager* _animationManager;
-	osg::ref_ptr<osg::PositionAttitudeTransform> _transformNode;
+	//osg::ref_ptr<osg::PositionAttitudeTransform> _transformNode;
+	osg::ref_ptr<ImprovedMatrixTransform> _transformNode;
 	osg::ref_ptr<osg::Node> _modelNode;
 	osg::ref_ptr<osg::Node> _updateNode;	// Used to update the object each frame.
 
@@ -53,6 +51,8 @@ protected:
 	// Export/meta data (used for editor purposes)
 	std::string _modelFilename;
 	std::unordered_map<std::string, std::string> _functionSources;	/// source code for script functions.
+	//bool _autoGenerateCollisionBody;
+	std::string _collisionShapeGenerationMethod;
 
 public:
 	std::string _objectType = "GameObject";
@@ -63,10 +63,18 @@ public:
 	virtual ~GameObject();
 
 	virtual void setPosition(osg::Vec3 newPosition);
+	virtual void setRotation(osg::Quat newRotation);
 	virtual osg::Vec3 getLocalPosition();
 	virtual osg::Vec3 getWorldPosition();
+	virtual osg::Quat getLocalRotation();
+	virtual osg::Quat getWorldRotation();
 	osg::Vec3 localToWorld(osg::Vec3 localVector);
 	osg::Vec3 worldToLocal(osg::Vec3 worldVector);
+
+	osg::ref_ptr<ImprovedMatrixTransform> getTransformNode()
+	{
+		return _transformNode;
+	}
 
 	virtual void reset();	/// Reset the object.
 
@@ -89,7 +97,11 @@ public:
 
 	void setFunction(std::string functionName, std::string code);
 
-	void generateRigidBody(double mass);	/// Generates a rigid body to fit the geometry
+	void generateRigidBody(double mass, std::string generationMethod);	/// Generates a rigid body to fit the geometry
+
+#ifndef USING_BOX2D_PHYSICS
+	btCollisionObject* getPhysicsBody();
+#endif
 
 protected:
 	void saveGameObjectVariables(GameObjectData* dataObj);	/// Saves the variables declared in GameObject.

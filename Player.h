@@ -43,6 +43,12 @@ public:
 	void interact();	/// Interact with an object if in range.
 
 	virtual ~Player();
+
+	void setObjectToInteractWith(Controller* object)
+	{
+		_willInteractWith = object;
+	}
+
 protected:
 };
 

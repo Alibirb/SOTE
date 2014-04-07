@@ -7,6 +7,8 @@
 #include "Player.h"
 #include "ControlledObject.h"
 #include "Controller.h"
+#include "Door.h"
+
 #include "PhysicsData.h"
 #include "GameObjectData.h"
 
@@ -21,8 +23,12 @@
 
 
 
-void myTickCallback(btDynamicsWorld *world, btScalar timeStep)
+void myTickCallback(btDynamicsWorld* world, btScalar timeStep)
 {
+
+	for(auto kv : getPlayers())
+		kv.second->setObjectToInteractWith(NULL);	/// reset each Player's stored interable object, since we're going to regenerate it.
+
 	int numManifolds = world->getDispatcher()->getNumManifolds();
 	for (int i=0;i<numManifolds;i++)
 	{
@@ -193,6 +199,8 @@ void Level::loadFromYaml(std::string filename)
 		{
 			addObject(new ControlledObject(child));
 		}
+		else if(elementType == "Door")
+			addObject(new Door(child));
 		else if(elementType == "Controller")
 		{
 			addObject(new Controller(child));

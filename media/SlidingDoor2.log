@@ -1,0 +1,92 @@
+
+Type of SlidingDoor is EMPTY
+
+Type of Armature.001 is ARMATURE
+processing Armature Armature.001
+animation_data is Armature.001 <bpy_struct, AnimData at 0x5cd6848>
+animations created for object 'Armature.001'
+Exporting animation on object <bpy_struct, Object("Armature.001")>
+open processing channels for bone Bone.001
+time 0.0 0.0 24
+time 1.0 0.041666666666666664 24
+time 2.0 0.08333333333333333 24
+time 3.0 0.125 24
+time 4.0 0.16666666666666666 24
+time 5.0 0.20833333333333334 24
+time 6.0 0.25 24
+time 7.0 0.2916666666666667 24
+time 8.0 0.3333333333333333 24
+time 9.0 0.375 24
+time 10.0 0.4166666666666667 24
+time 0.0 0.0 24
+time 10.0 0.4166666666666667 24
+time 0.0 0.0 24
+time 10.0 0.4166666666666667 24
+
+Type of Outer is MESH
+curve.data_path location 0 location
+curve.data_path location 1 location
+curve.data_path location 2 location
+curve.data_path rotation_euler 0 rotation_euler
+curve.data_path rotation_euler 1 rotation_euler
+curve.data_path rotation_euler 2 rotation_euler
+curve.data_path scale 0 scale
+curve.data_path scale 1 scale
+curve.data_path scale 2 scale
+Exporting animation on object <bpy_struct, Object("Outer")>
+time 0.0 0.0 24
+time 10.0 0.4166666666666667 24
+time 0.0 0.0 24
+time 10.0 0.4166666666666667 24
+time 0.0 0.0 24
+time 10.0 0.4166666666666667 24
+time 0.0 0.0 24
+time 10.0 0.4166666666666667 24
+time 0.0 0.0 24
+time 10.0 0.4166666666666667 24
+exporting object Outer
+mesh_object is Cube.001
+mesh Outer with material Yellow
+vertexes 48
+faces 12
+WARNING group has no vertexes, skip it, if really unsued you should clean it
+WARNING update material animation not yet supported
+WARNING the texture <bpy_struct, MaterialTextureSlot("Texture")> has no Image, skip it
+-------------------------------
+vertex groups True False 
+
+Type of Inner is MESH
+curve.data_path location 0 location
+curve.data_path location 1 location
+curve.data_path location 2 location
+curve.data_path rotation_euler 0 rotation_euler
+curve.data_path rotation_euler 1 rotation_euler
+curve.data_path rotation_euler 2 rotation_euler
+curve.data_path scale 0 scale
+curve.data_path scale 1 scale
+curve.data_path scale 2 scale
+Exporting animation on object <bpy_struct, Object("Inner")>
+time 0.0 0.0 24
+time 10.0 0.4166666666666667 24
+time 0.0 0.0 24
+time 10.0 0.4166666666666667 24
+time 0.0 0.0 24
+time 10.0 0.4166666666666667 24
+time 0.0 0.0 24
+time 10.0 0.4166666666666667 24
+time 0.0 0.0 24
+time 10.0 0.4166666666666667 24
+exporting object Inner
+mesh_object is Cube
+mesh Inner with material Yellow
+vertexes 24
+faces 6
+vertex groups 1
+-------------------------------
+vertex groups True True 
+geode GeodeCube.001
+NOTICE: Reparenting GeodeCube.001 to Armature.001
+geode GeodeCube
+NOTICE: Reparenting GeodeCube to Armature.001
+write file to /run/media/daniel/SeagateExternal/ScumOfTheEarth/media/SlidingDoor2.osgt
+Check log file /run/media/daniel/SeagateExternal/ScumOfTheEarth/media/SlidingDoor2.log

@@ -78,7 +78,8 @@ Entity::Entity()
 	_physicsBody->setCollisionShape(shape);
 	_physicsBody->setCollisionFlags(btCollisionObject::CF_CHARACTER_OBJECT);
 	float stepHeight = .35;
-	controller = new btKinematicCharacterController((btPairCachingGhostObject*)_physicsBody, shape, stepHeight, 2);
+	//controller = new btKinematicCharacterController((btPairCachingGhostObject*)_physicsBody, shape, stepHeight, 2);
+	controller = new ImprovedBulletKinematicCharacterController((btPairCachingGhostObject*)_physicsBody, shape, stepHeight, 2);
 	controller->setGravity(-getCurrentLevel()->getBulletWorld()->getGravity().z());
 	getCurrentLevel()->getBulletWorld()->addCollisionObject(_physicsBody, btBroadphaseProxy::CharacterFilter, btBroadphaseProxy::AllFilter);
 	getCurrentLevel()->getBulletWorld()->addAction(controller);
@@ -96,7 +97,8 @@ Entity::Entity(std::string name, osg::Vec3 position)
 	_stateMachine = new StateMachine(this);
 
 	this->name = name;
-	_transformNode->setPosition(position);
+	//_transformNode->setPosition(position);
+	setPosition(position);
 
 	std::string modelFilename = DEFAULT_ENTITY_MODEL_NAME;
 	_modelNode = osgDB::readNodeFile(modelFilename);
@@ -151,7 +153,8 @@ Entity::Entity(std::string name, osg::Vec3 position)
 	_physicsBody->setCollisionShape(shape);
 	_physicsBody->setCollisionFlags(btCollisionObject::CF_CHARACTER_OBJECT);
 	float stepHeight = .35;
-	controller = new btKinematicCharacterController((btPairCachingGhostObject*)_physicsBody, shape, stepHeight, 2);
+	//controller = new btKinematicCharacterController((btPairCachingGhostObject*)_physicsBody, shape, stepHeight, 2);
+	controller = new ImprovedBulletKinematicCharacterController((btPairCachingGhostObject*)_physicsBody, shape, stepHeight, 2);
 	controller->setGravity(-getCurrentLevel()->getBulletWorld()->getGravity().z());
 	getCurrentLevel()->getBulletWorld()->addCollisionObject(_physicsBody, btBroadphaseProxy::CharacterFilter, btBroadphaseProxy::AllFilter);
 	getCurrentLevel()->getBulletWorld()->addAction(controller);

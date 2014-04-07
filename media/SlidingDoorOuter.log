@@ -1,0 +1,33 @@
+
+Type of Outer is MESH
+curve.data_path location 0 location
+curve.data_path location 1 location
+curve.data_path location 2 location
+curve.data_path rotation_euler 0 rotation_euler
+curve.data_path rotation_euler 1 rotation_euler
+curve.data_path rotation_euler 2 rotation_euler
+curve.data_path scale 0 scale
+curve.data_path scale 1 scale
+curve.data_path scale 2 scale
+Exporting animation on object <bpy_struct, Object("Outer")>
+time 0.0 0.0 24
+time 10.0 0.4166666666666667 24
+time 0.0 0.0 24
+time 10.0 0.4166666666666667 24
+time 0.0 0.0 24
+time 10.0 0.4166666666666667 24
+time 0.0 0.0 24
+time 10.0 0.4166666666666667 24
+time 0.0 0.0 24
+time 10.0 0.4166666666666667 24
+exporting object Outer
+mesh_object is Cube.001
+mesh Outer with material Yellow
+vertexes 48
+faces 12
+WARNING group has no vertexes, skip it, if really unsued you should clean it
+WARNING update material animation not yet supported
+WARNING the texture <bpy_struct, MaterialTextureSlot("Texture")> has no Image, skip it
+-------------------------------
+vertex groups True False 
+geode GeodeCube.001

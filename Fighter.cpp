@@ -6,6 +6,8 @@
 
 #include "TemporaryText.h"
 
+#include "Level.h"
+
 
 std::list<Fighter*> fighterList;
 
@@ -24,6 +26,9 @@ Fighter::Fighter(GameObjectData* dataObj) : Fighter()
 	_equippedWeapon = NULL;
 	_objectType = "Fighter";
 	load(dataObj);
+
+
+
 	addFighter(this);
 
 	PhysicsUserData *userData = new PhysicsUserData;

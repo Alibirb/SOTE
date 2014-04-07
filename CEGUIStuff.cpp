@@ -22,7 +22,7 @@ CEGUIDrawable::CEGUIDrawable()
 {
     setSupportsDisplayList(false);
     setDataVariance( osg::Object::DYNAMIC );
-     getOrCreateStateSet()->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
+	getOrCreateStateSet()->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
     getOrCreateStateSet()->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF );
 
     setEventCallback(new CEGUIEventCallback());

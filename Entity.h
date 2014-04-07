@@ -19,7 +19,8 @@
 #else
 	#include "btBulletDynamicsCommon.h"
 	#include "osgbCollision/Utils.h"
-	#include "BulletDynamics/Character/btKinematicCharacterController.h"
+	//#include "BulletDynamics/Character/btKinematicCharacterController.h"
+	#include "ImprovedBulletKinematicCharacterController.h"
 	#include "BulletCollision/CollisionDispatch/btGhostObject.h"
 #endif
 
@@ -39,7 +40,8 @@ public:
 	std::string name;
 
 #ifndef USE_BOX2D_PHYSICS
-	btKinematicCharacterController* controller;
+	//btKinematicCharacterController* controller;
+	ImprovedBulletKinematicCharacterController* controller;
 #endif
 
 	Entity();

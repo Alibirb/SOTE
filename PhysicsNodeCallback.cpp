@@ -1,5 +1,7 @@
 #include "PhysicsNodeCallback.h"
 
+#include "ImprovedMatrixTransform.h"
+
 
 #ifdef USE_BOX2D_PHYSICS
 
@@ -30,9 +32,22 @@ BulletPhysicsNodeCallback::BulletPhysicsNodeCallback(btCollisionObject *physicsB
 
 void BulletPhysicsNodeCallback::operator()(osg::Node* node, osg::NodeVisitor* nv)
 {
-	osg::Matrix mat = osgbCollision::asOsgMatrix(physicsBody->getWorldTransform());
+	/*osg::Matrix mat = osgbCollision::asOsgMatrix(physicsBody->getWorldTransform());
 
 	osg::PositionAttitudeTransform *pat = dynamic_cast<osg::PositionAttitudeTransform*>(node);
+	pat->setPosition(mat.getTrans() + physicsToOsgAdjustment);
+	pat->setAttitude(mat.getRotate());
+
+	traverse(node, nv);*/
+
+	osg::Matrix mat = osgbCollision::asOsgMatrix(physicsBody->getWorldTransform());
+
+	//osg::PositionAttitudeTransform *pat = dynamic_cast<osg::PositionAttitudeTransform*>(node);
+	ImprovedMatrixTransform *pat = dynamic_cast<ImprovedMatrixTransform*>(node);
+
+	//osg::Matrix localToWorldAdjustment = getWorldCoordinates(pat);
+
+
 	pat->setPosition(mat.getTrans() + physicsToOsgAdjustment);
 	pat->setAttitude(mat.getRotate());
 
