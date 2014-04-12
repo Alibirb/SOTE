@@ -9,7 +9,7 @@
 #define DEFAULT_PROJECTILE_IMAGE "circle.png"
 
 
-
+/// TODO: should inherit from DangerZone
 class Projectile : public Item
 {
 protected:

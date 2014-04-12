@@ -8,6 +8,8 @@
 #include "Weapon.h"
 #include "Attack.h"
 
+class DangerZone;
+
 
 class Fighter;
 std::list<Fighter*> getFighters();
@@ -16,7 +18,7 @@ class Fighter : public Entity
 {
 protected:
 	Weapon* _equippedWeapon;
-	float health = 10.0;
+	float health;
 	std::string _team;
 	std::vector<Attack*> _attacks;
 	Attack* _currentAttack;	/// currently-selected attack
@@ -44,6 +46,8 @@ public:
 	virtual void attack(Fighter* target);
 	virtual void useBestAttackOn(Fighter* target);
 
+	float getHealth();
+
 	virtual void die();	/// Perform any actions to be taken when the Fighter is killed (mark for removal, change state to "dead", etc.)
 
 	bool isHurtByTeam(std::string otherTeam);
@@ -52,7 +56,7 @@ public:
 	std::string getTeam();
 
 	virtual void onCollision(GameObject* other);
-	virtual void onCollision(Projectile* projectile);
+	virtual void onCollision(DangerZone* other);
 
 	virtual void onUpdate(float deltaTime);
 

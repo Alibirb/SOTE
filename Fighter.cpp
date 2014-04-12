@@ -1,8 +1,11 @@
 #include "Fighter.h"
+
+
 #include "Weapon.h"
 #include "AngelScriptEngine.h"
 #include "GameObjectData.h"
 #include "PhysicsData.h"
+#include "DangerZone.h"
 
 #include "TemporaryText.h"
 
@@ -26,6 +29,7 @@ Fighter::Fighter(GameObjectData* dataObj) : Fighter()
 	_equippedWeapon = NULL;
 	_objectType = "Fighter";
 	load(dataObj);
+	health = _maxHealth;
 
 
 
@@ -117,6 +121,11 @@ void Fighter::takeDamages(Damages dams)
 	}
 }
 
+float Fighter::getHealth()
+{
+	return health;
+}
+
 float Fighter::getResistance(std::string type)
 {
 	return _resistances[type];
@@ -144,15 +153,15 @@ std::string Fighter::getTeam()
 	return _team;
 }
 
-void Fighter::onCollision(Projectile* projectile)
+void Fighter::onCollision(DangerZone* other)
 {
-	if(isHurtByTeam(projectile->getTeam()))
-		takeDamages(projectile->getDamages());
+	if(isHurtByTeam(other->getTeam()))
+		takeDamages(other->getDamages());
 }
 void Fighter::onCollision(GameObject* other)
 {
-	if(dynamic_cast<Projectile*>(other))
-		onCollision(dynamic_cast<Projectile*>(other));
+	if(dynamic_cast<DangerZone*>(other))
+		onCollision(dynamic_cast<DangerZone*>(other));
 }
 
 void Fighter::onUpdate(float deltaTime)
@@ -217,6 +226,7 @@ void Fighter::loadFighterData(GameObjectData* dataObj)
 {
 	_team = dataObj->getString("team");
 	_maxHealth = dataObj->getFloat("maxHealth");
+	health = _maxHealth;
 
 	if(dataObj->getObject("weapon"))
 		equipWeapon(new Weapon(dataObj->getObject("weapon")));

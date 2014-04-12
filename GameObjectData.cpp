@@ -410,17 +410,20 @@ void GameObjectData::fromYAML(YAML::Node node)
 			}
 			else if(it->second["dataType"])
 			{
-				// Could be GameObjectDataŝ
+				// Could be GameObjectData
 				addData(key, new GameObjectData(it->second));
 			}
 			else	// Probably a map of GameObjectData then
 			{
+				/// if it's not a map of GameObjectData, this will fail.
+				/// Reasons a node might be incorrectly-identified:
+				///		it's a new data type that's not yet recognized
+				///		typo: yaml-cpp will not recognize a mapping unless there's a space after the colon.
 				//addData(key, new GameObjectData(it->second));
 				unordered_map<string, GameObjectData*> objMap;
 				for(YAML::const_iterator objIt = it->second.begin(); objIt != it->second.end(); ++objIt)
 				{
 					objMap[objIt->first.as<std::string>()] = new GameObjectData(objIt->second);
-					//addData(objIt->first.as<std::string>(), objIt->second.as<std::string>());	/// Assuming that the function is source code, not byte code.
 				}
 				addData(key, objMap);
 			}
@@ -428,7 +431,16 @@ void GameObjectData::fromYAML(YAML::Node node)
 		case YAML::NodeType::Scalar:
 			// Simple primitive data type
 
-			try
+			/// Figure out what type it is.
+			float floatValue;
+			bool boolValue;
+			if(YAML::convert<float>::decode(it->second, floatValue))
+				this->addData(key, floatValue);
+			else if(YAML::convert<bool>::decode(it->second, boolValue))
+				this->addData(key, boolValue);
+			else this->addData(key, it->second.as<std::string>());
+
+			/*try
 			{
 				float value = it->second.as<float>();
 				this->addData(key, value);
@@ -448,8 +460,9 @@ void GameObjectData::fromYAML(YAML::Node node)
 						std::cout << "How did it not convert to string?" << std::endl;
 					}
 				}
-			}
+			}*/
 			break;
+
 		case YAML::NodeType::Null:
 			break;
 		}

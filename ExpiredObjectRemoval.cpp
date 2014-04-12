@@ -11,6 +11,8 @@
 #include "Player.h"
 #include "Controller.h"
 #include "TemporaryText.h"
+#include "DangerZone.h"
+#include "Door.h"
 
 #include "globals.h"
 
@@ -30,6 +32,9 @@ void removeExpiredObjects()
 		// For each object in the list, cast it to the appropriate type and then delete it.
 		std::string objectType = expiredObjects.front().objectType;
 
+
+		#define EOR_OBJECT_TYPE_ELSE_IF(type) else if (objectType == "type") delete ((type*) expiredObjects.front().object);
+
 		if (objectType == "Fighter")
 			delete ((Fighter*) expiredObjects.front().object);
 		else if (objectType == "Entity")
@@ -46,6 +51,14 @@ void removeExpiredObjects()
 			delete ((Projectile*) expiredObjects.front().object);
 		else if (objectType == "TemporaryText")
 			delete ((TemporaryText*) expiredObjects.front().object);
+		else if (objectType == "DangerZone")
+			delete ((DangerZone*) expiredObjects.front().object);
+		//EOR_OBJECT_TYPE_ELSE_IF(Door)
+		//EOR_OBJECT_TYPE_ELSE_IF(ControlledObject)		/// The macro does not seem to work.
+		else if (objectType == "Door")
+			delete ((Door*) expiredObjects.front().object);
+		else if (objectType == "ControlledObject")
+			delete ((ControlledObject*) expiredObjects.front().object);
 
 		else
 			logError("Object of unfamiliar type \"" + objectType + "\" marked for deletion");	// cannot properly delete the object unless we know what type it is.

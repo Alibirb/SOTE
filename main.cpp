@@ -326,7 +326,7 @@ int main()
 	//getScriptEngine()->test();
 	getScriptEngine()->runFile("initialize.as");
 
-	AngelScriptConsole* console = new AngelScriptConsole();
+	//AngelScriptConsole* console = new AngelScriptConsole();
 
 	osg::Timer_t frame_tick = osg::Timer::instance()->tick();
 
@@ -370,6 +370,10 @@ int main()
 			fps[fpsArrayLength - 1] = (1 / deltaTime);
 			fpsTotal += fps[fpsArrayLength - 1];
 		}
+
+		std::ostringstream hudStream;
+		hudStream << "Health: " << getActivePlayer()->getHealth();
+		getDebugDisplayer()->addText(hudStream);
 
 		removeExpiredObjects();
 

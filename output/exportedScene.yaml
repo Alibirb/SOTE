@@ -7,7 +7,7 @@ children:
     position: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0, w: 1}
   - dataType: Controller
-    radius: 3
+    radius: 5
     mass: inf
     physicsBodyGeneration: none
     geometry: Switch.osgt
@@ -21,22 +21,22 @@ children:
         }
         
     controlled:
-      - dataType: ControlledObject
+      - dataType: Door
         mass: 0
         physicsBodyGeneration: convexHullShape
         geometry: SlidingDoorOuter.osgt
         position: {x: 0, y: 8, z: 0}
-        rotation: {x: 0, y: 0, z: 0, w: 1}
+        rotation: {x: 0, y: 0, z: 0.7071067811865476, w: 0.7071067811865476}
         innerPart:
           dataType: GameObject
           mass: 10
           physicsBodyGeneration: convexHullShape
           geometry: SlidingDoorInner.osgt
-          position: {x: 13.62702, y: 7.995718, z: -1769.149}
-          rotation: {x: -0.1967860783155117, y: -0.03090490478351619, z: 0.8133684432224331, w: 0.5465819482420412}
+          position: {x: 0.9935614, y: 7.947005, z: 0.03994847}
+          rotation: {x: 0.001125714032532143, y: -0.004154422279273658, z: 0.6678351705490675, w: 0.7442967408789638}
         stateMachine:
           dataType: StateMachine
-          defaultState: closed
+          defaultState: open
           states:
             open:
               dataType: State
@@ -45,7 +45,6 @@ children:
                 onEnter: |
                   void onEnter(Door@ self)
                   {
-                  	//self.playAnimation("open");
                   	self.open();
                    	print("opening");
                   }
@@ -57,7 +56,6 @@ children:
                 onEnter: |
                   void onEnter(Door@ self)
                   {
-                  	//self.playAnimation("close");
                   	self.close();
                   	print("closing");
                   }
@@ -72,96 +70,200 @@ children:
                     self.changeState("closed");
             }
             
-  - dataType: Fighter
-    maxHealth: 5
-    mass: inf
-    team: Enemy
-    physicsBodyGeneration: none
-    geometry: humanmodelNoBones.osg
-    position: {x: 5, y: 5, z: 0}
-    rotation: {x: 0, y: 0, z: 0, w: 1}
-    resistances:
-      dataType: unordered_map
-      COLD: 0
-      ACID: 0
-      HOT: 0
-    weapon:
-      dataType: Weapon
-      coolDownTime: 2.5
-      physicsBodyGeneration: none
-      geometry: staff.png
-      position: {x: 0, y: 0, z: 1}
-      rotation: {x: 0, y: 0, z: 0, w: 1}
-      projectile:
-        dataType: Projectile
-        geometry: circle.png
-        damages:
-          - dataType: damage
-            amount: 2
-            type: PURE_MAGIC
-    stateMachine:
-      dataType: StateMachine
-      defaultState: idle
-      states:
-        attacking:
-          dataType: State
-          name: attacking
-          functions:
-            onUpdate: |
-              void onUpdate(Fighter@ self)
-              {
-                if(self.getCurrentAttack().done())
-                	self.returnToPreviousState();
-              }
-              
-        idle:
-          dataType: State
-          name: idle
-          functions:
-            onUpdate: |
-              void onUpdate(Fighter@ self)
-              {
-                if(self.getClosestEnemy() !is null)
-                  self.useBestAttackOn(self.getClosestEnemy());
+      - dataType: Door
+        mass: 0
+        physicsBodyGeneration: convexHullShape
+        geometry: SlidingDoorOuter.osgt
+        position: {x: 0, y: 8, z: 0}
+        rotation: {x: 0, y: 0, z: -0.7071067811865476, w: 0.7071067811865476}
+        innerPart:
+          dataType: GameObject
+          mass: 10
+          physicsBodyGeneration: convexHullShape
+          geometry: SlidingDoorInner.osgt
+          position: {x: -0.9902962, y: 8.002185, z: 0.005108773}
+          rotation: {x: 0.0009980946933668771, y: -0.0005516781800413664, z: 0.710309264565453, w: -0.7038888212305809}
+        stateMachine:
+          dataType: StateMachine
+          defaultState: open
+          states:
+            closed:
+              dataType: State
+              name: closed
+              functions:
+                onEnter: |
+                  void onEnter(Door@ self)
+                  {
+                  	self.close();
+                  	print("closing");
+                  }
+                  
+            open:
+              dataType: State
+              name: open
+              functions:
+                onEnter: |
+                  void onEnter(Door@ self)
+                  {
+                  	self.open();
+                   	print("opening");
+                  }
+                  
+        functions:
+          onMessage_toggle: |
+            void onMessage_toggle(ControlledObject@ self)
+            {
+                if(self.getStateName() == "closed")
+                    self.changeState("open");
                 else
-                	print("No nearby enemies");
-              }
-              
-    attacks:
-      - dataType: Attack
-        duration: 2.5
-        damages:
-          - dataType: damage
-            amount: 2
-            type: PURE_MAGIC
+                    self.changeState("closed");
+            }
+            
+      - dataType: Door
+        mass: 0
+        physicsBodyGeneration: convexHullShape
+        geometry: SlidingDoorOuter.osgt
+        position: {x: 8, y: 0, z: 0}
+        rotation: {x: 0, y: 0, z: 0, w: 1}
+        innerPart:
+          dataType: GameObject
+          mass: 10
+          physicsBodyGeneration: convexHullShape
+          geometry: SlidingDoorInner.osgt
+          position: {x: 8, y: -1.090772e-05, z: 0.03977815}
+          rotation: {x: -1.129379617735537e-07, y: -0.002218344347957781, z: -3.950906994520722e-06, w: 0.9999975413053805}
+        stateMachine:
+          dataType: StateMachine
+          defaultState: closed
+          states:
+            closed:
+              dataType: State
+              name: closed
+              functions:
+                onEnter: |
+                  void onEnter(Door@ self)
+                  {
+                  	self.close();
+                  	print("closing");
+                  }
+                  
+            open:
+              dataType: State
+              name: open
+              functions:
+                onEnter: |
+                  void onEnter(Door@ self)
+                  {
+                  	self.open();
+                   	print("opening");
+                  }
+                  
+        functions:
+          onMessage_toggle: |
+            void onMessage_toggle(ControlledObject@ self)
+            {
+                if(self.getStateName() == "closed")
+                    self.changeState("open");
+                else
+                    self.changeState("closed");
+            }
+            
+      - dataType: Door
+        mass: 0
+        physicsBodyGeneration: convexHullShape
+        geometry: SlidingDoorOuter.osgt
+        position: {x: 8, y: 0, z: 0}
+        rotation: {x: 0, y: 0, z: 1, w: 0}
+        innerPart:
+          dataType: GameObject
+          mass: 10
+          physicsBodyGeneration: convexHullShape
+          geometry: SlidingDoorInner.osgt
+          position: {x: 8.026927, y: -0.07597011, z: -0.4105523}
+          rotation: {x: -0.6107560370714386, y: 0.04083254180552752, z: 0.786884739628418, w: -0.07824434011288207}
+        stateMachine:
+          dataType: StateMachine
+          defaultState: closed
+          states:
+            closed:
+              dataType: State
+              name: closed
+              functions:
+                onEnter: |
+                  void onEnter(Door@ self)
+                  {
+                  	self.close();
+                  	print("closing");
+                  }
+                  
+            open:
+              dataType: State
+              name: open
+              functions:
+                onEnter: |
+                  void onEnter(Door@ self)
+                  {
+                  	self.open();
+                   	print("opening");
+                  }
+                  
+        functions:
+          onMessage_toggle: |
+            void onMessage_toggle(ControlledObject@ self)
+            {
+                if(self.getStateName() == "closed")
+                    self.changeState("open");
+                else
+                    self.changeState("closed");
+            }
+            
+  - dataType: DangerZone
+    radius: 5
+    mass: inf
+    physicsBodyGeneration: none
+    geometry: Fire.osgt
+    position: {x: 0, y: 14, z: 1}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+    damages:
+      - dataType: damage
+        amount: 0.05
+        type: HOT
+  - dataType: DangerZone
+    radius: 5
+    mass: inf
+    physicsBodyGeneration: none
+    geometry: Fire.osgt
+    position: {x: 0, y: 17, z: 1}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+    damages:
+      - dataType: damage
+        amount: 1
+        type: HOT
+  - dataType: DangerZone
+    radius: 5
+    mass: inf
+    physicsBodyGeneration: none
+    geometry: Fire.osgt
+    position: {x: 0, y: 20, z: 1}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+    damages:
+      - dataType: damage
+        amount: 0.05
+        type: HOT
   - dataType: Player
     maxHealth: 100
     mass: inf
     team: Player
     physicsBodyGeneration: none
     geometry: humanmodelNoBones.osg
-    position: {x: 1.089267, y: 7.294517, z: -0.04000688}
-    rotation: {x: 0, y: 0, z: 0.9988047198267813, w: -0.04887874437570024}
+    position: {x: 1.774425, y: 0.2120127, z: -0.0400002}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
     resistances:
       dataType: unordered_map
-      HOT: 0
-      ACID: 0
       COLD: 0
+      ACID: 0
+      HOT: 0
       PURE_MAGIC: 0
-    weapon:
-      dataType: Weapon
-      coolDownTime: 2.5
-      physicsBodyGeneration: none
-      geometry: staff.png
-      position: {x: 0, y: 0, z: 1}
-      rotation: {x: 0, y: 0, z: 0, w: 1}
-      projectile:
-        dataType: Projectile
-        geometry: Fireball.png
-        damages:
-          - dataType: damage
-            amount: 2
-            type: HOT
     stateMachine:
       dataType: StateMachine
       defaultState: idle
@@ -184,8 +286,10 @@ children:
             onUpdate: |
               void onUpdate(Fighter@ self)
               {
-                //if(self.getClosestEnemy())
-                 // self.useBestAttackOn(self.getClosestEnemy());
+              	//if(self.getClosestEnemy() !is null)
+              	//	self.useBestAttackOn(self.getClosestEnemy());
+                //else
+              	//	print("No nearby enemies");
               }
               
     attacks:

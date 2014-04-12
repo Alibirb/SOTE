@@ -50,6 +50,8 @@ private:
 
 	std::list<GameObject*> _objects;
 
+	std::string _filename;	/// filename used to load the level. Stored to allow reloading.
+
 
 public:
 	Level(std::string filename);
@@ -92,6 +94,7 @@ public:
 
 	void load(std::string filename);
 	void reload(std::string filename);
+	void reload();
 
 	void removeObject(GameObject* obj);
 protected:

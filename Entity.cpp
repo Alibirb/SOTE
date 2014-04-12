@@ -212,7 +212,7 @@ void Entity::setHeading(double angle)
 	this->setAttitude(osg::Quat(angle, osg::Vec3(0,0,1)));
 }
 
-const osg::Quat& Entity::getAttitude()
+const osg::Quat Entity::getAttitude()
 {
 	return _transformNode->getAttitude();
 }

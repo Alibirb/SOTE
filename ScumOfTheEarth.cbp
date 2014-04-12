@@ -96,6 +96,8 @@
 		<Unit filename="Controller.h" />
 		<Unit filename="Damage.cpp" />
 		<Unit filename="Damage.h" />
+		<Unit filename="DangerZone.cpp" />
+		<Unit filename="DangerZone.h" />
 		<Unit filename="Door.cpp" />
 		<Unit filename="Door.h" />
 		<Unit filename="Editor.cpp" />

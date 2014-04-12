@@ -1,8 +1,7 @@
-#include "Controller.h"
+#include "DangerZone.h"
 
-#include "ControlledObject.h"
-
-#include "tinyxml/tinyxml2.h"
+#include "Level.h"
+#include "OwnerUpdateCallback.h"
 
 #ifndef USE_BOX2D_PHYSICS
 	#include "BulletCollision/CollisionDispatch/btGhostObject.h"
@@ -10,22 +9,12 @@
 #include "PhysicsData.h"
 #include "PhysicsNodeCallback.h"
 
-#include "AngelScriptEngine.h"
-
-#include "Level.h"
-
-#include "GameObjectData.h"
-
-#include "Door.h"
 
 
-
-Controller::Controller()
+DangerZone::DangerZone() : _team("Wild")
 {
-	_objectType = "Controller";
-
-	registerController();
-
+	_objectType = "DangerZone";
+	//registerDangerZone();
 
 	osg::Vec3 position;
 
@@ -56,7 +45,7 @@ Controller::Controller()
 
 	PhysicsUserData *userData = new PhysicsUserData;
 	userData->owner = this;
-	userData->ownerType = "Controller";
+	userData->ownerType = _objectType;
 #ifdef USE_BOX2D_PHYSICS
 	physicsBody->SetUserData(userData);
 #else
@@ -64,11 +53,9 @@ Controller::Controller()
 #endif
 }
 
-Controller::Controller(GameObjectData* dataObj)
+DangerZone::DangerZone(GameObjectData* dataObj) : _team("Wild")
 {
-	_objectType = "Controller";
-
-	registerController();
+	_objectType = "DangerZone";
 
 	load(dataObj);
 
@@ -100,7 +87,7 @@ Controller::Controller(GameObjectData* dataObj)
 
 	PhysicsUserData *userData = new PhysicsUserData;
 	userData->owner = this;
-	userData->ownerType = "Controller";
+	userData->ownerType = _objectType;
 #ifdef USE_BOX2D_PHYSICS
 	physicsBody->SetUserData(userData);
 #else
@@ -108,112 +95,67 @@ Controller::Controller(GameObjectData* dataObj)
 #endif
 }
 
-Controller::~Controller()
+DangerZone::~DangerZone()
 {
-	for(ControlledObject* object: _controlled)
-		markForRemoval(object, object->_objectType);
+	//dtor
 }
 
 
-void Controller::addControlledObject(ControlledObject* object)
+Damages DangerZone::getDamages()
 {
-	_controlled.push_back(object);
+	return _damages;
 }
-
-void Controller::onPlayerInteraction()
+std::string DangerZone::getTeam()
 {
-	std::cout << "Player interacted." << std::endl;
-	if(_functions["onInteraction"])
-		getScriptEngine()->runFunction(_functions["onInteraction"], "object", this);
-}
-
-void Controller::sendMessage(std::string& message)
-{
-	std::cout << message << std::endl;
-	for(ControlledObject* object : _controlled)
-		object->receiveMessage(message);
+	return _team;
 }
 
 
-
-
-GameObjectData* Controller::save()
+GameObjectData* DangerZone::save()
 {
 	GameObjectData* dataObj = new GameObjectData(_objectType);
 
 	saveGameObjectVariables(dataObj);
-	saveControllerVariables(dataObj);
+	saveDangerZoneVariables(dataObj);
 
 	return dataObj;
 }
-void Controller::saveControllerVariables(GameObjectData* dataObj)
-{
 
-	//for(auto child : _controlled)
-	//	dataObj->addChild(child);
-	dataObj->addData("controlled", _controlled);
+void DangerZone::load(GameObjectData* dataObj)
+{
+	loadGameObjectVariables(dataObj);
+	loadDangerZoneVariables(dataObj);
+}
+
+
+void DangerZone::saveDangerZoneVariables(GameObjectData* dataObj)
+{
+	std::vector<GameObjectData*> damageListData;
+	for(Damage damage : _damages)
+	{
+		GameObjectData* damageData = new GameObjectData("damage");
+		damageData->addData("type", damage.type);
+		damageData->addData("amount", damage.amount);
+		damageListData.push_back(damageData);
+	}
+	dataObj->addData("damages", damageListData);
+
 	dataObj->addData("radius", _radius);
 }
 
-void Controller::load(GameObjectData* dataObj)
-{
-	loadGameObjectVariables(dataObj);
-	loadControllerVariables(dataObj);
-}
-void Controller::loadControllerVariables(GameObjectData* dataObj)
+void DangerZone::loadDangerZoneVariables(GameObjectData* dataObj)
 {
 	_radius = dataObj->getFloat("radius");
 
-	//for(auto child : dataObj->getChildren())
-	for(auto child : dataObj->getObjectList("controlled"))
+	for(GameObjectData* damageData : dataObj->getObjectList("damages"))
 	{
-		if(child->getType() == "ControlledObject")
-			_controlled.push_back(new ControlledObject(child));
-		if(child->getType() == "Door")
-			_controlled.push_back(new Door(child));
-		else
-			logWarning("No frickin' clue what this non-ControlledObject object is doing as a child of a Controller");
-
+		Damage dam;
+		dam.type = damageData->getString("type");
+		dam.amount = damageData->getFloat("amount");
+		_damages.push_back(dam);
 	}
 
-}
-
-
-
-
-
-
-
-namespace AngelScriptWrapperFunctions
-{
-Controller* ControllerFactoryFunction()
-{
-	return new Controller();
-}
-void ControllerDestructor(void *memory)
-{
-	// Uninitialize the memory by calling the object destructor
-	((Controller*)memory)->~Controller();
-}
 
 }
 
-using namespace AngelScriptWrapperFunctions;
-
-
-void registerController()
-{
-	static bool registered = false;
-	if(registered)
-		return;
-
-	registerGameObject();
-
-	getScriptEngine()->registerObjectType("Controller", sizeof(Controller), asOBJ_REF | asOBJ_NOCOUNT );
-	getScriptEngine()->registerFactoryFunction("Controller", "Controller@ f()", asFUNCTION(ControllerFactoryFunction));
-
-	getScriptEngine()->registerObjectMethod("Controller", "void sendMessage(const string &in)", asMETHOD(Controller, sendMessage), asCALL_THISCALL);
-
-	registered = true;
-}
 

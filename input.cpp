@@ -63,6 +63,7 @@ bool MainEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIAction
 			{
 				getViewer()->getCameraManipulator()->home(ea, aa);
 				getActivePlayer()->resetPosition();
+				getCurrentLevel()->reload();
 			}
 			else if (ea.getKey() == 'p')
 			{

@@ -5,7 +5,7 @@
 #include <string>
 
 
-/// NOTE: this should really be a struct, but it doesn't seem like AngelScript supports structs.
+/// Class representing damage of some kind.
 class Damage
 {
 public:

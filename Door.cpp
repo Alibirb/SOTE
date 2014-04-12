@@ -24,6 +24,7 @@
 Door::Door() : _inner(NULL)
 {
 	registerDoor();
+	_objectType = "Door";
 }
 Door::Door(GameObjectData* dataObj) : Door()
 {
@@ -110,7 +111,9 @@ Door::Door(GameObjectData* dataObj) : Door()
 
 Door::~Door()
 {
-	//dtor
+	getCurrentLevel()->getBulletWorld()->removeConstraint(_constraint);
+	markForRemoval(_inner, _inner->_objectType);
+
 }
 
 

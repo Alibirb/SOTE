@@ -1,21 +1,19 @@
 Basics:
-	A game starring the characters from MW:ADC.
-	Also developing a core system that can be reused in other games.
+	Some kind of platformer/action-adventure type game.
+		Prototype to figure out how it will work.
 
 
 TODO:
 	DoneThisCommit:
-		Got the door animation working properly
-			open/close animation now used Bullet constraints
-			fixed the character controller colliding with ghost objects.
+
 	Current Task:
-		Get the door animation working properly (open and close, and should affect the physics body)
+		Flame jets
+			Right now: get the level reloading thing to work properly so I can tweak scene file and relaod without having to relaunch
 
 	Next Steps:
 		Focus on getting the demo level/prototype done so I actually know where this is all going.
-			flame jets
 			multiple characters
-			add to the level.
+			Add more to the puzzle/level
 
 		Improve import/export to allow it to link to prototypes.
 		Make a class to wrap around the physics stuff

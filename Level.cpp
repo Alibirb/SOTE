@@ -8,6 +8,7 @@
 #include "ControlledObject.h"
 #include "Controller.h"
 #include "Door.h"
+#include "DangerZone.h"
 
 #include "PhysicsData.h"
 #include "GameObjectData.h"
@@ -46,7 +47,7 @@ void myTickCallback(btDynamicsWorld* world, btScalar timeStep)
 			continue;
 		}
 
-		if(dataA->ownerType == "Projectile" && (dataB->ownerType == "Fighter" || dataB->ownerType == "Player") )
+		/*if(dataA->ownerType == "Projectile" && (dataB->ownerType == "Fighter" || dataB->ownerType == "Player") )
 		{
 			((Fighter*)dataB->owner)->onCollision((Projectile*)dataA->owner);
 			((Projectile*)dataA->owner)->onCollision((Fighter*)dataB->owner);
@@ -55,6 +56,16 @@ void myTickCallback(btDynamicsWorld* world, btScalar timeStep)
 		{
 			((Fighter*)dataA->owner)->onCollision((Projectile*)dataB->owner);
 			((Projectile*)dataB->owner)->onCollision((Fighter*)dataA->owner);
+		}*/
+		if(dataA->ownerType == "DangerZone" && (dataB->ownerType == "Fighter" || dataB->ownerType == "Player") )
+		{
+			((Fighter*)dataB->owner)->onCollision((DangerZone*)dataA->owner);
+			//((DangerZone*)dataA->owner)->onCollision((Fighter*)dataB->owner);
+		}
+		else if((dataA->ownerType == "Fighter" || dataA->ownerType == "Player") && dataB->ownerType == "DangerZone")
+		{
+			((Fighter*)dataA->owner)->onCollision((DangerZone*)dataB->owner);
+			//((DangerZone*)dataB->owner)->onCollision((Fighter*)dataA->owner);
 		}
 		else if(dataA->ownerType == "Player" && dataB->ownerType == "Controller")
 		{
@@ -121,6 +132,7 @@ Level::Level(std::string filename)
 	_physicsWorld->setInternalTickCallback(myTickCallback);
 #endif
 
+	_filename = filename;
 	load(filename);
 }
 
@@ -216,6 +228,8 @@ void Level::loadFromYaml(std::string filename)
 			setActivePlayer(name);
 			addObject(getActivePlayer());
 		}
+		else if(elementType == "DangerZone")
+			addObject(new DangerZone(child));
 		else
 		{
 			std::string warning = "";
@@ -239,6 +253,10 @@ void Level::reload(std::string filename)
 	for(auto obj : _objects)
 		markForRemoval(obj, obj->_objectType);
 	loadFromYaml(filename);
+}
+void Level::reload()
+{
+	reload(_filename);
 }
 
 void Level::addObject(GameObject* obj)

@@ -204,6 +204,39 @@ children:
                   	self.close();
                   	print("closing");
                   }
+  - dataType: DangerZone
+    radius: 5
+    mass: 0
+    physicsBodyGeneration: none
+    geometry: Fire.osgt
+    position: {x: 0, y: 14, z: 1}
+    damages:
+      - dataType: damage
+        amount: .5
+        type: HOT
+    damageFrequency: 2
+  - dataType: DangerZone
+    radius: 5
+    mass: 0
+    physicsBodyGeneration: none
+    geometry: Fire.osgt
+    position: {x: 0, y: 17, z: 1}
+    damages:
+      - dataType: damage
+        amount: .5
+        type: HOT
+    damageFrequency: 2
+  - dataType: DangerZone
+    radius: 5
+    mass: 0
+    physicsBodyGeneration: none
+    geometry: Fire.osgt
+    position: {x: 0, y: 20, z: 1}
+    damages:
+      - dataType: damage
+        amount: .5
+        type: HOT
+    damageFrequency: 2
   - dataType: Player
     maxHealth: 100.0
     team: Player

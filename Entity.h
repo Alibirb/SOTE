@@ -59,7 +59,7 @@ public:
 	double getHeading();
 	void setHeading(double angle);
 
-	const osg::Quat& getAttitude();
+	const osg::Quat getAttitude();
 	void setAttitude(const osg::Quat& newAttitude);
 
 	virtual void onUpdate(float deltaTime){};
