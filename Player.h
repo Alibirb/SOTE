@@ -56,8 +56,9 @@ protected:
 
 Player* getClosestPlayer(osg::Vec3 position);
 Player* getActivePlayer();
+std::list<std::string> getPlayerNames();
 void setActivePlayer(std::string newActivePlayer);
-void addNewPlayer(std::string playerName, osg::Vec3 position = osg::Vec3(0,0,0));
+//void addNewPlayer(std::string playerName, osg::Vec3 position = osg::Vec3(0,0,0));
 void addPlayer(std::string playerName, Player* thePlayer);
 std::unordered_map<std::string, Player*> getPlayers();
 

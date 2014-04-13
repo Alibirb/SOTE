@@ -5,14 +5,12 @@ Basics:
 
 TODO:
 	DoneThisCommit:
-
+		Added multiple characters and support for switching between them.
 	Current Task:
-		Flame jets
-			Right now: get the level reloading thing to work properly so I can tweak scene file and relaod without having to relaunch
+		multiple characters
 
 	Next Steps:
 		Focus on getting the demo level/prototype done so I actually know where this is all going.
-			multiple characters
 			Add more to the puzzle/level
 
 		Improve import/export to allow it to link to prototypes.
@@ -52,7 +50,8 @@ TODO:
 	Physics fixes:
 		figure out proper collision filtering technique for ghost objects (there should be no collision response, but it still needs to be detected.)
 	Make sure it all works on Windows
-	Figure out what to do about YAML's hatred of tabs (either put a hack into the text editor so it treats spaces like tabs, or alter yaml-cpp so it allows tabs)
+	Figure out what to do about YAML's hatred of tabs (either put a hack into the text editor so it treats spaces like tabs, or alter yaml-cpp so it allows tabs. Or use a different data language)
+	Make it possible to have multiple levels loaded at once (and have all objects in one level ignore objects in others)
 	Clean up:
 
 
@@ -67,8 +66,7 @@ BUGS:
 	Can easily push through doors.
 	Low Priority (it works, but might be ugly):
 
-Bugs I expect to see later:
-
+Bugs/issues I expect to see later:
 
 Issues: (with other software)
 	Not sure how to have multiple animations on an object in Blender. See http://wiki.blender.org/index.php/Doc:2.6/Manual/Animation/Basics/Actions

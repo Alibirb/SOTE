@@ -33,7 +33,7 @@
 class Entity : public GameObject
 {
 protected:
-	float maxSpeed = 6.0f;
+	float _maxSpeed = 6.0f;
 	StateMachine* _stateMachine;
 
 public:

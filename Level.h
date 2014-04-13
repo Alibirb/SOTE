@@ -21,14 +21,17 @@
 #endif
 
 #include <iostream>
-
+#include <unordered_map>
 
 class GameObject;
 class GameObjectData;
+class Player;
 
 
 void myTickCallback(btDynamicsWorld *world, btScalar timeStep);
 
+
+/// Class for a game level.
 class Level
 {
 private:
@@ -49,6 +52,9 @@ private:
 #endif
 
 	std::list<GameObject*> _objects;
+	std::unordered_map<std::string, Player*> _players;
+	std::list<std::string> _playerNames;
+	std::string _activePlayerName;
 
 	std::string _filename;	/// filename used to load the level. Stored to allow reloading.
 
@@ -97,6 +103,16 @@ public:
 	void reload();
 
 	void removeObject(GameObject* obj);
+
+	Player* getClosestPlayer(osg::Vec3 position);
+	Player* getActivePlayer();
+	void switchToNextPlayer();
+	void switchToPreviousPlayer();
+	void setActivePlayer(std::string newActivePlayer);
+	void addPlayer(std::string playerName, Player* thePlayer);
+	std::unordered_map<std::string, Player*> getPlayers();
+	std::list<std::string> getPlayerNames();
+
 protected:
 	void loadFromYaml(std::string filename);
 

@@ -213,7 +213,7 @@ children:
     damages:
       - dataType: damage
         amount: .5
-        type: HOT
+        type: FIRE
     damageFrequency: 2
   - dataType: DangerZone
     radius: 5
@@ -224,7 +224,7 @@ children:
     damages:
       - dataType: damage
         amount: .5
-        type: HOT
+        type: FIRE
     damageFrequency: 2
   - dataType: DangerZone
     radius: 5
@@ -235,9 +235,10 @@ children:
     damages:
       - dataType: damage
         amount: .5
-        type: HOT
+        type: FIRE
     damageFrequency: 2
   - dataType: Player
+    name: Alex
     maxHealth: 100.0
     team: Player
     geometry: humanmodelNoBones.osg
@@ -246,14 +247,105 @@ children:
       dataType: unordered_map
       ACID: 0.0
       COLD: 0.0
-      HOT: 0.0
+      FIRE: 1.0
       PURE_MAGIC: 0.0
     attacks:
       - dataType: Attack
         damages:
           - dataType: damage
             amount: 2
-            type: HOT
+            type: FIRE
+        duration: 2
+    stateMachine:
+      dataType: StateMachine
+      defaultState: idle
+      states:
+        idle:
+          dataType: State
+          name: idle
+          functions:
+            onUpdate: |
+              void onUpdate(Fighter@ self)
+              {
+              	//if(self.getClosestEnemy() !is null)
+              	//	self.useBestAttackOn(self.getClosestEnemy());
+                //else
+              	//	print("No nearby enemies");
+              }
+        attacking:
+          dataType: State
+          name: attacking
+          functions:
+            onUpdate: |
+              void onUpdate(Fighter@ self)
+              {
+                if(self.getCurrentAttack().done())
+                	self.returnToPreviousState();
+              }
+  - dataType: Player
+    name: Lilly
+    maxHealth: 100.0
+    team: Player
+    geometry: humanmodelNoBones.osg
+    position: {x: 1.774747, y: 0.1247724, z: 1.839263}
+    resistances:
+      dataType: unordered_map
+      ACID: 0.0
+      COLD: 0.0
+      FIRE: 0.0
+      PURE_MAGIC: 0.0
+    attacks:
+      - dataType: Attack
+        damages:
+          - dataType: damage
+            amount: 2
+            type: PURE_MAGIC
+        duration: 2
+    stateMachine:
+      dataType: StateMachine
+      defaultState: idle
+      states:
+        idle:
+          dataType: State
+          name: idle
+          functions:
+            onUpdate: |
+              void onUpdate(Fighter@ self)
+              {
+              	//if(self.getClosestEnemy() !is null)
+              	//	self.useBestAttackOn(self.getClosestEnemy());
+                //else
+              	//	print("No nearby enemies");
+              }
+        attacking:
+          dataType: State
+          name: attacking
+          functions:
+            onUpdate: |
+              void onUpdate(Fighter@ self)
+              {
+                if(self.getCurrentAttack().done())
+                	self.returnToPreviousState();
+              }
+  - dataType: Player
+    name: Tanner
+    maxHealth: 100.0
+    team: Player
+    geometry: humanmodelNoBones.osg
+    position: {x: 1.774747, y: 0.1247724, z: 1.839263}
+    resistances:
+      dataType: unordered_map
+      ACID: 0.0
+      COLD: 0.0
+      FIRE: 0.0
+      PURE_MAGIC: 0.0
+      NAP: 1.0
+    attacks:
+      - dataType: Attack
+        damages:
+          - dataType: damage
+            amount: 2
+            type: NAP
         duration: 2
     stateMachine:
       dataType: StateMachine

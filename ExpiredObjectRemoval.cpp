@@ -77,7 +77,8 @@ bool isMarked(void* object)
 	return false;
 }
 
-void markForRemoval(void *toBeEXTERMINATED, std::string objectType) {
+void markForRemoval(void *toBeEXTERMINATED, std::string objectType)
+{
 	if(isMarked(toBeEXTERMINATED))
 	{
 		logWarning("Object already marked for removal.");

@@ -323,7 +323,6 @@ int main()
 	getViewer()->realize();
 	getViewer()->getCamera()->getGraphicsContext()->makeCurrent();
 
-	//getScriptEngine()->test();
 	getScriptEngine()->runFile("initialize.as");
 
 	//AngelScriptConsole* console = new AngelScriptConsole();
@@ -336,13 +335,6 @@ int main()
 		fps[i] = 60;
 	float fpsTotal = 60.0 * fpsArrayLength;
 
-/*
-	glewInit();
-	osg::ref_ptr<osg::Geode> geode = new osg::Geode;
-    osg::ref_ptr<CEGUIDrawable> cd = new CEGUIDrawable();
-    geode->addDrawable(cd.get());
-    addToSceneGraph(geode);*/
-
 
 	getEditor()->setupDefaultWindows();
 	getEditor()->setMode(Editor::Play);
@@ -350,8 +342,6 @@ int main()
 	addAndRemoveQueuedNodes();
 
 	double elapsedTime = 0.0;	// Elapsed time, in seconds, that the game has been running for.
-
-	//writeOutSceneGraph();
 
 	while(!getViewer()->done())
 	{
@@ -362,16 +352,18 @@ int main()
 		elapsedTime = osg::Timer::instance()->time_s();
 
 		getCurrentLevel()->updatePhysics(deltaTime);
-		if (deltaTime > 0)
+
+		/*if (deltaTime > 0)
 		{
 			fpsTotal -= fps[0];
 			for (int i = 0; i < fpsArrayLength - 1; ++i)
 				fps[i] = fps[i+1];
 			fps[fpsArrayLength - 1] = (1 / deltaTime);
 			fpsTotal += fps[fpsArrayLength - 1];
-		}
+		}*/
 
 		std::ostringstream hudStream;
+		hudStream << "Name: " << getActivePlayer()->name << std::endl;
 		hudStream << "Health: " << getActivePlayer()->getHealth();
 		getDebugDisplayer()->addText(hudStream);
 

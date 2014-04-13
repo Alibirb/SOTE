@@ -32,8 +32,8 @@ children:
           mass: 10
           physicsBodyGeneration: convexHullShape
           geometry: SlidingDoorInner.osgt
-          position: {x: 0.9935614, y: 7.947005, z: 0.03994847}
-          rotation: {x: 0.001125714032532143, y: -0.004154422279273658, z: 0.6678351705490675, w: 0.7442967408789638}
+          position: {x: -3.742947e-08, y: 8.000032, z: 0.03988725}
+          rotation: {x: 0.0007972605077072388, y: -0.0007972571326656799, z: 0.7071065809889887, w: 0.7071061595203842}
         stateMachine:
           dataType: StateMachine
           defaultState: open
@@ -81,8 +81,8 @@ children:
           mass: 10
           physicsBodyGeneration: convexHullShape
           geometry: SlidingDoorInner.osgt
-          position: {x: -0.9902962, y: 8.002185, z: 0.005108773}
-          rotation: {x: 0.0009980946933668771, y: -0.0005516781800413664, z: 0.710309264565453, w: -0.7038888212305809}
+          position: {x: -3.374743e-05, y: 8.00013, z: 0.03944447}
+          rotation: {x: 0.001716349319528547, y: 0.001354598426790447, z: 0.7071109537122394, w: -0.7070992369574921}
         stateMachine:
           dataType: StateMachine
           defaultState: open
@@ -130,8 +130,8 @@ children:
           mass: 10
           physicsBodyGeneration: convexHullShape
           geometry: SlidingDoorInner.osgt
-          position: {x: 8, y: -1.090772e-05, z: 0.03977815}
-          rotation: {x: -1.129379617735537e-07, y: -0.002218344347957781, z: -3.950906994520722e-06, w: 0.9999975413053805}
+          position: {x: 8.000256, y: -0.8762952, z: 0.0185317}
+          rotation: {x: -0.01064128953250788, y: -0.003191054078723944, z: 0.216913040505664, w: 0.9761277184606688}
         stateMachine:
           dataType: StateMachine
           defaultState: closed
@@ -179,8 +179,8 @@ children:
           mass: 10
           physicsBodyGeneration: convexHullShape
           geometry: SlidingDoorInner.osgt
-          position: {x: 8.026927, y: -0.07597011, z: -0.4105523}
-          rotation: {x: -0.6107560370714386, y: 0.04083254180552752, z: 0.786884739628418, w: -0.07824434011288207}
+          position: {x: 7.999602, y: 0.9999784, z: 0.0391037}
+          rotation: {x: 0.002407516907692126, y: -4.642735420380801e-05, z: 0.9999952241664332, w: -0.001934311859472563}
         stateMachine:
           dataType: StateMachine
           defaultState: closed
@@ -226,8 +226,8 @@ children:
     rotation: {x: 0, y: 0, z: 0, w: 1}
     damages:
       - dataType: damage
-        amount: 0.05
-        type: HOT
+        amount: 0.5
+        type: FIRE
   - dataType: DangerZone
     radius: 5
     mass: inf
@@ -237,8 +237,8 @@ children:
     rotation: {x: 0, y: 0, z: 0, w: 1}
     damages:
       - dataType: damage
-        amount: 1
-        type: HOT
+        amount: 0.5
+        type: FIRE
   - dataType: DangerZone
     radius: 5
     mass: inf
@@ -248,21 +248,74 @@ children:
     rotation: {x: 0, y: 0, z: 0, w: 1}
     damages:
       - dataType: damage
-        amount: 0.05
-        type: HOT
+        amount: 0.5
+        type: FIRE
   - dataType: Player
+    maxSpeed: 6
+    maxHealth: 100
+    mass: 0
+    team: Player
+    name: Alex
+    physicsBodyGeneration: none
+    geometry: humanmodelNoBones.osg
+    position: {x: -0.687621, y: 25.98658, z: -0.04001921}
+    rotation: {x: 0, y: 0, z: 0.9999998749426108, w: 0.0005001147495343353}
+    resistances:
+      dataType: unordered_map
+      PURE_MAGIC: 0
+      FIRE: 1
+      ACID: 0
+      COLD: 0
+    stateMachine:
+      dataType: StateMachine
+      defaultState: idle
+      states:
+        attacking:
+          dataType: State
+          name: attacking
+          functions:
+            onUpdate: |
+              void onUpdate(Fighter@ self)
+              {
+                if(self.getCurrentAttack().done())
+                	self.returnToPreviousState();
+              }
+              
+        idle:
+          dataType: State
+          name: idle
+          functions:
+            onUpdate: |
+              void onUpdate(Fighter@ self)
+              {
+              	//if(self.getClosestEnemy() !is null)
+              	//	self.useBestAttackOn(self.getClosestEnemy());
+                //else
+              	//	print("No nearby enemies");
+              }
+              
+    attacks:
+      - dataType: Attack
+        duration: 2
+        damages:
+          - dataType: damage
+            amount: 2
+            type: FIRE
+  - dataType: Player
+    maxSpeed: 6
     maxHealth: 100
     mass: inf
     team: Player
+    name: Lilly
     physicsBodyGeneration: none
     geometry: humanmodelNoBones.osg
-    position: {x: 1.774425, y: 0.2120127, z: -0.0400002}
-    rotation: {x: 0, y: 0, z: 0, w: 1}
+    position: {x: -2.99211, y: 2.798382, z: -0.04003704}
+    rotation: {x: 0, y: 0, z: 0.9991389986061647, w: -0.04148808822144546}
     resistances:
       dataType: unordered_map
-      COLD: 0
+      FIRE: 0
       ACID: 0
-      HOT: 0
+      COLD: 0
       PURE_MAGIC: 0
     stateMachine:
       dataType: StateMachine
@@ -298,4 +351,56 @@ children:
         damages:
           - dataType: damage
             amount: 2
-            type: HOT
+            type: PURE_MAGIC
+  - dataType: Player
+    maxSpeed: 6
+    maxHealth: 100
+    mass: inf
+    team: Player
+    name: Tanner
+    physicsBodyGeneration: none
+    geometry: humanmodelNoBones.osg
+    position: {x: -2.091386, y: 3.113853, z: -0.04002762}
+    rotation: {x: 0, y: 0, z: 0.9790609861307341, w: -0.2035671521555353}
+    resistances:
+      dataType: unordered_map
+      FIRE: 0
+      ACID: 0
+      COLD: 0
+      NAP: 1
+      PURE_MAGIC: 0
+    stateMachine:
+      dataType: StateMachine
+      defaultState: idle
+      states:
+        attacking:
+          dataType: State
+          name: attacking
+          functions:
+            onUpdate: |
+              void onUpdate(Fighter@ self)
+              {
+                if(self.getCurrentAttack().done())
+                	self.returnToPreviousState();
+              }
+              
+        idle:
+          dataType: State
+          name: idle
+          functions:
+            onUpdate: |
+              void onUpdate(Fighter@ self)
+              {
+              	//if(self.getClosestEnemy() !is null)
+              	//	self.useBestAttackOn(self.getClosestEnemy());
+                //else
+              	//	print("No nearby enemies");
+              }
+              
+    attacks:
+      - dataType: Attack
+        duration: 2
+        damages:
+          - dataType: damage
+            amount: 2
+            type: NAP

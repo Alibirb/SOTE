@@ -252,6 +252,9 @@ void Level::reload(std::string filename)
 
 	for(auto obj : _objects)
 		markForRemoval(obj, obj->_objectType);
+
+	_playerNames.clear();
+
 	loadFromYaml(filename);
 }
 void Level::reload()
@@ -266,6 +269,89 @@ void Level::addObject(GameObject* obj)
 void Level::removeObject(GameObject* obj)
 {
 	_objects.remove(obj);
+}
+
+
+Player* Level::getClosestPlayer(osg::Vec3 position)
+{
+	Player* closest;
+	float shortestDistance = FLT_MAX;
+
+	for(auto kv : _players)
+	{
+		Player* p = kv.second;	// Get the Player from the key-value pair.
+		if(getDistance(position, p->getWorldPosition()) < shortestDistance)
+		{
+			closest = p;
+			shortestDistance = getDistance(position, p->getWorldPosition());
+		}
+	}
+
+	return closest;
+}
+
+Player* Level::getActivePlayer()
+{
+	return _players[_activePlayerName];
+}
+
+void Level::setActivePlayer(std::string newActivePlayerName)
+{
+	_activePlayerName = newActivePlayerName;
+}
+
+void Level::addPlayer(std::string playerName, Player* thePlayer)
+{
+	_players[playerName] = thePlayer;
+	_playerNames.push_back(playerName);
+}
+
+void Level::switchToNextPlayer()
+{
+	std::string nextPlayerName = _activePlayerName;
+	for(auto it = _playerNames.begin(); it != _playerNames.end(); ++it)
+	{
+		if(*it == _activePlayerName)
+		{
+			++it;	/// Okay, it's ugly, but this seems the simplest way to access the next name in the list.
+			if(it == _playerNames.end())
+				nextPlayerName = *_playerNames.begin();	/// the node with the current player name is the last in the list, so we switch to the first player name
+			else
+				nextPlayerName = *it;	/// we'll switch to the next name in the list.
+			break;
+		}
+	}
+	setActivePlayer(nextPlayerName);
+
+}
+void Level::switchToPreviousPlayer()
+{
+	std::string previousPlayerName = _activePlayerName;
+	/// Here we do the same thing as for switchToNextPlayer(), except with a reverse iterator (so we start with the last name and move towards the first one)
+	for(auto it = _playerNames.rbegin(); it != _playerNames.rend(); ++it)
+	{
+		if(*it == _activePlayerName)
+		{
+			++it;
+			if(it == _playerNames.rend())
+				previousPlayerName = *_playerNames.rbegin();
+			else
+				previousPlayerName = *it;
+			break;
+		}
+	}
+	setActivePlayer(previousPlayerName);
+
+}
+
+std::list<std::string> Level::getPlayerNames()
+{
+	return _playerNames;
+}
+
+std::unordered_map<std::string, Player*> Level::getPlayers()
+{
+	return _players;
 }
 
 

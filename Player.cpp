@@ -3,9 +3,7 @@
 #include "PhysicsData.h"
 #include "Controller.h"
 
-
-std::string activePlayerName;
-std::unordered_map<std::string, Player*> players;	/// List of all Players, identified by their name.
+#include "Level.h"
 
 
 
@@ -43,7 +41,7 @@ Player::Player(GameObjectData* dataObj) : Fighter(dataObj) , _willInteractWith(N
 void Player::processMovementControls(osg::Vec3 controlVector)
 {
 	if(controlVector.length() > 1.0f ) controlVector.normalize();
-	osg::Vec3 worldMovement = cameraToWorldTranslation(controlVector * maxSpeed * getDeltaTime());
+	osg::Vec3 worldMovement = cameraToWorldTranslation(controlVector * _maxSpeed * getDeltaTime());
 
 	double controlAngle =  -atan( worldMovement.y()/worldMovement.x());
 	if ( worldMovement.x() < 0 )
@@ -83,7 +81,7 @@ void Player::attack(Fighter *theOneWhoMustDie)
 
 bool Player::isActivePlayer()
 {
-	return ( activePlayerName == this->name);
+	return (getCurrentLevel()->getActivePlayer() == this);
 }
 
 void Player::die()
@@ -121,7 +119,7 @@ void Player::interact()
 
 Player::~Player()
 {
-	std::cout << "Player destructor called" << std::endl;
+
 }
 
 
@@ -131,42 +129,33 @@ Player::~Player()
 
 Player* getClosestPlayer(osg::Vec3 position)
 {
-	Player* closest;
-	float shortestDistance = FLT_MAX;
-
-	for(auto kv : players)
-	{
-		Player* p = kv.second;	// Get the Player from the key-value pair.
-		if(getDistance(position, p->getWorldPosition()) < shortestDistance)
-		{
-			closest = p;
-			shortestDistance = getDistance(position, p->getWorldPosition());
-		}
-	}
-
-	return closest;
+	return getCurrentLevel()->getClosestPlayer(position);
 }
 
 Player* getActivePlayer()
 {
-	return players[activePlayerName];
+	return getCurrentLevel()->getActivePlayer();
 }
 
 void setActivePlayer(std::string newActivePlayerName)
 {
-	activePlayerName = newActivePlayerName;
+	getCurrentLevel()->setActivePlayer(newActivePlayerName);
 }
 
-void addNewPlayer(std::string playerName, osg::Vec3 position)
-{
-	players[playerName] = new Player(playerName, position);
-}
 void addPlayer(std::string playerName, Player* thePlayer)
 {
-	players[playerName] = thePlayer;
+	getCurrentLevel()->addPlayer(playerName, thePlayer);
+}
+
+std::list<std::string> getPlayerNames()
+{
+	return getCurrentLevel()->getPlayerNames();
 }
 
 std::unordered_map<std::string, Player*> getPlayers()
 {
-	return players;
+	return getCurrentLevel()->getPlayers();
 }
+
+
+

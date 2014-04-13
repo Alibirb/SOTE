@@ -253,8 +253,9 @@ GameObjectData* Entity::save()
 }
 void Entity::saveEntityVariables(GameObjectData* dataObj)
 {
-	// TODO: maxSpeed
 	dataObj->addData("stateMachine", _stateMachine->save());
+	dataObj->addData("name", name);
+	dataObj->addData("maxSpeed", _maxSpeed);
 }
 
 void Entity::load(GameObjectData* dataObj)
@@ -264,7 +265,10 @@ void Entity::load(GameObjectData* dataObj)
 }
 void Entity::loadEntityVariables(GameObjectData* dataObj)
 {
-	// TODO: maxSpeed
+	if(dataObj->hasString("name"))
+		name = dataObj->getString("name");
+	if(dataObj->hasFloat("maxSpeed"))
+		_maxSpeed = dataObj->getFloat("maxSpeed");
 	if(dataObj->getObject("stateMachine"))
 		_stateMachine->load(dataObj->getObject("stateMachine"));
 }

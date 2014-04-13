@@ -59,39 +59,54 @@ bool MainEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIAction
 		switch(_inputMode)
 		{
 		case InputMode::Standard:
-			if (ea.getKey() == 'r')
+			switch(ea.getKey())
 			{
-				getViewer()->getCameraManipulator()->home(ea, aa);
-				getActivePlayer()->resetPosition();
+			case 'r':
 				getCurrentLevel()->reload();
-			}
-			else if (ea.getKey() == 'p')
-			{
+				break;
+			case 'p':
 				getCurrentLevel()->getDebugDrawer()->setEnabled(!getCurrentLevel()->getDebugDrawer()->getEnabled());
-			}
-			else if (ea.getKey() == 'o')
-			{
+				break;
+			case 'o':
 				writeOutSceneGraph();
-			}
-			else if(ea.getKey() == 'e')
-				getActivePlayer()->interact();
-			if (ea.getKey() == 'q')
+				break;
+
+			case 'q':
 				if(getActivePlayer()->getClosestEnemy())
 					getActivePlayer()->useBestAttackOn(getActivePlayer()->getClosestEnemy());
-			if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Space)
+				break;
+			case 'e':
+				getActivePlayer()->interact();
+				break;
+
+			case '1':
+				getCurrentLevel()->switchToPreviousPlayer();
+				break;
+			case '3':
+				getCurrentLevel()->switchToNextPlayer();
+				break;
+
+
+
+			case osgGA::GUIEventAdapter::KEY_Space:
 				getActivePlayer()->jump();
-			if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Shift_L)
+				break;
+
+			case osgGA::GUIEventAdapter::KEY_Shift_L:
 				if (getActivePlayer()->getClosestEnemy())
 					getActivePlayer()->aimWeapon(getActivePlayer()->getClosestEnemy());
-			if(ea.getKey() == osgGA::GUIEventAdapter::KEY_F1)
-			{
+				break;
+			case osgGA::GUIEventAdapter::KEY_F1:
 				getEditor()->setMode(Editor::Edit);
+				break;
 			}
 			break;
 		case InputMode::Editor:
-			if(ea.getKey() == osgGA::GUIEventAdapter::KEY_F1)
+			switch (ea.getKey())
 			{
+			case osgGA::GUIEventAdapter::KEY_F1:
 				getEditor()->setMode(Editor::Play);
+				break;
 			}
 			break;
 		}
