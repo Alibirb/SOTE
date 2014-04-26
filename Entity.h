@@ -36,6 +36,9 @@ protected:
 	float _maxSpeed = 6.0f;
 	StateMachine* _stateMachine;
 
+	float _capsuleRadius;
+	float _capsuleHeight;
+
 public:
 	std::string name;
 
@@ -75,6 +78,8 @@ public:
 protected:
 	void saveEntityVariables(GameObjectData* data);	/// Saves the variables declared in Entity.
 	void loadEntityVariables(GameObjectData* data);	/// Loads the variables declared in Entity.
+
+	void createController();
 };
 
 void registerEntity();

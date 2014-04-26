@@ -136,6 +136,7 @@ public:
 				btScalar timeInterval);
 
 	void reset ( btCollisionWorld* collisionWorld );
+	void reset();
 	void warp (const btVector3& origin);
 
 	void preStep (  btCollisionWorld* collisionWorld);

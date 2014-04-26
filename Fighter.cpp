@@ -41,6 +41,18 @@ Fighter::Fighter(GameObjectData* dataObj) : Fighter()
 #ifdef USE_BOX2D_PHYSICS
 	physicsBody->SetUserData(userData);
 #else
+
+	//physicsToModelAdjustment = osg::Vec3(0, 0, _capsuleHeight/2 + _capsuleRadius);
+	//btCapsuleShapeZ* shape = new btCapsuleShapeZ(_capsuleRadius, _capsuleHeight);
+
+	//btTransform transform = btTransform();
+	//transform.setIdentity();
+	//transform.setOrigin(osgbCollision::asBtVector3(physicsToModelAdjustment));
+	//_physicsBody->setWorldTransform(transform);
+	//_physicsBody->setCollisionShape(shape);
+
+	createController();
+
 	controller->getGhostObject()->setUserPointer(userData);
 #endif
 	if(_equippedWeapon)

@@ -291,7 +291,7 @@ int main()
 	windowHeight = 900;
 
 
-	level = new Level("media/DemoLevel.yaml");
+	level = new Level("media/MWADC/DemoLevel.yaml");
 
 
 	osg::Light* sun = new osg::Light;

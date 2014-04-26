@@ -2,8 +2,8 @@ dataType: Level
 children:
   - dataType: GameObject
     mass: 0
-    geometry: DemoLevel.osgt
     physicsBodyGeneration: triangleMeshShape
+    geometry: MWADC/DemoLevel.osgt
     position: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0, w: 1}
   - dataType: Controller
@@ -58,8 +58,8 @@ children:
           mass: 10
           physicsBodyGeneration: convexHullShape
           geometry: SlidingDoorInner.osgt
-          position: {x: -3.742947e-08, y: 8.000032, z: 0.03988725}
-          rotation: {x: 0.0007972605077072388, y: -0.0007972571326656799, z: 0.7071065809889887, w: 0.7071061595203842}
+          position: {x: 0.9706159, y: 7.956184, z: 0.03575794}
+          rotation: {x: 0.0006773389983382025, y: -0.006619285750860018, z: 0.6662426193561962, w: 0.745705398628042}
         functions:
           onMessage_toggle: |
             void onMessage_toggle(ControlledObject@ self)
@@ -107,8 +107,8 @@ children:
           mass: 10
           geometry: SlidingDoorInner.osgt
           physicsBodyGeneration: convexHullShape
-          position: {x: -3.374743e-05, y: 8.00013, z: 0.03944447}
-          rotation: {x: 0.001716349319528547, y: 0.001354598426790447, z: 0.7071109537122394, w: -0.7070992369574921}
+          position: {x: -0.9612368, y: 8.000048, z: 0.04010597}
+          rotation: {x: -0.001329622178725263, y: -0.0004673900133719735, z: -0.7001131970829676, w: 0.7140304754409018}
         functions:
           onMessage_toggle: |
             void onMessage_toggle(ControlledObject@ self)
@@ -156,8 +156,8 @@ children:
           mass: 10
           physicsBodyGeneration: convexHullShape
           geometry: SlidingDoorInner.osgt
-          position: {x: 8.000256, y: -0.8762952, z: 0.0185317}
-          rotation: {x: -0.01064128953250788, y: -0.003191054078723944, z: 0.216913040505664, w: 0.9761277184606688}
+          position: {x: 8, y: -2.262241e-05, z: 0.03977829}
+          rotation: {x: 2.267538666256646e-06, y: -0.002217049107902535, z: -8.287609857161921e-06, w: 0.9999975413053805}
         functions:
           onMessage_toggle: |
             void onMessage_toggle(ControlledObject@ self)
@@ -205,8 +205,8 @@ children:
           mass: 10
           physicsBodyGeneration: convexHullShape
           geometry: SlidingDoorInner.osgt
-          position: {x: 7.999602, y: 0.9999784, z: 0.0391037}
-          rotation: {x: 0.002407516907692126, y: -4.642735420380801e-05, z: 0.9999952241664332, w: -0.001934311859472563}
+          position: {x: 8.000002, y: 1.388218e-06, z: 0.03988725}
+          rotation: {x: 0.001127481742545279, y: -2.908254589385001e-08, z: 0.9999993368981069, w: 2.590500697536844e-07}
         functions:
           onMessage_toggle: |
             void onMessage_toggle(ControlledObject@ self)
@@ -252,14 +252,16 @@ children:
         type: FIRE
   - dataType: Player
     maxHealth: 100
-    mass: 0
+    capsuleHeight: 1.25
     maxSpeed: 6
+    capsuleRadius: 0.4
     physicsBodyGeneration: none
     name: Alex
     team: Player
+    mass: inf
     geometry: humanmodelNoBones.osg
-    position: {x: -0.687621, y: 25.98658, z: -0.04001921}
-    rotation: {x: 0, y: 0, z: 0.9999998749426108, w: 0.0005001147495343353}
+    position: {x: -27.82623, y: 0.2878924, z: -0.0400008}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
     stateMachine:
       dataType: StateMachine
       defaultState: idle
@@ -290,10 +292,10 @@ children:
               
     resistances:
       dataType: unordered_map
-      COLD: 0
       PURE_MAGIC: 0
-      FIRE: 1
       ACID: 0
+      FIRE: 1
+      COLD: 0
     attacks:
       - dataType: Attack
         duration: 2
@@ -302,66 +304,17 @@ children:
             amount: 2
             type: FIRE
   - dataType: Player
-    maxSpeed: 6
     maxHealth: 100
+    mass: 0
+    capsuleRadius: 0.4
+    maxSpeed: 6
+    capsuleHeight: 0.1
     physicsBodyGeneration: none
-    name: Lilly
-    geometry: humanmodelNoBones.osg
-    mass: inf
     team: Player
-    position: {x: -2.99211, y: 2.798382, z: -0.04003704}
-    rotation: {x: 0, y: 0, z: 0.9991389986061647, w: -0.04148808822144546}
-    stateMachine:
-      dataType: StateMachine
-      defaultState: idle
-      states:
-        idle:
-          dataType: State
-          name: idle
-          functions:
-            onUpdate: |
-              void onUpdate(Fighter@ self)
-              {
-              	//if(self.getClosestEnemy() !is null)
-              	//	self.useBestAttackOn(self.getClosestEnemy());
-                //else
-              	//	print("No nearby enemies");
-              }
-              
-        attacking:
-          dataType: State
-          name: attacking
-          functions:
-            onUpdate: |
-              void onUpdate(Fighter@ self)
-              {
-                if(self.getCurrentAttack().done())
-                	self.returnToPreviousState();
-              }
-              
-    resistances:
-      dataType: unordered_map
-      PURE_MAGIC: 0
-      COLD: 0
-      ACID: 0
-      FIRE: 0
-    attacks:
-      - dataType: Attack
-        duration: 2
-        damages:
-          - dataType: damage
-            amount: 2
-            type: PURE_MAGIC
-  - dataType: Player
-    maxSpeed: 6
-    maxHealth: 100
-    physicsBodyGeneration: none
     name: Tanner
-    team: Player
-    geometry: humanmodelNoBones.osg
-    mass: inf
-    position: {x: -2.091386, y: 3.113853, z: -0.04002762}
-    rotation: {x: 0, y: 0, z: 0.9790609861307341, w: -0.2035671521555353}
+    geometry: tiger.osgt
+    position: {x: -3.023457, y: -1.90604, z: -0.03999999}
+    rotation: {x: 0, y: 0, z: 0.9538191045172988, w: 0.3003816170437503}
     stateMachine:
       dataType: StateMachine
       defaultState: idle
@@ -394,9 +347,9 @@ children:
       dataType: unordered_map
       NAP: 1
       PURE_MAGIC: 0
+      COLD: 0
       ACID: 0
       FIRE: 0
-      COLD: 0
     attacks:
       - dataType: Attack
         duration: 2
@@ -404,3 +357,116 @@ children:
           - dataType: damage
             amount: 2
             type: NAP
+  - dataType: Controller
+    radius: 5
+    physicsBodyGeneration: none
+    geometry: Switch.osgt
+    mass: inf
+    position: {x: 15, y: 44, z: 0}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+    functions:
+      onInteraction: |
+        void onInteraction(Controller@ self)
+        {
+        	self.sendMessage("toggle");
+        }
+        
+    controlled:
+      - dataType: Door
+        mass: 0
+        geometry: SlidingDoorOuter.osgt
+        physicsBodyGeneration: convexHullShape
+        position: {x: 4, y: 28, z: 0}
+        rotation: {x: 0, y: 0, z: 0, w: 1}
+        stateMachine:
+          dataType: StateMachine
+          defaultState: closed
+          states:
+            open:
+              dataType: State
+              name: open
+              functions:
+                onEnter: |
+                  void onEnter(Door@ self)
+                  {
+                  	self.open();
+                   	print("opening");
+                  }
+                  
+            closed:
+              dataType: State
+              name: closed
+              functions:
+                onEnter: |
+                  void onEnter(Door@ self)
+                  {
+                  	self.close();
+                  	print("closing");
+                  }
+                  
+        innerPart:
+          dataType: GameObject
+          mass: 10
+          physicsBodyGeneration: convexHullShape
+          geometry: SlidingDoorInner.osgt
+          position: {x: 3.999933, y: 28.0001, z: 0.03967905}
+          rotation: {x: -0.004501331788160203, y: -0.001605214142667757, z: 0.0001156480142116511, w: 0.9999885781947161}
+        functions:
+          onMessage_toggle: |
+            void onMessage_toggle(ControlledObject@ self)
+            {
+                if(self.getStateName() == "closed")
+                    self.changeState("open");
+                else
+                    self.changeState("closed");
+            }
+            
+      - dataType: Door
+        mass: 0
+        geometry: SlidingDoorOuter.osgt
+        physicsBodyGeneration: convexHullShape
+        position: {x: 4, y: 28, z: 0}
+        rotation: {x: 0, y: 0, z: 1, w: 0}
+        stateMachine:
+          dataType: StateMachine
+          defaultState: closed
+          states:
+            open:
+              dataType: State
+              name: open
+              functions:
+                onEnter: |
+                  void onEnter(Door@ self)
+                  {
+                  	self.open();
+                   	print("opening");
+                  }
+                  
+            closed:
+              dataType: State
+              name: closed
+              functions:
+                onEnter: |
+                  void onEnter(Door@ self)
+                  {
+                  	self.close();
+                  	print("closing");
+                  }
+                  
+        innerPart:
+          dataType: GameObject
+          mass: 10
+          geometry: SlidingDoorInner.osgt
+          physicsBodyGeneration: convexHullShape
+          position: {x: 4.001885, y: 28.00037, z: 0.02015996}
+          rotation: {x: 0.001706920566235688, y: -0.005197943599032213, z: 0.9999796746095709, w: 0.003269013337485605}
+        functions:
+          onMessage_toggle: |
+            void onMessage_toggle(ControlledObject@ self)
+            {
+                if(self.getStateName() == "closed")
+                    self.changeState("open");
+                else
+                    self.changeState("closed");
+            }
+            

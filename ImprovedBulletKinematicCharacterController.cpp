@@ -533,6 +533,10 @@ void ImprovedBulletKinematicCharacterController::reset ( btCollisionWorld* colli
                 cache->removeOverlappingPair(cache->getOverlappingPairArray()[0].m_pProxy0, cache->getOverlappingPairArray()[0].m_pProxy1, collisionWorld->getDispatcher());
         }
 }
+void ImprovedBulletKinematicCharacterController::reset()
+{
+
+}
 
 void ImprovedBulletKinematicCharacterController::warp (const btVector3& origin)
 {

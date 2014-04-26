@@ -1,29 +1,36 @@
-Basics:
-	Some kind of platformer/action-adventure type game.
-		Prototype to figure out how it will work.
 
 
 TODO:
 	DoneThisCommit:
-		Added multiple characters and support for switching between them.
+		Improved the MWADC level.
+
 	Current Task:
-		multiple characters
 
 	Next Steps:
-		Focus on getting the demo level/prototype done so I actually know where this is all going.
-			Add more to the puzzle/level
+		Create LightAndDark level:
+			Malhela character.
+			Light Crystal
+			Outdoor scene
 
+		Need path-finding. Recast/Detour sounds good. Automatically creates navmesh.
 		Improve import/export to allow it to link to prototypes.
+
 		Make a class to wrap around the physics stuff
 			Should also expose the physics info to the object files.
 		Add mechanism for key bindings
 		Expose all GameObject-derived classes to AngelScript (also exposing the type hierarchy (see http://www.angelcode.com/angelscript/sdk/docs/manual/doc_adv_class_hierarchy.html))
+
 	Minor Tasks:
 		logError and logWarning should allow multiple parameters.
 		Use a namespace for all my classes
+
 	Under consideration:
 		Perhaps GameObjectData getter methods should use pass-by-reference so you can just pass in the variable you want to assign.
 		the MainEventHandler should probably act as an event dispatcher that determines what object handles the events
+
+	Suggestions for design/organization:
+		Use factory function to create game objects and other Savebables.
+
 	Much later (after I've made the prototype)
 		Possibly create my own data storage language:
 			uses {} to denote elements (with matching-brace highlighting, it's much clearer than having to follow the indentation like in YAML)
@@ -86,6 +93,10 @@ Useful notes:
 		[w, x, y, z] = [cos(a/2), sin(a/2) * nx, sin(a/2)* ny, sin(a/2) * nz]
 			where a=angle of rotation, {nx,ny,nz} is axis of rotation.
 
+Research:
+	Camera systems:
+		Check out The Legend of Zelda: The Wind Waker for a good camera system that rarely needs manual adjustment
+
 Scripting Uses:
 	Input?--so that options can be set more easily. In addition to the standard key bindings, it'll also be possible to define custom controls that depend on more than a single binding.
 	AI
@@ -104,17 +115,3 @@ Engine features:
 			Can attach functions to an object, to be used elsewhere (e.g. a door has the functions "open()" and "close()" defined in a central location, and called in response to signals from a switch.)
 	Views a game as a collection of objects, behaviors, and relationships.
 
-
-
-Goals:
-	First playable-- demo level with basic functionality.
-		Functionality:
-			Combat-- GOT IT!!
-			Basic enemy AI-- look for the player, and try to kill him.
-			Scripting--DONE!! (or close enough)
-			Physics
-		Assets:
-			Enemies-- at least two types.
-			A few standin models.
-			Basic level, with at least one puzzle
-				Puzzle idea: hallway full of flame jets, Alex needs to go through and activate some switch to open a door for the others. Unfortunately, the switch also locks him inside the room, and the others need to find another switch to free him.

@@ -621,3 +621,4 @@ AngelScriptEngine* getScriptEngine()
 	static AngelScriptEngine* engine = new AngelScriptEngine();
 	return engine;
 }
+

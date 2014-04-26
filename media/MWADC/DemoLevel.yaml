@@ -1,7 +1,7 @@
 dataType: Level
 children:
   - dataType: GameObject
-    geometry: DemoLevel.osgt
+    geometry: MWADC/DemoLevel.osgt
     position: {x: 0, y: 0, z: 0}
     mass: 0
     physicsBodyGeneration: triangleMeshShape
@@ -242,7 +242,9 @@ children:
     maxHealth: 100.0
     team: Player
     geometry: humanmodelNoBones.osg
-    position: {x: 1.774747, y: 0.1247724, z: 1.839263}
+    capsuleHeight: 1.25
+    capsuleRadius: .4
+    position: {x: -28, y: 0, z: 0}
     resistances:
       dataType: unordered_map
       ACID: 0.0
@@ -283,56 +285,13 @@ children:
                 	self.returnToPreviousState();
               }
   - dataType: Player
-    name: Lilly
-    maxHealth: 100.0
-    team: Player
-    geometry: humanmodelNoBones.osg
-    position: {x: 1.774747, y: 0.1247724, z: 1.839263}
-    resistances:
-      dataType: unordered_map
-      ACID: 0.0
-      COLD: 0.0
-      FIRE: 0.0
-      PURE_MAGIC: 0.0
-    attacks:
-      - dataType: Attack
-        damages:
-          - dataType: damage
-            amount: 2
-            type: PURE_MAGIC
-        duration: 2
-    stateMachine:
-      dataType: StateMachine
-      defaultState: idle
-      states:
-        idle:
-          dataType: State
-          name: idle
-          functions:
-            onUpdate: |
-              void onUpdate(Fighter@ self)
-              {
-              	//if(self.getClosestEnemy() !is null)
-              	//	self.useBestAttackOn(self.getClosestEnemy());
-                //else
-              	//	print("No nearby enemies");
-              }
-        attacking:
-          dataType: State
-          name: attacking
-          functions:
-            onUpdate: |
-              void onUpdate(Fighter@ self)
-              {
-                if(self.getCurrentAttack().done())
-                	self.returnToPreviousState();
-              }
-  - dataType: Player
     name: Tanner
     maxHealth: 100.0
     team: Player
-    geometry: humanmodelNoBones.osg
-    position: {x: 1.774747, y: 0.1247724, z: 1.839263}
+    geometry: tiger.osgt
+    capsuleHeight: 0.1
+    capsuleRadius: .4
+    position: {x: -30, y: 2, z: 0}
     resistances:
       dataType: unordered_map
       ACID: 0.0
@@ -373,3 +332,110 @@ children:
                 if(self.getCurrentAttack().done())
                 	self.returnToPreviousState();
               }
+  # Tanner's switch
+  - dataType: Controller
+    radius: 5
+    mass: 0
+    physicsBodyGeneration: none
+    geometry: Switch.osgt
+    position: {x: 15, y: 44, z: 0}
+    functions:
+      onInteraction: |
+        void onInteraction(Controller@ self)
+        {
+        	self.sendMessage("toggle");
+        }
+    controlled:
+      # doors allowing Alex further passage
+      - dataType: Door
+        geometry: SlidingDoorOuter.osgt
+        position: {x: 4, y: 28, z: 0}
+        rotation: {x: 0, y: 0, z: 0, w: 1}
+        mass: 0
+        physicsBodyGeneration: convexHullShape
+        innerPart:
+          dataType: GameObject
+          geometry: SlidingDoorInner.osgt
+          physicsBodyGeneration: convexHullShape
+          position: {x: 0, y: 0, z: 0}
+          rotation: {x: 0, y: 0, z: 0, w: 1}
+          mass: 10
+        functions:
+          onMessage_toggle: |
+            void onMessage_toggle(ControlledObject@ self)
+            {
+                if(self.getStateName() == "closed")
+                    self.changeState("open");
+                else
+                    self.changeState("closed");
+            }
+        stateMachine:
+          dataType: StateMachine
+          defaultState: closed
+          states:
+            open:
+              dataType: State
+              name: open
+              functions:
+                onEnter: |
+                  void onEnter(Door@ self)
+                  {
+                  	self.open();
+                   	print("opening");
+                  }
+            closed:
+              dataType: State
+              name: closed
+              functions:
+                onEnter: |
+                  void onEnter(Door@ self)
+                  {
+                  	self.close();
+                  	print("closing");
+                  }
+      - dataType: Door
+        geometry: SlidingDoorOuter.osgt
+        position: {x: 4, y: 28, z: 0}
+        rotation: {x: 0, y: 0, z: 1, w: 0}
+        mass: 0
+        physicsBodyGeneration: convexHullShape
+        innerPart:
+          dataType: GameObject
+          geometry: SlidingDoorInner.osgt
+          physicsBodyGeneration: convexHullShape
+          position: {x: 0, y: 0, z: 0}
+          rotation: {x: 0, y: 0, z: 0, w: 1}
+          mass: 10
+        functions:
+          onMessage_toggle: |
+            void onMessage_toggle(ControlledObject@ self)
+            {
+                if(self.getStateName() == "closed")
+                    self.changeState("open");
+                else
+                    self.changeState("closed");
+            }
+        stateMachine:
+          dataType: StateMachine
+          defaultState: closed
+          states:
+            open:
+              dataType: State
+              name: open
+              functions:
+                onEnter: |
+                  void onEnter(Door@ self)
+                  {
+                  	self.open();
+                   	print("opening");
+                  }
+            closed:
+              dataType: State
+              name: closed
+              functions:
+                onEnter: |
+                  void onEnter(Door@ self)
+                  {
+                  	self.close();
+                  	print("closing");
+                  }

@@ -1,0 +1,201 @@
+Animations will not be exported
+
+Type of Hallway.001 is MESH
+exporting object Hallway.001
+mesh_object is Plane.003
+mesh Hallway.001 with material Red
+vertexes reduced from 88 to 64
+faces 22
+WARNING update material animation not yet supported
+WARNING the texture <bpy_struct, MaterialTextureSlot("Texture")> has no Image, skip it
+----------------------------------
+vertex groups False False 
+
+Type of BigRoom is MESH
+exporting object BigRoom
+mesh_object is Plane.002
+mesh BigRoom with material Grey
+vertexes reduced from 504 to 267
+faces 133
+WARNING update material animation not yet supported
+WARNING the texture <bpy_struct, MaterialTextureSlot("Texture.003")> has no Image, skip it
+-------------------------------
+vertex groups False False 
+
+Type of Hallway.000 is MESH
+exporting object Hallway.000
+mesh_object is Plane.009
+mesh Hallway.000 with material Grey
+vertexes reduced from 88 to 64
+faces 22
+-----------------------------------
+vertex groups False False 
+
+Type of Hallway.003 is MESH
+exporting object Hallway.003
+mesh_object is Plane.013
+mesh Hallway.003 with material Grey
+vertexes reduced from 88 to 64
+faces 22
+-----------------------------------
+vertex groups False False 
+
+Type of SmallRoom.003 is MESH
+exporting object SmallRoom.003
+mesh_object is Plane.014
+mesh SmallRoom.003 with material Grey
+vertexes reduced from 244 to 128
+faces 64
+-------------------------------------
+vertex groups False False 
+
+Type of BigRoom.001 is MESH
+exporting object BigRoom.001
+mesh_object is Plane.001
+mesh BigRoom.001 with material Grey.002
+vertexes reduced from 504 to 267
+faces 133
+WARNING update material animation not yet supported
+WARNING the texture <bpy_struct, MaterialTextureSlot("Texture.002")> has no Image, skip it
+---------------------------------------
+vertex groups False False 
+
+Type of Stairway is MESH
+exporting object Stairway
+mesh_object is Plane.006
+mesh Stairway with material Grey.004
+vertexes reduced from 88 to 64
+faces 22
+WARNING update material animation not yet supported
+WARNING the texture <bpy_struct, MaterialTextureSlot("Texture.005")> has no Image, skip it
+------------------------------------
+vertex groups False False 
+
+Type of SmallRoomWithBend.001 is MESH
+exporting object SmallRoomWithBend.001
+mesh_object is Plane.007
+mesh SmallRoomWithBend.001 with material Grey.005
+vertexes reduced from 278 to 153
+faces 75
+WARNING update material animation not yet supported
+WARNING the texture <bpy_struct, MaterialTextureSlot("Texture.006")> has no Image, skip it
+-------------------------------------------------
+vertex groups False False 
+
+Type of TightTunnel is MESH
+exporting object TightTunnel
+mesh_object is Plane.016
+mesh TightTunnel with material Grey.008
+vertexes reduced from 92 to 64
+faces 23
+WARNING update material animation not yet supported
+WARNING the texture <bpy_struct, MaterialTextureSlot("Texture.009")> has no Image, skip it
+---------------------------------------
+vertex groups False False 
+
+Type of SmallRoom.000 is MESH
+exporting object SmallRoom.000
+mesh_object is Plane.017
+mesh SmallRoom.000 with material Glass
+vertexes reduced from 244 to 128
+faces 64
+WARNING update material animation not yet supported
+WARNING the texture <bpy_struct, MaterialTextureSlot("Texture.010")> has no Image, skip it
+--------------------------------------
+vertex groups False False 
+
+Type of Hallway.005 is MESH
+exporting object Hallway.005
+mesh_object is Plane.004
+mesh Hallway.005 with material Grey.009
+vertexes reduced from 88 to 64
+faces 22
+WARNING update material animation not yet supported
+WARNING the texture <bpy_struct, MaterialTextureSlot("Texture.011")> has no Image, skip it
+---------------------------------------
+vertex groups False False 
+
+Type of Hallway.006 is MESH
+exporting object Hallway.006
+mesh_object is Plane.021
+mesh Hallway.006 with material Grey.013
+vertexes reduced from 148 to 92
+faces 42
+WARNING update material animation not yet supported
+WARNING the texture <bpy_struct, MaterialTextureSlot("Texture.015")> has no Image, skip it
+---------------------------------------
+vertex groups False False 
+
+Type of SmallRoomWithBend.002 is MESH
+exporting object SmallRoomWithBend.002
+mesh_object is Plane.023
+mesh SmallRoomWithBend.002 with material Grey.015
+vertexes reduced from 278 to 153
+faces 75
+WARNING update material animation not yet supported
+WARNING the texture <bpy_struct, MaterialTextureSlot("Texture.017")> has no Image, skip it
+-------------------------------------------------
+vertex groups False False 
+
+Type of SmallRoomWithBend.004 is MESH
+exporting object SmallRoomWithBend.004
+mesh_object is Plane.030
+mesh SmallRoomWithBend.004 with material Grey.020
+vertexes reduced from 302 to 159
+faces 81
+WARNING update material animation not yet supported
+WARNING the texture <bpy_struct, MaterialTextureSlot("Texture.024")> has no Image, skip it
+-------------------------------------------------
+vertex groups False False 
+
+Type of BigRoom.002 is MESH
+exporting object BigRoom.002
+mesh_object is Plane.031
+mesh BigRoom.002 with material Grey.021
+vertexes reduced from 504 to 267
+faces 133
+WARNING update material animation not yet supported
+WARNING the texture <bpy_struct, MaterialTextureSlot("Texture.025")> has no Image, skip it
+---------------------------------------
+vertex groups False False 
+
+Type of BigRoom.003 is MESH
+exporting object BigRoom.003
+mesh_object is Plane.033
+mesh BigRoom.003 with material Grey.023
+vertexes reduced from 504 to 267
+faces 133
+WARNING update material animation not yet supported
+WARNING the texture <bpy_struct, MaterialTextureSlot("Texture.027")> has no Image, skip it
+---------------------------------------
+vertex groups False False 
+
+Type of SmallRoomWithBend.000 is MESH
+exporting object SmallRoomWithBend.000
+mesh_object is Plane.034
+mesh SmallRoomWithBend.000 with material Grey.024
+vertexes reduced from 302 to 163
+faces 81
+WARNING update material animation not yet supported
+WARNING the texture <bpy_struct, MaterialTextureSlot("Texture.028")> has no Image, skip it
+-------------------------------------------------
+vertex groups False False 
+geode GeodePlane.003
+geode GeodePlane.002
+geode GeodePlane.009
+geode GeodePlane.013
+geode GeodePlane.014
+geode GeodePlane.001
+geode GeodePlane.006
+geode GeodePlane.007
+geode GeodePlane.016
+geode GeodePlane.017
+geode GeodePlane.004
+geode GeodePlane.021
+geode GeodePlane.023
+geode GeodePlane.030
+geode GeodePlane.031
+geode GeodePlane.033
+geode GeodePlane.034
+write file to /run/media/daniel/SeagateExternal/ScumOfTheEarth/media/DemoLevel.osgt
+Check log file /run/media/daniel/SeagateExternal/ScumOfTheEarth/media/DemoLevel.log

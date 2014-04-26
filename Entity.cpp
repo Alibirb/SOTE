@@ -7,6 +7,7 @@
 
 #include "Entity.h"
 #include "PhysicsNodeCallback.h"
+#include "PhysicsData.h"
 #include "Level.h"
 
 #include "Sprite.h"
@@ -25,12 +26,12 @@
 #define DEFAULT_ENTITY_MODEL_NAME "humanmodelNoBones.osg"
 
 
-Entity::Entity()
+Entity::Entity() : controller(NULL)
 {
 	registerEntity();
 	osg::Vec3 position;
 	_stateMachine = new StateMachine(this);
-
+/*
 #ifdef USE_BOX2D_PHYSICS
 	box2DToOsgAdjustment = osg::Vec3(0.0, 0.0, 0.0);
 
@@ -65,10 +66,10 @@ Entity::Entity()
 
 	transformNode->setUpdateCallback(new PhysicsNodeCallback(transformNode, physicsBody, box2DToOsgAdjustment));
 #else
-	float capsuleHeight = 1.25;
-	float capsuleRadius = .4;
-	physicsToModelAdjustment = osg::Vec3(0, 0, capsuleHeight/2 + capsuleRadius);
-	btCapsuleShapeZ* shape = new btCapsuleShapeZ(capsuleRadius, capsuleHeight);
+	//float capsuleHeight = 1.25;
+	//float capsuleRadius = .4;
+	physicsToModelAdjustment = osg::Vec3(0, 0, _capsuleHeight/2 + _capsuleRadius);
+	btCapsuleShapeZ* shape = new btCapsuleShapeZ(_capsuleRadius, _capsuleHeight);
 
 	btTransform transform = btTransform();
 	transform.setIdentity();
@@ -86,6 +87,8 @@ Entity::Entity()
 
 	_transformNode->setUpdateCallback(new BulletPhysicsNodeCallback(_physicsBody, -physicsToModelAdjustment));
 #endif
+*/
+	createController();
 
 //	state = awake;
 }
@@ -105,7 +108,7 @@ Entity::Entity(std::string name, osg::Vec3 position)
 	_modelNode->setUpdateCallback(new OwnerUpdateCallback<Entity>(this));
 
 	_transformNode->addChild(_modelNode);
-
+/*
 #ifdef USE_BOX2D_PHYSICS
 	box2DToOsgAdjustment = osg::Vec3(0.0, 0.0, 0.0);
 
@@ -140,10 +143,10 @@ Entity::Entity(std::string name, osg::Vec3 position)
 
 	transformNode->setUpdateCallback(new PhysicsNodeCallback(transformNode, physicsBody, box2DToOsgAdjustment));
 #else
-	float capsuleHeight = 1.25;
-	float capsuleRadius = .4;
-	physicsToModelAdjustment = osg::Vec3(0, 0, capsuleHeight/2 + capsuleRadius);
-	btCapsuleShapeZ* shape = new btCapsuleShapeZ(capsuleRadius, capsuleHeight);
+	//float capsuleHeight = 1.25;
+	//float capsuleRadius = .4;
+	physicsToModelAdjustment = osg::Vec3(0, 0, _capsuleHeight/2 + _capsuleRadius);
+	btCapsuleShapeZ* shape = new btCapsuleShapeZ(_capsuleRadius, _capsuleHeight);
 
 	btTransform transform = btTransform();
 	transform.setIdentity();
@@ -161,6 +164,8 @@ Entity::Entity(std::string name, osg::Vec3 position)
 
 	_transformNode->setUpdateCallback(new BulletPhysicsNodeCallback(_physicsBody, -physicsToModelAdjustment));
 #endif
+*/
+	createController();
 
 //	state = awake;
 }
@@ -256,6 +261,8 @@ void Entity::saveEntityVariables(GameObjectData* dataObj)
 	dataObj->addData("stateMachine", _stateMachine->save());
 	dataObj->addData("name", name);
 	dataObj->addData("maxSpeed", _maxSpeed);
+	dataObj->addData("capsuleHeight", _capsuleHeight);
+	dataObj->addData("capsuleRadius", _capsuleRadius);
 }
 
 void Entity::load(GameObjectData* dataObj)
@@ -271,8 +278,92 @@ void Entity::loadEntityVariables(GameObjectData* dataObj)
 		_maxSpeed = dataObj->getFloat("maxSpeed");
 	if(dataObj->getObject("stateMachine"))
 		_stateMachine->load(dataObj->getObject("stateMachine"));
+	if(dataObj->hasFloat("capsuleHeight"))
+		_capsuleHeight = dataObj->getFloat("capsuleHeight");
+	if(dataObj->hasFloat("capsuleRadius"))
+		_capsuleRadius = dataObj->getFloat("capsuleRadius");
 }
 
+
+void Entity::createController()
+{
+	if(controller)
+	{
+		getCurrentLevel()->getBulletWorld()->removeAction(controller);
+		delete controller;
+	}
+	if(_physicsBody)
+	{
+#ifdef USE_BOX2D_PHYSICS
+		getCurrentLevel()->getPhysicsWorld()->DestroyBody(physicsBody);
+#else
+		getCurrentLevel()->getBulletWorld()->removeCollisionObject(_physicsBody);
+		delete _physicsBody;
+#endif
+	}
+
+
+#ifdef USE_BOX2D_PHYSICS
+	box2DToOsgAdjustment = osg::Vec3(0.0, 0.0, 0.0);
+
+	b2BodyDef bodyDef;
+	bodyDef.type = b2_dynamicBody;
+	bodyDef.position.Set(position.x() - box2DToOsgAdjustment.x() , position.y() - box2DToOsgAdjustment.y());
+	physicsBody = getCurrentLevel()->getPhysicsWorld()->CreateBody(&bodyDef);
+
+	// Create fixture for obstacle collision (around the feet)
+	b2FixtureDef bodyFixtureDef;
+	b2CircleShape bodyShape;
+	bodyShape.m_radius = .125f;
+	bodyShape.m_p = b2Vec2(0, -.4);
+	bodyFixtureDef.shape = &bodyShape;
+	bodyFixtureDef.filter.categoryBits = CollisionCategories::OBSTACLE;
+	bodyFixtureDef.filter.maskBits = CollisionCategories::ALL;
+	physicsBody->CreateFixture(&bodyFixtureDef);
+
+	// Create hit box
+	b2FixtureDef hitBoxFixtureDef;
+	b2PolygonShape hitBoxShape;
+	hitBoxShape.SetAsBox(.125f, .5f, b2Vec2(0, 0), 0.0);
+	hitBoxFixtureDef.shape = &hitBoxShape;
+	hitBoxFixtureDef.filter.categoryBits = CollisionCategories::HIT_BOX;
+	hitBoxFixtureDef.filter.maskBits = CollisionCategories::PAIN_SOURCE;
+	b2Fixture *hitBoxFixture = physicsBody->CreateFixture(&hitBoxFixtureDef);
+
+	Box2DUserData *userData = new Box2DUserData;
+	userData->owner = this;
+	userData->ownerType = "Entity";
+	physicsBody->SetUserData(userData);
+
+	transformNode->setUpdateCallback(new PhysicsNodeCallback(transformNode, physicsBody, box2DToOsgAdjustment));
+#else
+	//float capsuleHeight = 1.25;
+	//float capsuleRadius = .4;
+	physicsToModelAdjustment = osg::Vec3(0, 0, _capsuleHeight/2 + _capsuleRadius);
+	btCapsuleShapeZ* shape = new btCapsuleShapeZ(_capsuleRadius, _capsuleHeight);
+
+	btTransform transform = btTransform();
+	transform.setIdentity();
+	transform.setOrigin(osgbCollision::asBtVector3(_transformNode->getPosition() + physicsToModelAdjustment));
+	_physicsBody = new btPairCachingGhostObject();
+	_physicsBody->setWorldTransform(transform);
+	_physicsBody->setCollisionShape(shape);
+	_physicsBody->setCollisionFlags(btCollisionObject::CF_CHARACTER_OBJECT);
+	float stepHeight = .35;
+	//controller = new btKinematicCharacterController((btPairCachingGhostObject*)_physicsBody, shape, stepHeight, 2);
+	controller = new ImprovedBulletKinematicCharacterController((btPairCachingGhostObject*)_physicsBody, shape, stepHeight, 2);
+	controller->setGravity(-getCurrentLevel()->getBulletWorld()->getGravity().z());
+	getCurrentLevel()->getBulletWorld()->addCollisionObject(_physicsBody, btBroadphaseProxy::CharacterFilter, btBroadphaseProxy::AllFilter);
+	getCurrentLevel()->getBulletWorld()->addAction(controller);
+
+	_transformNode->setUpdateCallback(new BulletPhysicsNodeCallback(_physicsBody, -physicsToModelAdjustment));
+
+	PhysicsUserData *userData = new PhysicsUserData;
+	userData->owner = this;
+	userData->ownerType = _objectType;
+	_physicsBody->setUserPointer(userData);
+#endif
+}
 
 
 

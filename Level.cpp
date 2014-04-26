@@ -364,3 +364,4 @@ Level* getCurrentLevel() {
 void setCurrentLevel(Level* newLevel) {
 	currentLevel = newLevel;
 }
+
