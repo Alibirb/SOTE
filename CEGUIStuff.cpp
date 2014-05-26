@@ -24,6 +24,9 @@ CEGUIDrawable::CEGUIDrawable()
     setDataVariance( osg::Object::DYNAMIC );
 	getOrCreateStateSet()->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
     getOrCreateStateSet()->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF );
+    getOrCreateStateSet()->setTextureMode(0, GL_TEXTURE_2D, osg::StateAttribute::ON);	/// To avoid CEGUI bug when using multitextured objects.
+    getOrCreateStateSet()->setRenderBinDetails(12, "CEGUI RenderBin");               	/// Also for that bug
+    getOrCreateStateSet()->setMode(GL_BLEND,osg::StateAttribute::ON);
 
     setEventCallback(new CEGUIEventCallback());
 

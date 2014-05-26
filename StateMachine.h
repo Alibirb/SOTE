@@ -27,6 +27,7 @@ protected:
 	std::string _onExitCode;
 
 public:
+	State(GameObject* owner);	/// Creates an empty state
 	State(GameObject* owner, GameObjectData* dataObj);
 	virtual ~State();
 

@@ -59,6 +59,13 @@ Editor::Editor()
 
 	glewInit();
 	_geode = new osg::Geode;
+	_geode->setName("CEGUI System");
+	_geode->setDataVariance( osg::Object::DYNAMIC );
+    {
+        osg::StateSet* ss = _geode->getOrCreateStateSet();
+        ss->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
+    }
+
 	_cd = new CEGUIDrawable();
 	_geode->addDrawable(_cd.get());
 

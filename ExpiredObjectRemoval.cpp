@@ -13,6 +13,7 @@
 #include "TemporaryText.h"
 #include "DangerZone.h"
 #include "Door.h"
+#include "Light.h"
 
 #include "globals.h"
 
@@ -53,6 +54,8 @@ void removeExpiredObjects()
 			delete ((TemporaryText*) expiredObjects.front().object);
 		else if (objectType == "DangerZone")
 			delete ((DangerZone*) expiredObjects.front().object);
+		else if (objectType == "Light")
+			delete ((Light*) expiredObjects.front().object);
 		//EOR_OBJECT_TYPE_ELSE_IF(Door)
 		//EOR_OBJECT_TYPE_ELSE_IF(ControlledObject)		/// The macro does not seem to work.
 		else if (objectType == "Door")

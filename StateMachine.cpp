@@ -7,6 +7,10 @@
 #include "GameObjectData.h"
 
 
+State::State(GameObject* owner) : _onEnterFunction(NULL), _onUpdateFunction(NULL), _onExitFunction(NULL)
+{
+	_owner = owner;
+}
 State::State(GameObject* owner, GameObjectData* dataObj) : _onEnterFunction(NULL), _onUpdateFunction(NULL), _onExitFunction(NULL)
 {
 	_owner = owner;
@@ -89,7 +93,8 @@ std::string& State::getName()
 
 
 
-StateMachine::StateMachine(GameObject* owner) : _globalState(NULL)
+
+StateMachine::StateMachine(GameObject* owner) : _globalState(NULL), _defaultState("default")
 {
 	_owner = owner;
 }
@@ -168,7 +173,8 @@ GameObjectData* StateMachine::save()
 
 void StateMachine::saveStateMachineVariables(GameObjectData* dataObj)
 {
-	dataObj->addData("states", _states);
+	if(!_states.empty())
+		dataObj->addData("states", _states);
 	dataObj->addData("defaultState", _defaultState);
 }
 
@@ -179,13 +185,6 @@ void StateMachine::load(GameObjectData* dataObj)
 
 void StateMachine::loadStateMachineVariables(GameObjectData* dataObj)
 {
-	/*for(auto child : dataObj->getObjectList("states"))
-	{
-		if(child->getType() == "State")
-			addState(new State(_owner, child), child->getString("name"));
-		else
-			logWarning("No frickin' clue what this non-State object is doing as a child of a StateMachine");
-	}*/
 	for(auto kv : dataObj->getObjectMap("states"))
 	{
 		addState(new State(_owner, kv.second), kv.first);

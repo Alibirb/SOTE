@@ -23,7 +23,7 @@ protected:
 	std::vector<Attack*> _attacks;
 	Attack* _currentAttack;	/// currently-selected attack
 
-	std::unordered_map<std::string, float> _resistances;
+	std::unordered_map<std::string, double> _resistances;
 	float _maxHealth;
 
 public:

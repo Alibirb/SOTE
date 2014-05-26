@@ -83,6 +83,12 @@ protected:
 #endif
 
 
+#include "osgwTools/FindNamedNode.h"
+
+
+#include "Light.h"
+
+
 using namespace std;
 
 /// Variables declared extern in globals.h
@@ -251,7 +257,7 @@ void runCleanup()
 
 void writeOutSceneGraph()
 {
-//	osgDB::writeNodeFile(*root, "output/sceneGraph.osg");
+	osgDB::writeNodeFile(*root, "output/sceneGraph.osg");
 	level->saveAsYaml("output/exportedScene.yaml");
 
 	GameObjectData::testYamlImportExport("output/exportedScene.yaml", "output/doublyExportedScene.yaml");
@@ -291,9 +297,9 @@ int main()
 	windowHeight = 900;
 
 
-	level = new Level("media/MWADC/DemoLevel.yaml");
 
 
+/*
 	osg::Light* sun = new osg::Light;
 	sun->setLightNum(0);
 	sun->setPosition(osg::Vec4(0, 0, 200.0f, 1.0f));
@@ -304,7 +310,7 @@ int main()
 	lightSource->setLight(sun);
 	lightGroup->addChild(lightSource);
 
-
+*/
 	getViewer()->setSceneData(root);
 	getViewer()->addEventHandler(getMainEventHandler());
 	getViewer()->apply(new osgViewer::SingleWindow(0, 0, windowWidth, windowHeight, 0));
@@ -323,9 +329,20 @@ int main()
 	getViewer()->realize();
 	getViewer()->getCamera()->getGraphicsContext()->makeCurrent();
 
+	//level = new Level("media/MWADC/DemoLevel.yaml");
+	level = new Level("media/LightAndDark/Level0x0.yaml");
+
 	getScriptEngine()->runFile("initialize.as");
 
-	//AngelScriptConsole* console = new AngelScriptConsole();
+	root->getOrCreateStateSet()->setMode(GL_CULL_FACE, osg::StateAttribute::ON);
+
+
+	addAndRemoveQueuedNodes();
+
+	getViewer()->frame(0);
+
+	Light::enableAllLights();
+
 
 	osg::Timer_t frame_tick = osg::Timer::instance()->tick();
 
@@ -334,14 +351,12 @@ int main()
 	for ( int i = 0; i < fpsArrayLength; ++i)
 		fps[i] = 60;
 	float fpsTotal = 60.0 * fpsArrayLength;
-
+	double elapsedTime = 0.0;	// Elapsed time, in seconds, that the game has been running for.
 
 	getEditor()->setupDefaultWindows();
 	getEditor()->setMode(Editor::Play);
 
 	addAndRemoveQueuedNodes();
-
-	double elapsedTime = 0.0;	// Elapsed time, in seconds, that the game has been running for.
 
 	while(!getViewer()->done())
 	{

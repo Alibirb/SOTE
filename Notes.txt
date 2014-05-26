@@ -2,15 +2,24 @@
 
 TODO:
 	DoneThisCommit:
-		Improved the MWADC level.
+		Added Light class
+		Began work on LightAndDark level
+		Added shaders for multitextured objects
+		Lots of work to get passable lighting and materials
+		Malhela character
 
 	Current Task:
-
-	Next Steps:
 		Create LightAndDark level:
-			Malhela character.
+			Malhela character
 			Light Crystal
 			Outdoor scene
+
+	Next Steps:
+		Reorganization:
+			Use factory function to create game objects and other Saveables. Also have a function that finds the proper destructor.
+			Light should NOT inherit from GameObject. Instead, it should be an "Attachment", owned and controlled by a GameObject. The same should be done with DangerZone. That way, any object type can have a Light or DangerZone attached to it (e.g. an enemy with a flashlight can just be a normal Fighter with a Light attachment, an electric fence is a normal GameObject with a DangerZone, et cetera.)
+		Perhaps some cleanup
+
 
 		Need path-finding. Recast/Detour sounds good. Automatically creates navmesh.
 		Improve import/export to allow it to link to prototypes.
@@ -24,12 +33,15 @@ TODO:
 		logError and logWarning should allow multiple parameters.
 		Use a namespace for all my classes
 
-	Under consideration:
+	Changes under consideration:
 		Perhaps GameObjectData getter methods should use pass-by-reference so you can just pass in the variable you want to assign.
 		the MainEventHandler should probably act as an event dispatcher that determines what object handles the events
+		A component-entity system (or similar) might be useful to some extent to allow greater flexibility.
+		Get rid of ControlledObject class and put that functionality into GameObject.
 
 	Suggestions for design/organization:
-		Use factory function to create game objects and other Savebables.
+		Use factory function to create game objects and other Saveables. Also have a function that finds the proper destructor.
+		Light should NOT inherit from GameObject. Instead, it should be an "Attachment", owned and controlled by a GameObject. The same should be done with DangerZone. That way, any object type can have a Light or DangerZone attached to it (e.g. an enemy with a flashlight can just be a normal Fighter with a Light attachment, an electric fence is a normal GameObject with a DangerZone, et cetera.)
 
 	Much later (after I've made the prototype)
 		Possibly create my own data storage language:
@@ -53,12 +65,12 @@ TODO:
 	Use a game clock that's separate from the real-time clock. For debugging purposes. Allows the game to run in slow/fast motion.
 	Development cheats and features:
 		Changing game speed
-	Lighting should be done with Light objects, rather than lights freely floating in the scene graph.
 	Physics fixes:
 		figure out proper collision filtering technique for ghost objects (there should be no collision response, but it still needs to be detected.)
 	Make sure it all works on Windows
 	Figure out what to do about YAML's hatred of tabs (either put a hack into the text editor so it treats spaces like tabs, or alter yaml-cpp so it allows tabs. Or use a different data language)
 	Make it possible to have multiple levels loaded at once (and have all objects in one level ignore objects in others)
+	Will probably want the light crystals to use special shaders that give them mysterious effects (rainbow colors and such)
 	Clean up:
 
 
@@ -67,10 +79,12 @@ BUGS:
 	input handler does not respond to releasing a key if Ctrl is pressed. Most likely due to the way OSG reports the button. I think it's a different value if a modkey is pressed.
 	Console does not appear until window is resized
 	Weapons do not point in the correct direction (rotated relative to the owner)
-	Lighting needs work. Should figure out how to ensure every surface is lit.
 	Collision checking (in Level) may call onCollision() multiple times for the same pair of objects if they have multiple manifolds, or if Bullet takes multiple simulation steps for one rendering step.
 	In the text editor, pressing the Delete key inserts a character.
 	Can easily push through doors.
+	Warping/teleporting is based on osg objects (not physics objects), and will warp the player to the skybox
+	Lighting has issues if I try to use GL_LIGHT0. Currently using GL_LIGHT1 only.
+	Specular lighting is screwed up. On a few objects (eyes and pants), it seems to show up only if the shadows. Probably an issue with the shader.
 	Low Priority (it works, but might be ugly):
 
 Bugs/issues I expect to see later:
@@ -80,6 +94,7 @@ Issues: (with other software)
 
 Things to remember to prevent bugs:
 	It is NOT safe to alter the scene graph during a traversal (multi-threaded, multiple traversals happen at the same time). To ensure that doesn't happen, use the addToSceneGraph function for any new nodes, rather than adding them directly.
+	When exporting Blender models, make sure the objects have UV maps, or else textures won't display.
 
 
 Things to consider:

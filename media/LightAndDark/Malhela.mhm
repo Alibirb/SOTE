@@ -1,0 +1,61 @@
+# Written by MakeHuman 1.0.0
+version v1.0.0
+tags Malhela
+macro Weight 0.310000
+macro Gender 1.000000
+macro Age 0.506000
+macro Height 0.494000
+macro Asian 0.333333
+macro African 0.333333
+macro Caucasian 0.333333
+macro Muscle 0.672000
+macro BodyProportions 0.500000
+gendered BreastFirmness 0.500000
+gendered BreastSize 0.500000
+tongue tongue01 52ad91a3-caad-4e50-8c38-67634e5e789c
+teeth Teeth_Base 8ed08ea6-e3ad-4d36-b8e7-c4e3836e66b7
+hair mhair02 f81a4e9a-e3d7-4ecb-bdf0-16d7fd9070a4
+eyes HighPolyEyes 2c12f43b-1303-432c-b7ce-d78346baf2e6
+clothes fedora_cocked 4cd07df0-831a-401f-86de-77a7d5e28142
+clothes Tshirt_short 553a8752-3213-4284-b790-6390ccafb8f8
+clothes Jacket 594935b0-4b4a-4296-a35f-3e273e9b8e7a
+clothes jeans01 faa58a00-05db-4a53-a3a6-72af1cec2053
+clothesHideFaces True
+face r-eye-corner2-up-down 0.196000
+face r-ear-wing-out-in -0.736000
+face l-ear-wing-out-in -0.736000
+face l-ear-shape1-pointed-triangle -1.000000
+face r-eye-corner1-up-down -1.000000
+face l-eye-height1-min-max 0.242000
+face r-eye-size-small-big 0.540000
+face l-ear-height-min-max 0.724000
+face l-ear-flap-out-in -0.334000
+face l-eye-corner2-up-down 0.196000
+face r-eye-height1-min-max 0.242000
+face r-eye-push1-in-out 0.034000
+face r-ear-shape1-pointed-triangle -1.000000
+face r-ear-flap-out-in -0.334000
+face l-eye-height2-min-max 0.206000
+face l-eye-corner1-up-down -1.000000
+face l-eye-size-small-big 0.540000
+face l-eye-push1-in-out 0.034000
+face r-eye-height2-min-max 0.206000
+face chin-height-min-max 0.206000
+face l-ear-trans-vert-down-up 0.574000
+face chin-width-min-max -0.632000
+face r-ear-height-min-max 0.724000
+face l-eye-height3-min-max 0.356000
+face r-eye-height3-min-max 0.356000
+face r-ear-trans-vert-down-up 0.574000
+armslegs l-hand-fingers-diameter-decr-incr -0.310000
+armslegs r-hand-fingers-length-decr-incr 0.414000
+armslegs r-hand-fingers-diameter-decr-incr -0.310000
+armslegs l-foot-trans-in-out 0.068000
+armslegs l-hand-fingers-length-decr-incr 0.414000
+skinMaterial skins/young_caucasian_male/young_caucasian_male.mhmat
+material jeans01 faa58a00-05db-4a53-a3a6-72af1cec2053 clothes/jeans01/jeans01_black_leather.mhmat
+material Tshirt_short 553a8752-3213-4284-b790-6390ccafb8f8 clothes/tshirt01/materials/white_tshirt.mhmat
+material fedora_cocked 4cd07df0-831a-401f-86de-77a7d5e28142 clothes/fedora01/materials/black_fedora.mhmat
+material mhair02 f81a4e9a-e3d7-4ecb-bdf0-16d7fd9070a4 hair/mhair02/materials/male02_black.mhmat
+material HighPolyEyes 2c12f43b-1303-432c-b7ce-d78346baf2e6 eyes/materials/brown.mhmat
+skeleton game.json 

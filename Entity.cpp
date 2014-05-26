@@ -337,14 +337,14 @@ void Entity::createController()
 
 	transformNode->setUpdateCallback(new PhysicsNodeCallback(transformNode, physicsBody, box2DToOsgAdjustment));
 #else
-	//float capsuleHeight = 1.25;
-	//float capsuleRadius = .4;
 	physicsToModelAdjustment = osg::Vec3(0, 0, _capsuleHeight/2 + _capsuleRadius);
 	btCapsuleShapeZ* shape = new btCapsuleShapeZ(_capsuleRadius, _capsuleHeight);
 
 	btTransform transform = btTransform();
 	transform.setIdentity();
 	transform.setOrigin(osgbCollision::asBtVector3(_transformNode->getPosition() + physicsToModelAdjustment));
+	//transform.setBasis(osgbCollision::asBtMatrix3x3(osg::Matrix(_transformNode->getAttitude())));
+	transform.setBasis(osgbCollision::asBtMatrix3x3(osg::Matrix(osg::Quat(_transformNode->getAttitude().x(), _transformNode->getAttitude().y(), _transformNode->getAttitude().z(), -_transformNode->getAttitude().w()))));	/// NOTE: the angle is reversed here. I think it's because the model doesn't face in the positive direction like it should. Will need to get the rotational stuff working correctly at some point.
 	_physicsBody = new btPairCachingGhostObject();
 	_physicsBody->setWorldTransform(transform);
 	_physicsBody->setCollisionShape(shape);

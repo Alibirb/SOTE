@@ -9,6 +9,7 @@
 #include "Controller.h"
 #include "Door.h"
 #include "DangerZone.h"
+#include "Light.h"
 
 #include "PhysicsData.h"
 #include "GameObjectData.h"
@@ -204,23 +205,17 @@ void Level::loadFromYaml(std::string filename)
 	{
 		std::string elementType = child->getType();
 		if(elementType == "GameObject")
-		{
 			addObject(new GameObject(child));
-		}
 		else if(elementType == "ControlledObject")
-		{
 			addObject(new ControlledObject(child));
-		}
+		else if(elementType == "Light")
+			addObject(new Light(child));
 		else if(elementType == "Door")
 			addObject(new Door(child));
 		else if(elementType == "Controller")
-		{
 			addObject(new Controller(child));
-		}
 		else if(elementType == "Fighter")
-		{
 			addObject(new Fighter(child));
-		}
 		else if(elementType == "Player")
 		{
 			std::string name = child->getString("name");

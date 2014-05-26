@@ -54,6 +54,9 @@ protected:
 	//bool _autoGenerateCollisionBody;
 	std::string _collisionShapeGenerationMethod;
 
+
+	osg::Program* _shaderProgram;
+
 public:
 	std::string _objectType = "GameObject";
 
@@ -106,6 +109,16 @@ public:
 protected:
 	void saveGameObjectVariables(GameObjectData* dataObj);	/// Saves the variables declared in GameObject.
 	void loadGameObjectVariables(GameObjectData* dataObj);
+
+	void tryToSetProperShaders(osg::Node* node);	/// Attempts to setup shaders for drawables contained in the given node. (Recursive)
+
+	/**
+	 * Sets up the default shaders for multitextured geometry.
+	 * Shader Unit 0	diffuse
+	 * Shader Unit 1	normalmap
+	 * Shader Unit 2	heightmap (optional)
+	 */
+	void createShaders();
 };
 
 void registerGameObject();

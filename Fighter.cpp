@@ -244,7 +244,7 @@ void Fighter::loadFighterData(GameObjectData* dataObj)
 		equipWeapon(new Weapon(dataObj->getObject("weapon")));
 	if(dataObj->getObject("resistances"))
 	{
-		_resistances = std::unordered_map<std::string, float>(dataObj->getObject("resistances")->getAllFloats());
+		_resistances = std::unordered_map<std::string, double>(dataObj->getObject("resistances")->getAllFloats());
 	}
 
 	if(!dataObj->getObjectList("attacks").empty())

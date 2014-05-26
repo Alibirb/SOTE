@@ -122,6 +122,8 @@
 		<Unit filename="Item.h" />
 		<Unit filename="Level.cpp" />
 		<Unit filename="Level.h" />
+		<Unit filename="Light.cpp" />
+		<Unit filename="Light.h" />
 		<Unit filename="Notes.txt" />
 		<Unit filename="OwnerUpdateCallback.cpp" />
 		<Unit filename="OwnerUpdateCallback.h" />
@@ -189,6 +191,8 @@
 		<Unit filename="osgwTools/AbsoluteModelTransform.cpp" />
 		<Unit filename="osgwTools/AbsoluteModelTransform.h" />
 		<Unit filename="osgwTools/Export.h" />
+		<Unit filename="osgwTools/FindNamedNode.cpp" />
+		<Unit filename="osgwTools/FindNamedNode.h" />
 		<Unit filename="osgwTools/ForceFlattenTransforms.h" />
 		<Unit filename="osgwTools/GeometryModifier.cpp" />
 		<Unit filename="osgwTools/GeometryModifier.h" />

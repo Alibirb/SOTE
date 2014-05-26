@@ -3,6 +3,8 @@
 #include <osgDB/ReadFile>
 #include <osgDB/FileUtils>
 
+#include <osg/Program>
+
 #include "globals.h"
 #include "Level.h"
 #include "Sprite.h"
@@ -47,7 +49,7 @@ struct AnimationManagerFinder : public osg::NodeVisitor
 
 
 
-GameObject::GameObject() : _physicsBody(NULL), _collisionShapeGenerationMethod("none")
+GameObject::GameObject() : _physicsBody(NULL), _collisionShapeGenerationMethod("none"), _shaderProgram(NULL)
 {
 	registerGameObject();
 
@@ -109,6 +111,8 @@ void GameObject::setModelNode(osg::Node* node)
 	_modelNode = node;
 	_transformNode->addChild(_modelNode);
 	findAnimation();
+
+	tryToSetProperShaders(_modelNode);
 }
 
 
@@ -355,6 +359,166 @@ btCollisionObject* GameObject::getPhysicsBody()
 	return _physicsBody;
 }
 #endif
+
+void GameObject::tryToSetProperShaders(osg::Node* node)
+{
+	if(node->asGeode())
+	{
+		/// Given node is a Geode. Look for drawables
+		osg::Geode* geode = node->asGeode();
+		for(int i = 0; i < geode->getNumDrawables(); ++i)
+		{
+			osg::Drawable* drawable = geode->getDrawable(i);
+			if(drawable->getStateSet())
+			{
+				osg::StateSet* stateSet = drawable->getStateSet();
+				if(stateSet->getNumTextureAttributeLists() > 1)
+				{
+					createShaders();
+					stateSet->setAttribute( _shaderProgram, osg::StateAttribute::ON );
+				}
+			}
+		}
+	}
+
+	if(node->asGroup())
+	{
+		osg::Group* group = node->asGroup();
+		for(int i = 0; i < group->getNumChildren(); ++i)
+			tryToSetProperShaders(group->getChild(i));
+	}
+
+}
+
+void GameObject::createShaders()
+{
+	if(_shaderProgram && (_shaderProgram->getNumShaders() > 0) )
+		return;	/// Already set up.
+
+	/// Adapted from osgwnormalmap.cpp
+
+	///Setup the shaders and programs
+	std::string shaderName = osgDB::findDataFile( "parallax_mapping.fs" );
+	osg::ref_ptr< osg::Shader > fragmentShader;
+	if( shaderName.empty() )
+	{
+		std::string fragmentSource =
+		"uniform sampler2D baseMap;\n"
+		"uniform sampler2D normalMap;\n"
+		"uniform sampler2D heightMap;\n"
+		"uniform bool useHeightMap;\n"
+		"\n"
+		"varying vec3 v_lightVector;\n"
+		"varying vec3 v_viewVector;\n"
+		"\n"
+		"void main()\n"
+		"{\n"
+		//determine if we are going to use the height map
+		"float height = 0.;\n"
+		"float v = 0.;\n"
+		"if( useHeightMap )\n"
+		"{\n"
+			"height = texture2D( heightMap, gl_TexCoord[ 0 ].st ).r;\n"
+			"vec2 scaleBias = vec2( 0.06, 0.03 );\n"
+			"v = height * scaleBias.s - scaleBias.t;\n"
+		"}\n"
+		"\n"
+		"vec3 V = normalize( v_viewVector );\n"
+		"vec2 texCoords = gl_TexCoord[ 0 ].st + ( V.xy * v );\n"
+		"\n"
+		//
+		"float bumpiness = 1.0;\n"
+		"vec3 smoothOut = vec3( 0.5, 0.5, 1.0 );\n"
+		"vec3 N = texture2D( normalMap, texCoords ).rgb;\n"
+		"N = mix( smoothOut, N, bumpiness );\n"
+		"N = normalize( ( N * 2.0 ) - 1.0 );\n"
+		"\n"
+		//
+		"vec3 L = normalize( v_lightVector );\n"
+		"float NdotL = max( dot( N, L ), 0.0 );\n"
+		"\n"
+		//
+		"vec3 R = reflect( V, N );\n"
+		"float RdotL = max( dot( R, L ), 0.0 );\n"
+		"\n"
+		//
+		"float specularPower = 50.0;\n"
+		"vec3 base = texture2D( baseMap, texCoords ).rgb;\n"
+		"vec3 ambient = vec3( 0.368627, 0.368421, 0.368421 ) * base;\n"
+		"vec3 diffuse = vec3( 0.886275, 0.885003, 0.885003 ) * base * NdotL;\n"
+		"vec3 specular = vec3( 0.490196, 0.488722, 0.488722 ) * pow( RdotL, specularPower );\n"
+		"vec3 color = ambient + diffuse + specular;\n"
+		"\n"
+		//
+		"gl_FragColor = vec4( color, 1.0 );\n"
+		"}\n";
+		fragmentShader = new osg::Shader();
+		fragmentShader->setType( osg::Shader::FRAGMENT );
+		fragmentShader->setShaderSource( fragmentSource );
+		osg::notify( osg::ALWAYS ) << "Using the inline fragment shader." << std::endl;
+	}
+	else
+	{
+		fragmentShader =
+			osg::Shader::readShaderFile( osg::Shader::FRAGMENT, shaderName );
+		osg::notify( osg::ALWAYS ) << "Using the file fragment shader." << std::endl;
+	}
+	fragmentShader->setName( "parallax frag shader" );
+
+	shaderName = osgDB::findDataFile( "parallax_mapping.vs" );
+	osg::ref_ptr< osg::Shader > vertexShader;
+	if( shaderName.empty() )
+	{
+		std::string vertexSource =
+		"attribute vec4 a_tangent; \n"
+		"attribute vec4 a_binormal;\n"
+
+		"varying vec3 v_lightVector;\n"
+		"varying vec3 v_viewVector;\n"
+		"\n"
+		"void main()\n"
+		"{\n"
+		//
+		"gl_Position = ftransform();\n"
+		"\n"
+		//Get the texture coordinates
+		"gl_TexCoord[ 0 ] = gl_TextureMatrix[ 0 ] * gl_MultiTexCoord0;\n"
+		"\n"
+		//Convert the vertex position into eye coordinates
+		"vec3 ecPosition = vec3( gl_ModelViewMatrix * gl_Vertex );\n"
+		"\n"
+		//Convert tangent, binormal, and normal into eye coordinates
+		"mat3 TBNMatrix = mat3( gl_ModelViewMatrix[0].xyz,gl_ModelViewMatrix[1].xyz,gl_ModelViewMatrix[2].xyz ) *\n"
+		"    mat3( a_tangent.xyz, a_binormal.xyz, gl_Normal );\n"
+		"\n"
+		//Convert light vector into tangent space
+		"v_lightVector = gl_LightSource[ 0 ].position.xyz - ecPosition;\n"
+		"v_lightVector *= TBNMatrix;\n"
+		"\n"
+		//Convert view vector into tangent space
+		"v_viewVector = ecPosition;\n"
+		"v_viewVector *= TBNMatrix;\n"
+		"}\n";
+		vertexShader = new osg::Shader();
+		vertexShader->setType( osg::Shader::VERTEX );
+		vertexShader->setShaderSource( vertexSource );
+		osg::notify( osg::ALWAYS ) << "Using the inline vertex shader." << std::endl;
+	}
+	else
+	{
+		vertexShader = osg::Shader::readShaderFile( osg::Shader::VERTEX, shaderName );
+		osg::notify( osg::ALWAYS ) << "Using the file vertex shader." << std::endl;
+	}
+	vertexShader->setName( "parallax vertex shader" );
+
+	_shaderProgram = new osg::Program();
+	_shaderProgram->addShader( vertexShader.get() );
+	_shaderProgram->addShader( fragmentShader.get() );
+	_shaderProgram->addBindAttribLocation( "a_tangent", 6 );
+	_shaderProgram->addBindAttribLocation( "a_binormal", 7 );
+	_shaderProgram->addBindAttribLocation( "a_normal", 15 );
+}
+
 
 
 namespace AngelScriptWrapperFunctions

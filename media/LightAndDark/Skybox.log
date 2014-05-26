@@ -1,0 +1,18 @@
+Animations will not be exported
+
+Type of Sky is MESH
+exporting object Sky
+mesh_object is Cube
+mesh Sky with material Sky
+vertexes 24
+faces 6
+uvs channels 1 - dict_keys(['UVMap'])
+WARNING update material animation not yet supported
+--------------------------
+vertex groups False False 
+
+Type of Camera is CAMERA
+geode GeodeCube
+write file to /run/media/daniel/SeagateExternal/ScumOfTheEarth/media/LightAndDark/Skybox.osgt
+error while trying to copy file skyhorizon01.png to /run/media/daniel/SeagateExternal/ScumOfTheEarth/media/LightAndDark/textures: `/run/media/daniel/SeagateExternal/ScumOfTheEarth/media/LightAndDark/textures/skyhorizon01.png` and `/run/media/daniel/SeagateExternal/ScumOfTheEarth/media/LightAndDark/textures/skyhorizon01.png` are the same file
+Check log file /run/media/daniel/SeagateExternal/ScumOfTheEarth/media/LightAndDark/Skybox.log

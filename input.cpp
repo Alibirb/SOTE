@@ -56,6 +56,10 @@ bool MainEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIAction
 			std::cout << "Cleanup finished" << std::endl;
 		}
 
+
+		if(ea.getKey() == osgGA::GUIEventAdapter::KEY_F2)
+			writeOutSceneGraph();
+
 		switch(_inputMode)
 		{
 		case InputMode::Standard:
@@ -67,9 +71,9 @@ bool MainEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIAction
 			case 'p':
 				getCurrentLevel()->getDebugDrawer()->setEnabled(!getCurrentLevel()->getDebugDrawer()->getEnabled());
 				break;
-			case 'o':
+			/*case 'o':
 				writeOutSceneGraph();
-				break;
+				break;*/
 
 			case 'q':
 				if(getActivePlayer()->getClosestEnemy())
