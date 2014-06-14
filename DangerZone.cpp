@@ -11,7 +11,7 @@
 
 
 
-DangerZone::DangerZone() : _team("Wild")
+DangerZone::DangerZone(osg::Group* parentNode) : Attachment(parentNode), _team("Wild")
 {
 	_objectType = "DangerZone";
 	//registerDangerZone();
@@ -53,9 +53,11 @@ DangerZone::DangerZone() : _team("Wild")
 #endif
 }
 
-DangerZone::DangerZone(GameObjectData* dataObj) : _team("Wild")
+DangerZone::DangerZone(GameObjectData* dataObj, osg::Group* parentNode) : DangerZone(parentNode)
 {
-	_objectType = "DangerZone";
+	load(dataObj);
+
+	/*_objectType = "DangerZone";
 
 	load(dataObj);
 
@@ -93,6 +95,7 @@ DangerZone::DangerZone(GameObjectData* dataObj) : _team("Wild")
 #else
 	_physicsBody->setUserPointer(userData);
 #endif
+*/
 }
 
 DangerZone::~DangerZone()

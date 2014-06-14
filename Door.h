@@ -13,8 +13,8 @@ protected:
 	/// the outer part of the door is represented by the nodes and physics body of the Door object.
 	btSliderConstraint* _constraint;
 public:
-	Door();
-	Door(GameObjectData* dataObj);
+	Door(osg::Group* parentNode);
+	Door(GameObjectData* dataObj, osg::Group* parentNode);
 	virtual ~Door();
 
 	virtual GameObjectData* save();

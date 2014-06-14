@@ -27,9 +27,8 @@ protected:
 	float _maxHealth;
 
 public:
-	Fighter();
-	Fighter(std::string name, osg::Vec3 position, std::string team);
-	Fighter(GameObjectData* dataObj);
+	Fighter(osg::Group* parentNode);
+	Fighter(GameObjectData* dataObj, osg::Group* parentNode);
 	virtual ~Fighter();
 	void equipWeapon(Weapon* theWeapon);
 	void unequipWeapon();

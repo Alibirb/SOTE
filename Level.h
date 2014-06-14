@@ -42,19 +42,14 @@ private:
 #else	// Bullet
 	btDiscreteDynamicsWorld* _physicsWorld;
 	osgbCollision::GLDebugDrawer* _debugDrawer;
-	btRigidBody* _levelBody;
-#endif
-
-#ifdef USE_TILEMAP
-	TiledMap *tiledMap;
-#else
-	osg::ref_ptr<osg::Node> _levelGeometry;
 #endif
 
 	std::list<GameObject*> _objects;
 	std::unordered_map<std::string, Player*> _players;
 	std::list<std::string> _playerNames;
 	std::string _activePlayerName;
+
+	osg::Group* levelRoot;	/// Root node that everything in the Level is parented to.
 
 	std::string _filename;	/// filename used to load the level. Stored to allow reloading.
 
@@ -116,9 +111,6 @@ public:
 protected:
 	void loadFromYaml(std::string filename);
 
-#ifndef USE_TILEMAP
-	void addNode(osg::Node* node);
-#endif
 	void addObject(GameObject* obj);
 
 };

@@ -12,12 +12,6 @@
 
 
 
-namespace tinyxml2
-{
-	class XMLElement;
-	class XMLDocument;
-}
-using namespace tinyxml2;
 
 namespace YAML
 {
@@ -27,13 +21,18 @@ namespace YAML
 
 class asIScriptFunction;
 
-//class GameObject;
-
 class GameObjectData;
 
 class Saveable
 {
 public:
+	std::string _objectType;
+
+public:
+	std::string getType() {
+		return _objectType;
+	}
+
 	virtual GameObjectData* save()=0;
 	virtual void load(GameObjectData* dataObj)=0;
 };
@@ -61,12 +60,11 @@ private:
 	std::unordered_map<std::string, std::string> strings;
 	std::unordered_map<std::string, osg::Vec3> _vec3s;
 	std::unordered_map<std::string, osg::Vec4> _vec4s;
-	//std::unordered_map<std::string, osg::Quat> _quats;
 	std::unordered_map<std::string, asIScriptFunction*> _scriptFunctions;
 	std::unordered_map<std::string, std::string> _scriptFunctionSource;
 
 	std::unordered_map<std::string, GameObjectData*> _objects;	/// Other objects
-	std::unordered_map<std::string, std::vector<GameObjectData*>> _objectLists;	/// Lists of objects
+	std::unordered_map<std::string, std::vector<GameObjectData*>> _objectLists;	/// Lists of objects. TODO: maybe it should be std::list?
 	std::unordered_map<std::string, std::unordered_map<std::string, GameObjectData*>> _objectMaps;
 
 public:
@@ -105,10 +103,6 @@ public:
 		}
 	}
 
-	//void addChild(GameObjectData* child);
-	//void addChild(GameObject* child);
-	//void addChildren(std::vector<GameObject*> children);
-
 	void addScriptFunction(std::string name, asIScriptFunction* func);
 	void addScriptFunctions(std::unordered_map<std::string, asIScriptFunction*> functions);
 
@@ -124,7 +118,6 @@ public:
 	osg::Vec3 getVec3(std::string name);
 	osg::Vec4 getVec4(std::string name);
 	osg::Quat getQuat(std::string name);
-	//std::vector<GameObjectData*> getChildren();
 	std::string getFunctionSource(std::string name);
 	std::unordered_map<std::string, std::string> getFunctionSources();
 	std::unordered_map<std::string, int> getAllInts();
@@ -133,7 +126,6 @@ public:
 	std::unordered_map<std::string, std::string> getAllStrings();
 	std::unordered_map<std::string, osg::Vec3> getAllVec3s();
 	std::unordered_map<std::string, osg::Vec4> getAllVec4s();
-	//std::unordered_map<std::string, osg::Quat> getAllQuats();
 	GameObjectData* getObject(std::string name);
 	std::vector<GameObjectData*> getObjectList(std::string name);	/// get the specifed object list variable
 	std::unordered_map<std::string, GameObjectData*> getObjectMap(std::string name);
@@ -145,18 +137,13 @@ public:
 
 	std::string getType();
 
-
-	//TODO: functions to remove data? (some objects may not want to save properties from an inherited class (e.g. a Weapon doesn't need to save its location if it's equipped by a character
-
-
-
-	XMLElement* toXML(XMLDocument* doc);
-
 	YAML::Emitter& toYAML(YAML::Emitter& emitter);
 	void fromYAML(YAML::Node node);
 
 	static void testYamlImportExport(std::string importFilename, std::string exportFilename);	/// Helper testing function. Imports a YAML file, then exports it. Check (manually) to ensure no data was lost
 
 };
+
+
 
 #endif // GAMEOBJECTDATA_H

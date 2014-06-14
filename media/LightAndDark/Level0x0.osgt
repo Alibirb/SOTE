@@ -3,7 +3,7 @@
 #Generator osgexport 0.13.0
 
 osg::Group {
-  UniqueID 86
+  UniqueID 66
   Name "Root"
   Children 11 {
     osg::MatrixTransform {
@@ -176,7 +176,7 @@ osg::Group {
                         MIN_FILTER LINEAR_MIPMAP_LINEAR
                         MAG_FILTER LINEAR
                         Image TRUE {
-                          UniqueID 87
+                          UniqueID 67
                           FileName "textures/grass2.png"
                           WriteHint 0 2
                         }
@@ -186,14 +186,14 @@ osg::Group {
                     Data 1 {
                       osg::Texture2D {
                         UniqueID 28
-                        Name "Normal"
+                        Name "flatNormal"
                         WRAP_S REPEAT
                         WRAP_T REPEAT
                         WRAP_R REPEAT
                         MIN_FILTER LINEAR_MIPMAP_LINEAR
                         MAG_FILTER LINEAR
                         Image TRUE {
-                          UniqueID 88
+                          UniqueID 68
                           FileName "textures/FlatNormalMap.png"
                           WriteHint 0 2
                         }
@@ -71980,7 +71980,7 @@ osg::Group {
       Name "Grid.006"
       Children 1 {
         osg::Geode {
-          UniqueID 73
+          UniqueID 53
           Name "GeodeGrid.006"
           Drawables 1 {
             osg::Geometry {
@@ -71988,135 +71988,7 @@ osg::Group {
               Name "Grid.006"
               StateSet TRUE {
                 osg::StateSet {
-                  UniqueID 53
-                  Name "Clover"
-                  DataVariance DYNAMIC
-                  UserDataContainer TRUE {
-                    osg::DefaultUserDataContainer {
-                      UniqueID 67
-                      UDC_UserObjects 4 {
-                        osg::StringValueObject {
-                          UniqueID 68
-                          Name "source"
-                          Value "blender"
-                        }
-                        osg::StringValueObject {
-                          UniqueID 70
-                          Name "00_DiffuseColor"
-                          Value "1.0"
-                        }
-                        osg::StringValueObject {
-                          UniqueID 71
-                          Name "00_Ambient"
-                          Value "1.0"
-                        }
-                        osg::StringValueObject {
-                          UniqueID 72
-                          Name "00_BlendType"
-                          Value "MIX"
-                        }
-                      }
-                    }
-                  }
-                  AttributeList 1 {
-                    osg::Material {
-                      UniqueID 54
-                      Name "Clover"
-                      DataVariance DYNAMIC
-                      UserDataContainer TRUE {
-                        osg::DefaultUserDataContainer {
-                          UniqueID 55
-                          UDC_UserObjects 11 {
-                            osg::StringValueObject {
-                              UniqueID 56
-                              Name "source"
-                              Value "blender"
-                            }
-                            osg::StringValueObject {
-                              UniqueID 57
-                              Name "DiffuseIntensity"
-                              Value "1.0"
-                            }
-                            osg::StringValueObject {
-                              UniqueID 58
-                              Name "DiffuseColor"
-                              Value "[ 0.776149, 0.789440, 0.800000 ]"
-                            }
-                            osg::StringValueObject {
-                              UniqueID 59
-                              Name "SpecularIntensity"
-                              Value "0.0"
-                            }
-                            osg::StringValueObject {
-                              UniqueID 60
-                              Name "SpecularColor"
-                              Value "[ 0.986667, 1.000000, 1.000000 ]"
-                            }
-                            osg::StringValueObject {
-                              UniqueID 61
-                              Name "SpecularHardness"
-                              Value "261"
-                            }
-                            osg::StringValueObject {
-                              UniqueID 62
-                              Name "Emit"
-                              Value "0.0"
-                            }
-                            osg::StringValueObject {
-                              UniqueID 63
-                              Name "Ambient"
-                              Value "1.0"
-                            }
-                            osg::StringValueObject {
-                              UniqueID 64
-                              Name "Translucency"
-                              Value "0.0"
-                            }
-                            osg::StringValueObject {
-                              UniqueID 65
-                              Name "DiffuseShader"
-                              Value "LAMBERT"
-                            }
-                            osg::StringValueObject {
-                              UniqueID 66
-                              Name "SpecularShader"
-                              Value "COOKTORR"
-                            }
-                          }
-                        }
-                      }
-                      Ambient TRUE Front 0.00000 0.00000 0.00000 1.00000 Back 0.00000 0.00000 0.00000 1.00000
-                      Diffuse TRUE Front 0.77615 0.78944 0.80000 1.00000 Back 0.77615 0.78944 0.80000 1.00000
-                      Specular TRUE Front 0.00000 0.00000 0.00000 1.00000 Back 0.00000 0.00000 0.00000 1.00000
-                      Emission TRUE Front 0.00000 0.00000 0.00000 1.00000 Back 0.00000 0.00000 0.00000 1.00000
-                      Shininess TRUE Front 65.25000 Back 65.25000
-                    }
-                    Value OFF
-                  }
-                  TextureModeList 1 {
-                    Data 1 {
-                      GL_TEXTURE_2D ON
-                    }
-                  }
-                  TextureAttributeList 1 {
-                    Data 1 {
-                      osg::Texture2D {
-                        UniqueID 69
-                        Name "Clover"
-                        WRAP_S REPEAT
-                        WRAP_T REPEAT
-                        WRAP_R REPEAT
-                        MIN_FILTER LINEAR_MIPMAP_LINEAR
-                        MAG_FILTER LINEAR
-                        Image TRUE {
-                          UniqueID 89
-                          FileName "textures/clover 1.png"
-                          WriteHint 0 2
-                        }
-                      }
-                      Value OFF
-                    }
-                  }
+                  UniqueID 7
                 }
               }
               PrimitiveSetList 1 {
@@ -72866,7 +72738,7 @@ osg::Group {
                 Binding BIND_PER_VERTEX
                 Normalize 0
               }
-              TexCoordData 1 {
+              TexCoordData 2 {
                 Data {
                   Array TRUE ArrayID 27 Vec2fArray 324 {
                     0.00000 0.00000
@@ -73198,6 +73070,12 @@ osg::Group {
                   Binding BIND_PER_VERTEX
                   Normalize 0
                 }
+                Data {
+                  Array TRUE ArrayID 27
+                  Indices FALSE
+                  Binding BIND_PER_VERTEX
+                  Normalize 0
+                }
               }
             }
           }
@@ -73211,15 +73089,15 @@ osg::Group {
       }
     }
     osg::MatrixTransform {
-      UniqueID 74
+      UniqueID 54
       Name "Grid.007"
       Children 1 {
         osg::Geode {
-          UniqueID 77
+          UniqueID 57
           Name "GeodeGrid.007"
           Drawables 1 {
             osg::Geometry {
-              UniqueID 76
+              UniqueID 56
               Name "Grid.007"
               StateSet TRUE {
                 osg::StateSet {
@@ -73312,7 +73190,7 @@ osg::Group {
                   }
               }
               VertexData {
-                Array TRUE ArrayID 29 Vec3fArray 324 {
+                Array TRUE ArrayID 30 Vec3fArray 324 {
                   -27.77778 -50.00000 0.00000
                   -16.66667 -50.00000 0.00000
                   -16.66667 -38.88889 0.00000
@@ -73643,7 +73521,7 @@ osg::Group {
                 Normalize 0
               }
               NormalData {
-                Array TRUE ArrayID 30 Vec3fArray 324 {
+                Array TRUE ArrayID 31 Vec3fArray 324 {
                   0.00000 0.00000 1.00000
                   0.00000 0.00000 1.00000
                   0.00000 0.00000 1.00000
@@ -73975,7 +73853,7 @@ osg::Group {
               }
               TexCoordData 2 {
                 Data {
-                  Array TRUE ArrayID 31 Vec2fArray 324 {
+                  Array TRUE ArrayID 32 Vec2fArray 324 {
                     0.00000 0.00000
                     1.00000 0.00000
                     1.00000 1.00000
@@ -74306,7 +74184,7 @@ osg::Group {
                   Normalize 0
                 }
                 Data {
-                  Array TRUE ArrayID 31
+                  Array TRUE ArrayID 32
                   Indices FALSE
                   Binding BIND_PER_VERTEX
                   Normalize 0
@@ -74324,15 +74202,15 @@ osg::Group {
       }
     }
     osg::MatrixTransform {
-      UniqueID 78
+      UniqueID 58
       Name "Grid.008"
       Children 1 {
         osg::Geode {
-          UniqueID 81
+          UniqueID 61
           Name "GeodeGrid.008"
           Drawables 1 {
             osg::Geometry {
-              UniqueID 80
+              UniqueID 60
               Name "Grid.008"
               StateSet TRUE {
                 osg::StateSet {
@@ -74425,7 +74303,7 @@ osg::Group {
                   }
               }
               VertexData {
-                Array TRUE ArrayID 34 Vec3fArray 324 {
+                Array TRUE ArrayID 35 Vec3fArray 324 {
                   -27.77778 -50.00000 0.00000
                   -16.66667 -50.00000 0.00000
                   -16.66667 -38.88889 0.00000
@@ -74756,7 +74634,7 @@ osg::Group {
                 Normalize 0
               }
               NormalData {
-                Array TRUE ArrayID 35 Vec3fArray 324 {
+                Array TRUE ArrayID 36 Vec3fArray 324 {
                   0.00000 0.00000 1.00000
                   0.00000 0.00000 1.00000
                   0.00000 0.00000 1.00000
@@ -75088,7 +74966,7 @@ osg::Group {
               }
               TexCoordData 2 {
                 Data {
-                  Array TRUE ArrayID 36 Vec2fArray 324 {
+                  Array TRUE ArrayID 37 Vec2fArray 324 {
                     0.00000 0.00000
                     1.00000 0.00000
                     1.00000 1.00000
@@ -75419,7 +75297,7 @@ osg::Group {
                   Normalize 0
                 }
                 Data {
-                  Array TRUE ArrayID 36
+                  Array TRUE ArrayID 37
                   Indices FALSE
                   Binding BIND_PER_VERTEX
                   Normalize 0
@@ -75437,15 +75315,15 @@ osg::Group {
       }
     }
     osg::MatrixTransform {
-      UniqueID 82
+      UniqueID 62
       Name "Grid.009"
       Children 1 {
         osg::Geode {
-          UniqueID 85
+          UniqueID 65
           Name "GeodeGrid.009"
           Drawables 1 {
             osg::Geometry {
-              UniqueID 84
+              UniqueID 64
               Name "Grid.009"
               StateSet TRUE {
                 osg::StateSet {
@@ -75538,7 +75416,7 @@ osg::Group {
                   }
               }
               VertexData {
-                Array TRUE ArrayID 39 Vec3fArray 324 {
+                Array TRUE ArrayID 40 Vec3fArray 324 {
                   -27.77778 -50.00000 0.00000
                   -16.66667 -50.00000 0.00000
                   -16.66667 -38.88889 0.00000
@@ -75869,7 +75747,7 @@ osg::Group {
                 Normalize 0
               }
               NormalData {
-                Array TRUE ArrayID 40 Vec3fArray 324 {
+                Array TRUE ArrayID 41 Vec3fArray 324 {
                   0.00000 0.00000 1.00000
                   0.00000 0.00000 1.00000
                   0.00000 0.00000 1.00000
@@ -76201,7 +76079,7 @@ osg::Group {
               }
               TexCoordData 2 {
                 Data {
-                  Array TRUE ArrayID 41 Vec2fArray 324 {
+                  Array TRUE ArrayID 42 Vec2fArray 324 {
                     0.00000 0.00000
                     1.00000 0.00000
                     1.00000 1.00000
@@ -76532,7 +76410,7 @@ osg::Group {
                   Normalize 0
                 }
                 Data {
-                  Array TRUE ArrayID 41
+                  Array TRUE ArrayID 42
                   Indices FALSE
                   Binding BIND_PER_VERTEX
                   Normalize 0

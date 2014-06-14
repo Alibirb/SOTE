@@ -3,6 +3,8 @@
 
 #include <iostream>
 
+class Saveable;
+
 /**
  * Handles deletion of game objects. Nothing special; just maintains a list of expired objects (e.g. dead enemies), and deletes them when it's safe.
  */
@@ -12,5 +14,6 @@ void removeExpiredObjects();
 bool isMarked(void* object);
 
 void markForRemoval(void *toBeEXTERMINATED, std::string objectType);
+void markForRemoval(Saveable* toBeEXTERMINATED);
 
 #endif

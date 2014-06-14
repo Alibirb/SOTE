@@ -12,28 +12,40 @@ children:
     position: [0, 0, 0]
     rotation: [0, 0, 0, 1]
   - dataType: GameObject
-    physicsBodyGeneration: none
-    geometry: LightAndDark/Malhela.osgt
-    position: [100, 100, 5]
+    mass: 0
+    physicsBodyGeneration: triangleMeshShape
+    geometry: LightAndDark/LightCrystal.osgt
+    position: [0, 0, 25]
     rotation: [0, 0, 0, 1]
+    attachments:
+      - dataType: Light
+        quadraticAttenuation: 1.000000003627494e-15
+        linearAttenuation: 1.000000003627494e-15
+        constantAttenuation: 9.9999998245167e-14
+        physicsBodyGeneration: none
+        position: [0, 0, 0]
+        specular: [1, 1, 1, 1]
+        diffuse: [1, 1, 1, 1]
+        ambient: [1, 1, 1, 1]
+        rotation: [0, 0, 0, 1]
   - dataType: Player
     capsuleRadius: 0.4000000059604645
     capsuleHeight: 1.25
     maxSpeed: 6
     maxHealth: 100
-    mass: 2.190172317935672e+40
+    mass: 0
     team: Player
     name: Malhela
     physicsBodyGeneration: none
-    geometry: tiger.osgt
-    position: [29.00991, 23.77239, 1.328475]
+    geometry: LightAndDark/Malhela.osgt
+    position: [27.03654, 24.88564, 1.528182]
     rotation: [0, 0, 0, 1]
     resistances:
       dataType: unordered_map
-      FIRE: 0
-      ACID: 0
-      COLD: 0
       PURE_MAGIC: 0
+      ACID: 0
+      FIRE: 0
+      COLD: 0
     stateMachine:
       dataType: StateMachine
       defaultState: idle

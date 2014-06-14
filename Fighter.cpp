@@ -14,17 +14,12 @@
 
 std::list<Fighter*> fighterList;
 
-Fighter::Fighter() : _currentAttack(NULL)
+Fighter::Fighter(osg::Group* parentNode) : Entity(parentNode), _currentAttack(NULL)
 {
 	registerFighter();
 }
 
-Fighter::Fighter(std::string name, osg::Vec3 position, std::string team) : Entity(name, position)
-{
-	registerFighter();
-	this->_team = team;
-}
-Fighter::Fighter(GameObjectData* dataObj) : Fighter()
+Fighter::Fighter(GameObjectData* dataObj, osg::Group* parentNode) : Fighter(parentNode)
 {
 	_equippedWeapon = NULL;
 	_objectType = "Fighter";
@@ -53,7 +48,7 @@ Fighter::Fighter(GameObjectData* dataObj) : Fighter()
 
 	createController();
 
-	controller->getGhostObject()->setUserPointer(userData);
+	_controller->getGhostObject()->setUserPointer(userData);
 #endif
 	if(_equippedWeapon)
 		_equippedWeapon->setTeam(_team);
@@ -71,7 +66,7 @@ void Fighter::die()
 {
 //	this->state = dead;
 	markForRemoval(this, "Fighter");	// this may not be a safe time to delete the object (for instance, if we're in the middle of running physics), so simply mark this for deletion at a safer time.
-	std::cout << this->name << " has died" << std::endl;
+	std::cout << this->_name << " has died" << std::endl;
 }
 
 void Fighter::equipWeapon(Weapon *theWeapon)
@@ -241,7 +236,7 @@ void Fighter::loadFighterData(GameObjectData* dataObj)
 	health = _maxHealth;
 
 	if(dataObj->getObject("weapon"))
-		equipWeapon(new Weapon(dataObj->getObject("weapon")));
+		equipWeapon(new Weapon(dataObj->getObject("weapon"), _transformNode));
 	if(dataObj->getObject("resistances"))
 	{
 		_resistances = std::unordered_map<std::string, double>(dataObj->getObject("resistances")->getAllFloats());
@@ -369,7 +364,7 @@ namespace AngelScriptWrapperFunctions
 {
 	Fighter* FighterFactoryFunction()
 	{
-		return new Fighter();
+		return new Fighter(root);
 	}
 }
 

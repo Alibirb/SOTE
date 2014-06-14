@@ -1,24 +1,25 @@
 #ifndef LIGHT_H
 #define LIGHT_H
 
-#include "ControlledObject.h"
+//#include "ControlledObject.h"
+#include "Attachment.h"
 
 #include <osg/LightSource>
 
 
-class Light : public ControlledObject
+class Light : public Attachment
 {
 private:
-	osg::Light* _light;
-	osg::LightSource* _lightSource;
-	osg::Group* _lightGroup;
+	osg::ref_ptr<osg::Light> _light;
+	osg::ref_ptr<osg::LightSource> _lightSource;
+	osg::ref_ptr<osg::Group> _lightGroup;
 
 	int _lightNumber;	/// OpenGL light number of this light.
 	static int numLights;	/// Number of currently-existing lights. Used to ensure each Light gets a unique number.
 
 public:
-	Light();
-	Light(GameObjectData* dataObj);
+	Light(osg::Group* parentNode);
+	Light(GameObjectData* dataObj, osg::Group* parentNode);
 	virtual ~Light();
 
 	virtual GameObjectData* save();

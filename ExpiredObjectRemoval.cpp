@@ -34,7 +34,7 @@ void removeExpiredObjects()
 		std::string objectType = expiredObjects.front().objectType;
 
 
-		#define EOR_OBJECT_TYPE_ELSE_IF(type) else if (objectType == "type") delete ((type*) expiredObjects.front().object);
+		#define EOR_OBJECT_TYPE_ELSE_IF(type) else if (objectType == #type) delete ((type*) expiredObjects.front().object);
 
 		if (objectType == "Fighter")
 			delete ((Fighter*) expiredObjects.front().object);
@@ -42,8 +42,6 @@ void removeExpiredObjects()
 			delete ((Entity*) expiredObjects.front().object);
 		else if (objectType == "Player")
 			delete ((Player*) expiredObjects.front().object);
-		else if (objectType == "Item")
-			delete ((Item*) expiredObjects.front().object);
 		else if (objectType == "GameObject")
 			delete ((GameObject*) expiredObjects.front().object);
 		else if (objectType == "Controller")
@@ -57,14 +55,14 @@ void removeExpiredObjects()
 		else if (objectType == "Light")
 			delete ((Light*) expiredObjects.front().object);
 		//EOR_OBJECT_TYPE_ELSE_IF(Door)
-		//EOR_OBJECT_TYPE_ELSE_IF(ControlledObject)		/// The macro does not seem to work.
+		//EOR_OBJECT_TYPE_ELSE_IF(ControlledObject)
 		else if (objectType == "Door")
 			delete ((Door*) expiredObjects.front().object);
 		else if (objectType == "ControlledObject")
 			delete ((ControlledObject*) expiredObjects.front().object);
 
 		else
-			logError("Object of unfamiliar type \"" + objectType + "\" marked for deletion");	// cannot properly delete the object unless we know what type it is.
+			logError("Object of unfamiliar type \"" + objectType + "\" marked for deletion");	/// cannot properly delete the object unless we know what type it is.
 
 		expiredObjects.pop_front();
 	}
@@ -92,3 +90,8 @@ void markForRemoval(void *toBeEXTERMINATED, std::string objectType)
 	info.objectType = objectType;
 	expiredObjects.push_back(info);
 }
+void markForRemoval(Saveable* toBeEXTERMINATED)
+{
+	markForRemoval(toBeEXTERMINATED, toBeEXTERMINATED->getType());
+}
+

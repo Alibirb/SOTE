@@ -27,7 +27,6 @@
 
 void myTickCallback(btDynamicsWorld* world, btScalar timeStep)
 {
-
 	for(auto kv : getPlayers())
 		kv.second->setObjectToInteractWith(NULL);	/// reset each Player's stored interable object, since we're going to regenerate it.
 
@@ -105,6 +104,9 @@ Level::Level(std::string filename)
 {
 	setCurrentLevel(this);
 
+	levelRoot = new osg::Group();
+	addToSceneGraph(levelRoot);
+
 #ifdef USE_BOX2D_PHYSICS
 	gravity = b2Vec2(0.0, 0.0);
 	physicsWorld = new b2World(gravity);
@@ -129,7 +131,7 @@ Level::Level(std::string filename)
 	_debugDrawer = new osgbCollision::GLDebugDrawer();
 	_physicsWorld->setDebugDrawer(_debugDrawer);
 	_debugDrawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);
-	addToSceneGraph(_debugDrawer->getSceneGraph());
+	addToSceneGraph(_debugDrawer->getSceneGraph(), levelRoot);
 	_physicsWorld->setInternalTickCallback(myTickCallback);
 #endif
 
@@ -141,48 +143,18 @@ Level::~Level()
 {
 }
 
-
-#ifndef USE_TILEMAP
-void Level::addNode(osg::Node* node)
-{
-	if(!_levelGeometry)
-	{
-		_levelGeometry = node;
-		addToSceneGraph(node);
-
-#ifndef USE_BOX2D_PHYSICS
-		btTriangleMeshShape* levelShape = osgbCollision::btTriMeshCollisionShapeFromOSG(_levelGeometry);
-		_levelBody = new btRigidBody(0, new btDefaultMotionState(), levelShape);
-		_physicsWorld->addRigidBody(_levelBody);
-#endif
-
-		PhysicsUserData *userData = new PhysicsUserData;
-		userData->owner = this;
-		userData->ownerType = "Level";
-#ifdef USE_BOX2D_PHYSICS
-		levelBody->SetUserData(userData);
-#else
-		_levelBody->setUserPointer(userData);
-#endif
-	}
-}
-#endif
-
 GameObjectData* Level::save()
 {
-	GameObjectData* data = new GameObjectData("Level");
+	GameObjectData* dataObj = new GameObjectData("Level");
 
-	//for(GameObject* object : _objects)
-	//	data->addChild(object);
-//	data->addData("children", _objects);
 	std::vector<GameObject*> objectVector;
 
 	for(GameObject* object : _objects)
 		objectVector.push_back(object);
 
-	data->addData("children", objectVector);
+	dataObj->addData("children", objectVector);
 
-	return data;
+	return dataObj;
 }
 
 
@@ -198,44 +170,10 @@ void Level::saveAsYaml(std::string filename)
 }
 void Level::loadFromYaml(std::string filename)
 {
-	GameObjectData* data = new GameObjectData(YAML::LoadFile(filename));
+	GameObjectData* dataObj = new GameObjectData(YAML::LoadFile(filename));
 
-	for(auto child : data->getObjectList("children"))
-	//for(auto child : data->getChildren())
-	{
-		std::string elementType = child->getType();
-		if(elementType == "GameObject")
-			addObject(new GameObject(child));
-		else if(elementType == "ControlledObject")
-			addObject(new ControlledObject(child));
-		else if(elementType == "Light")
-			addObject(new Light(child));
-		else if(elementType == "Door")
-			addObject(new Door(child));
-		else if(elementType == "Controller")
-			addObject(new Controller(child));
-		else if(elementType == "Fighter")
-			addObject(new Fighter(child));
-		else if(elementType == "Player")
-		{
-			std::string name = child->getString("name");
-			addPlayer(name, new Player(child));
-			setActivePlayer(name);
-			addObject(getActivePlayer());
-		}
-		else if(elementType == "DangerZone")
-			addObject(new DangerZone(child));
-		else
-		{
-			std::string warning = "";
-			warning += "Could not load element of type \"";
-			warning += elementType;
-			warning += "\".";
-			logWarning(warning);
-		}
-
-
-	}
+	for(auto child : dataObj->getObjectList("children"))
+		addObject(GameObject::create(child, levelRoot));
 }
 void Level::load(std::string filename)
 {
@@ -260,6 +198,8 @@ void Level::reload()
 void Level::addObject(GameObject* obj)
 {
 	_objects.push_back(obj);
+	if(dynamic_cast<Player*>(obj))
+		addPlayer(((Player*) obj)->getName(), (Player*) obj);
 }
 void Level::removeObject(GameObject* obj)
 {
@@ -287,6 +227,12 @@ Player* Level::getClosestPlayer(osg::Vec3 position)
 
 Player* Level::getActivePlayer()
 {
+	/// In case we haven't set an active player yet, make the first player active.
+	if(!_players.count(_activePlayerName))
+		setActivePlayer(_playerNames.front());
+	if(!_players.count(_activePlayerName))
+		logError("No players found.");
+
 	return _players[_activePlayerName];
 }
 
@@ -336,7 +282,6 @@ void Level::switchToPreviousPlayer()
 		}
 	}
 	setActivePlayer(previousPlayerName);
-
 }
 
 std::list<std::string> Level::getPlayerNames()

@@ -12,27 +12,61 @@
 
 // Initially taken from http://trac.openscenegraph.org/projects/osg/browser/OpenSceneGraph/trunk/examples/osgcegui/osgcegui.cpp?rev=11931
 
-
+#include <GL/glew.h>
 
 #include "CEGUIStuff.h"
 
 #include "globals.h"
 
+#include "Editor.h"
+
+
+
+void CEGUIInitOperation::operator() (osg::GraphicsContext* gc)
+{
+	CEGUI::OpenGLRenderer::bootstrapSystem();
+
+	// initialise the required dirs for the DefaultResourceProvider
+	CEGUI::DefaultResourceProvider* rp = static_cast<CEGUI::DefaultResourceProvider*>(CEGUI::System::getSingleton().getResourceProvider());
+	//CEGUI::ResourceProvider* rp = CEGUI::System::getSingleton().getResourceProvider();
+	rp->setResourceGroupDirectory("schemes", "./datafiles/schemes/");
+	rp->setResourceGroupDirectory("imagesets", "./datafiles/imagesets/");
+	rp->setResourceGroupDirectory("fonts", "./datafiles/fonts/");
+	rp->setResourceGroupDirectory("layouts", "./datafiles/layouts/");
+	rp->setResourceGroupDirectory("looknfeels", "./datafiles/looknfeel/");
+	rp->setResourceGroupDirectory("lua_scripts", "./datafiles/lua_scripts/");
+
+	// set the default resource groups to be used
+	CEGUI::ImageManager::setImagesetDefaultResourceGroup("imagesets");
+	CEGUI::Font::setDefaultResourceGroup("fonts");
+	CEGUI::Scheme::setDefaultResourceGroup("schemes");
+	CEGUI::WidgetLookManager::setDefaultResourceGroup("looknfeels");
+	CEGUI::WindowManager::setDefaultResourceGroup("layouts");
+	CEGUI::ScriptModule::setDefaultResourceGroup("lua_scripts");
+
+	CEGUI::SchemeManager::getSingleton().createFromFile("TaharezLook.scheme");
+	CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().setDefaultImage("TaharezLook/MouseArrow");
+
+	getEditor()->setupDefaultWindows();
+}
+
 CEGUIDrawable::CEGUIDrawable()
 {
-    setSupportsDisplayList(false);
-    setDataVariance( osg::Object::DYNAMIC );
+	setSupportsDisplayList(false);
+	setDataVariance( osg::Object::DYNAMIC );
 	getOrCreateStateSet()->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
-    getOrCreateStateSet()->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF );
-    getOrCreateStateSet()->setTextureMode(0, GL_TEXTURE_2D, osg::StateAttribute::ON);	/// To avoid CEGUI bug when using multitextured objects.
-    getOrCreateStateSet()->setRenderBinDetails(12, "CEGUI RenderBin");               	/// Also for that bug
-    getOrCreateStateSet()->setMode(GL_BLEND,osg::StateAttribute::ON);
+	getOrCreateStateSet()->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF );
+	getOrCreateStateSet()->setTextureMode(0, GL_TEXTURE_2D, osg::StateAttribute::ON);	/// To avoid CEGUI bug when using multitextured objects.
+	getOrCreateStateSet()->setRenderBinDetails(12, "CEGUI RenderBin");               	/// Also for that bug
+	getOrCreateStateSet()->setMode(GL_BLEND,osg::StateAttribute::ON);
 
-    setEventCallback(new CEGUIEventCallback());
+	setEventCallback(new CEGUIEventCallback());
 
-    //new CEGUI::System( CEGUI::OpenGLRenderer::create() );
-    CEGUI::OpenGLRenderer::bootstrapSystem();
+	//new CEGUI::System( CEGUI::OpenGLRenderer::create() );
 
+
+	//CEGUI::OpenGLRenderer::bootstrapSystem(CEGUI::OpenGLRenderer::TTT_NONE);
+/*
 
     // initialise the required dirs for the DefaultResourceProvider
 	CEGUI::DefaultResourceProvider* rp = static_cast<CEGUI::DefaultResourceProvider*>(CEGUI::System::getSingleton().getResourceProvider());
@@ -52,8 +86,9 @@ CEGUIDrawable::CEGUIDrawable()
 	CEGUI::WindowManager::setDefaultResourceGroup("layouts");
 	CEGUI::ScriptModule::setDefaultResourceGroup("lua_scripts");
 
-
+*/
     _activeContextID = 0;
+
 }
 
 CEGUIDrawable::~CEGUIDrawable()
@@ -120,6 +155,7 @@ void CEGUIDrawable::drawImplementation(osg::RenderInfo& renderInfo) const
 
     state.checkGLErrors("CEGUIDrawable::drawImplementation");
 */
+
 	osg::State* state = renderInfo.getState();
 	if (state->getContextID()!=_activeContextID)
 		return;
@@ -129,8 +165,7 @@ void CEGUIDrawable::drawImplementation(osg::RenderInfo& renderInfo) const
 	glPushMatrix();
 	glPushAttrib( GL_ALL_ATTRIB_BITS );
 
-	CEGUI::OpenGLRenderer* renderer = static_cast<CEGUI::OpenGLRenderer*>(
-	CEGUI::System::getSingleton().getRenderer() );
+	CEGUI::OpenGLRenderer* renderer = static_cast<CEGUI::OpenGLRenderer*>(CEGUI::System::getSingleton().getRenderer() );
 	osg::Viewport* viewport = renderInfo.getCurrentCamera()->getViewport();
 	if ( renderer && viewport )
 	{

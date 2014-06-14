@@ -39,16 +39,14 @@ protected:
 	float _capsuleRadius;
 	float _capsuleHeight;
 
-public:
-	std::string name;
+	std::string _name;
 
+public:
 #ifndef USE_BOX2D_PHYSICS
-	//btKinematicCharacterController* controller;
-	ImprovedBulletKinematicCharacterController* controller;
+	ImprovedBulletKinematicCharacterController* _controller;
 #endif
 
-	Entity();
-	Entity(std::string name, osg::Vec3 position);
+	Entity(osg::Group* parentNode);
 	virtual ~Entity();
 
 	virtual void jump();
@@ -64,6 +62,8 @@ public:
 
 	const osg::Quat getAttitude();
 	void setAttitude(const osg::Quat& newAttitude);
+
+	std::string getName();
 
 	virtual void onUpdate(float deltaTime){};
 

@@ -10,7 +10,7 @@
 
 int Light::numLights = 0;
 
-Light::Light()
+Light::Light(osg::Group* parentNode) : Attachment(parentNode)
 {
 	_objectType = "Light";
 
@@ -37,14 +37,14 @@ Light::Light()
 
 
 }
-Light::Light(GameObjectData* dataObj) : Light()
+Light::Light(GameObjectData* dataObj, osg::Group* parentNode) : Light(parentNode)
 {
 	load(dataObj);
 }
 
 Light::~Light()
 {
-	removeFromSceneGraph(_lightGroup);
+	//removeFromSceneGraph(_lightGroup);
 	--numLights;
 }
 
@@ -54,7 +54,7 @@ GameObjectData* Light::save()
 	GameObjectData* dataObj = new GameObjectData(_objectType);
 
 	saveGameObjectVariables(dataObj);
-	saveControlledObjectVariables(dataObj);
+	//saveAttachmentVariables(dataObj);
 	saveLightVariables(dataObj);
 
 	return dataObj;
@@ -71,7 +71,7 @@ void Light::saveLightVariables(GameObjectData* dataObj)
 void Light::load(GameObjectData* dataObj)
 {
 	loadGameObjectVariables(dataObj);
-	loadControlledObjectVariables(dataObj);
+	//loadAttachmentVariables(dataObj);
 	loadLightVariables(dataObj);
 }
 

@@ -19,19 +19,17 @@
 
 
 
-Projectile::Projectile(osg::Vec3 startingPosition, osg::Vec3 heading, GameObjectData* dataObj, std::string team)
+Projectile::Projectile(osg::Vec3 startingPosition, osg::Vec3 heading, GameObjectData* dataObj, std::string team) : GameObject(root), _team(team), _heading(heading)
 {
 	_objectType = "Projectile";
-	this->_team = team;
 
 	load(dataObj);
 
 	osg::Vec3 position = startingPosition;
-	heading.normalize();
-	this->heading = heading;
+	_heading.normalize();
 
-	width = .25;
-	height = .25;
+	//width = .25;
+	//height = .25;
 	//setModelNode(new Sprite(stats.imageFilename, width, height));
 
 #ifdef USE_BOX2D_PHYSICS
@@ -57,13 +55,13 @@ Projectile::Projectile(osg::Vec3 startingPosition, osg::Vec3 heading, GameObject
 	transformNode->setUpdateCallback(new PhysicsNodeCallback(transformNode, physicsBody, box2DToOsgAdjustment));
 #else
 	physicsToModelAdjustment = osg::Vec3(0, 0, 0);
-	btSphereShape* shape = new btSphereShape(width/2);
+	btSphereShape* shape = new btSphereShape(.125);
 
 	btTransform transform = btTransform();
 	transform.setIdentity();
 	transform.setOrigin(osgbCollision::asBtVector3(position + physicsToModelAdjustment));
 
-	_velocity = heading;
+	_velocity = _heading;
 
 	_physicsBody = new btPairCachingGhostObject();
 	_physicsBody->setWorldTransform(transform);

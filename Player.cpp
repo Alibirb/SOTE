@@ -6,7 +6,7 @@
 #include "Level.h"
 
 
-
+/*
 Player::Player(std::string name, osg::Vec3 position) : Fighter(name, position, "Player") , _willInteractWith(NULL)
 {
 	_objectType = "player";
@@ -17,11 +17,11 @@ Player::Player(std::string name, osg::Vec3 position) : Fighter(name, position, "
 #ifdef USE_BOX2D_PHYSICS
 	physicsBody->SetUserData(userData);
 #else
-	controller->getGhostObject()->setUserPointer(userData);
+	_controller->getGhostObject()->setUserPointer(userData);
 #endif
-}
+}*/
 
-Player::Player(GameObjectData* dataObj) : Fighter(dataObj) , _willInteractWith(NULL)
+Player::Player(GameObjectData* dataObj, osg::Group* parentNode) : Fighter(dataObj, parentNode) , _willInteractWith(NULL)
 {
 	_objectType = "Player";
 
@@ -31,7 +31,7 @@ Player::Player(GameObjectData* dataObj) : Fighter(dataObj) , _willInteractWith(N
 #ifdef USE_BOX2D_PHYSICS
 	physicsBody->SetUserData(userData);
 #else
-	controller->getGhostObject()->setUserPointer(userData);
+	_controller->getGhostObject()->setUserPointer(userData);
 #endif
 	_team = "Player";
 	if(_equippedWeapon)
@@ -63,7 +63,7 @@ void Player::processMovementControls(osg::Vec3 controlVector)
 #ifdef USE_BOX2D_PHYSICS
 	physicsBody->SetLinearVelocity(toB2Vec2(worldMovement / getDeltaTime()));
 #else
-	this->controller->setWalkDirection(osgbCollision::asBtVector3(worldMovement));
+	_controller->setWalkDirection(osgbCollision::asBtVector3(worldMovement));
 	// TODO: should turn around until it reaches the right point, instead of instantly changing.
 #endif
 }

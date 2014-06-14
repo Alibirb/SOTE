@@ -93,7 +93,6 @@ using namespace std;
 
 /// Variables declared extern in globals.h
 osg::Group* root;
-osg::Group* lightGroup;
 int windowWidth, windowHeight;
 double deltaTime;
 
@@ -275,12 +274,15 @@ osgViewer::Viewer* getViewer()
 }
 
 
+
+
+
+
+
 int main()
 {
 
 	root = new osg::Group();
-	lightGroup = new osg::Group();
-	root->addChild(lightGroup);
 	safeToAddRemoveNodes = true;
 
 	char currentDirectory[FILENAME_MAX];
@@ -296,21 +298,6 @@ int main()
 	windowWidth = 1600;
 	windowHeight = 900;
 
-
-
-
-/*
-	osg::Light* sun = new osg::Light;
-	sun->setLightNum(0);
-	sun->setPosition(osg::Vec4(0, 0, 200.0f, 1.0f));
-	sun->setAmbient(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	sun->setDiffuse(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	sun->setDirection(osg::Vec3(0.0f, 0.0f, -1.0f));
-	osg::LightSource* lightSource = new osg::LightSource;
-	lightSource->setLight(sun);
-	lightGroup->addChild(lightSource);
-
-*/
 	getViewer()->setSceneData(root);
 	getViewer()->addEventHandler(getMainEventHandler());
 	getViewer()->apply(new osgViewer::SingleWindow(0, 0, windowWidth, windowHeight, 0));
@@ -326,8 +313,11 @@ int main()
 	statsHandler->setKeyEventTogglesOnScreenStats( osgGA::GUIEventAdapter::KEY_F3);
 	getViewer()->addEventHandler(statsHandler);
     //getViewer()->addEventHandler(new osgViewer::WindowSizeHandler());
+
+    getViewer()->setRealizeOperation(new CEGUIInitOperation());	/// Must initialize CEGUI from the graphics thread
+	getViewer()->setReleaseContextAtEndOfFrameHint(false);		/// Trying to fix CEGUI, see http://forum.openscenegraph.org/viewtopic.php?p=27747#27747
 	getViewer()->realize();
-	getViewer()->getCamera()->getGraphicsContext()->makeCurrent();
+	//getViewer()->getCamera()->getGraphicsContext()->makeCurrent();
 
 	//level = new Level("media/MWADC/DemoLevel.yaml");
 	level = new Level("media/LightAndDark/Level0x0.yaml");
@@ -346,14 +336,12 @@ int main()
 
 	osg::Timer_t frame_tick = osg::Timer::instance()->tick();
 
-	const int fpsArrayLength = 60;
-	float fps[fpsArrayLength];
-	for ( int i = 0; i < fpsArrayLength; ++i)
-		fps[i] = 60;
-	float fpsTotal = 60.0 * fpsArrayLength;
 	double elapsedTime = 0.0;	// Elapsed time, in seconds, that the game has been running for.
 
-	getEditor()->setupDefaultWindows();
+
+
+
+	//getEditor()->setupDefaultWindows();
 	getEditor()->setMode(Editor::Play);
 
 	addAndRemoveQueuedNodes();
@@ -368,17 +356,8 @@ int main()
 
 		getCurrentLevel()->updatePhysics(deltaTime);
 
-		/*if (deltaTime > 0)
-		{
-			fpsTotal -= fps[0];
-			for (int i = 0; i < fpsArrayLength - 1; ++i)
-				fps[i] = fps[i+1];
-			fps[fpsArrayLength - 1] = (1 / deltaTime);
-			fpsTotal += fps[fpsArrayLength - 1];
-		}*/
-
 		std::ostringstream hudStream;
-		hudStream << "Name: " << getActivePlayer()->name << std::endl;
+		hudStream << "Name: " << getActivePlayer()->getName() << std::endl;
 		hudStream << "Health: " << getActivePlayer()->getHealth();
 		getDebugDisplayer()->addText(hudStream);
 

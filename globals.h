@@ -23,7 +23,6 @@
 
 
 extern osg::Group* root;
-extern osg::Group* lightGroup;
 const double pi = 3.14159265358979323846;
 extern int windowWidth;
 extern int windowHeight;

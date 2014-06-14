@@ -1,16 +1,14 @@
 #ifndef WEAPON_H
 #define WEAPON_H
 
-#include "Item.h"
-#define DEFAULT_WEAPON_IMAGE "staff.png"
-#define DEFAULT_WEAPON_TYPE "Staff"
+#include "Attachment.h"
 
 #include "Projectile.h"
 
 
 
 /// Class for weapons.
-class Weapon : public Item
+class Weapon : public Attachment
 {
 protected:
 	bool triggerPressed;
@@ -24,7 +22,8 @@ protected:
 	GameObjectData* _projectileData;
 
 public:
-	Weapon(GameObjectData* dataObj);
+	Weapon(osg::Group* parentNode);
+	Weapon(GameObjectData* dataObj, osg::Group* parentNode);
 	virtual ~Weapon();
 
 	void fire();
@@ -45,8 +44,6 @@ protected:
 	void saveWeaponData(GameObjectData* dataObj);
 	void loadWeaponData(GameObjectData* dataObj);
 };
-
-//void registerWeaponStats();
 
 
 #endif // WEAPON_H

@@ -10,13 +10,13 @@
 #include "GameObjectData.h"
 
 
-ControlledObject::ControlledObject()
+ControlledObject::ControlledObject(osg::Group* parentNode) : GameObject(parentNode)
 {
 	_objectType = "ControlledObject";
 	registerControlledObject();
 	_stateMachine = new StateMachine(this);
 }
-ControlledObject::ControlledObject(GameObjectData* dataObj) : ControlledObject()
+ControlledObject::ControlledObject(GameObjectData* dataObj, osg::Group* parentNode) : ControlledObject(parentNode)
 {
 	load(dataObj);
 }
@@ -85,7 +85,7 @@ namespace AngelScriptWrapperFunctions
 {
 	ControlledObject* ControlledObjectFactoryFunction()
 	{
-		return new ControlledObject();
+		return new ControlledObject(root);
 	}
 }
 

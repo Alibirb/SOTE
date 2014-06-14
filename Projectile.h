@@ -1,20 +1,19 @@
 #ifndef PROJECTILE_H
 #define PROJECTILE_H
 
-#include "Item.h"
-
+#include "GameObject.h"
 
 #include "Damage.h"
 
 #define DEFAULT_PROJECTILE_IMAGE "circle.png"
 
 
-/// TODO: should inherit from DangerZone
-class Projectile : public Item
+/// TODO: should inherit from DangerZone, or have a DangerZone attachment
+class Projectile : public GameObject
 {
 protected:
-	osg::Vec3 position;
-	osg::Vec3 heading;
+	//osg::Vec3 _position;
+	osg::Vec3 _heading;
 	osg::Vec3 _velocity;
 
 	std::string _team;	/// Used to prevent friendly fire.

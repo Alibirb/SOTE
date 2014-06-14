@@ -19,8 +19,11 @@
 #include "Door.h"
 
 
+Controller::Controller() : Controller(root)
+{
+}
 
-Controller::Controller()
+Controller::Controller(osg::Group* parentNode) : GameObject(parentNode)
 {
 	_objectType = "Controller";
 
@@ -64,8 +67,10 @@ Controller::Controller()
 #endif
 }
 
-Controller::Controller(GameObjectData* dataObj)
+Controller::Controller(GameObjectData* dataObj, osg::Group* parentNode) : Controller(parentNode)
 {
+	load(dataObj);
+/*
 	_objectType = "Controller";
 
 	registerController();
@@ -106,6 +111,7 @@ Controller::Controller(GameObjectData* dataObj)
 #else
 	_physicsBody->setUserPointer(userData);
 #endif
+*/
 }
 
 Controller::~Controller()
@@ -168,9 +174,9 @@ void Controller::loadControllerVariables(GameObjectData* dataObj)
 	for(auto child : dataObj->getObjectList("controlled"))
 	{
 		if(child->getType() == "ControlledObject")
-			_controlled.push_back(new ControlledObject(child));
+			_controlled.push_back(new ControlledObject(child, root));
 		if(child->getType() == "Door")
-			_controlled.push_back(new Door(child));
+			_controlled.push_back(new Door(child, root));
 		else
 			logWarning("No frickin' clue what this non-ControlledObject object is doing as a child of a Controller");
 

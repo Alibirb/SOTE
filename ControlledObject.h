@@ -17,8 +17,8 @@ protected:
 	StateMachine* _stateMachine;
 
 public:
-	ControlledObject();
-	ControlledObject(GameObjectData* dataObj);
+	ControlledObject(osg::Group* parentNode);
+	ControlledObject(GameObjectData* dataObj, osg::Group* parentNode);
 	virtual ~ControlledObject();
 
 	void changeState(std::string& stateName);

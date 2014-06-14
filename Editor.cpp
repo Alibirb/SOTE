@@ -57,10 +57,18 @@ Editor::Editor()
 	inputBox->setCanFill(true);
 	inputBox->setLabel("Wait a second, wait a second, why am I on trial?\nYou only gave me inches when I need a million miles.");*/
 
-	glewInit();
+	//getViewer()->getCamera()->getGraphicsContext()->makeCurrent();
+
+	//glewInit();
+
+	//if(glewInit() != GLEW_OK)
+	//	std::cout << "GLEW failed" << std::endl;
+
+
 	_geode = new osg::Geode;
 	_geode->setName("CEGUI System");
 	_geode->setDataVariance( osg::Object::DYNAMIC );
+
     {
         osg::StateSet* ss = _geode->getOrCreateStateSet();
         ss->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
@@ -69,20 +77,12 @@ Editor::Editor()
 	_cd = new CEGUIDrawable();
 	_geode->addDrawable(_cd.get());
 
-	CEGUI::SchemeManager::getSingleton().createFromFile("TaharezLook.scheme");
-	CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().setDefaultImage("TaharezLook/MouseArrow");
+	//CEGUI::SchemeManager::getSingleton().createFromFile("TaharezLook.scheme");
+	//CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().setDefaultImage("TaharezLook/MouseArrow");
 
 	_rootWindow = CEGUI::WindowManager::getSingleton().createWindow("DefaultWindow", "root");
 	//_rootWindow = CEGUI::WindowManager::getSingleton().createWindow("TaharezLook/FrameWindow", "root");
 	CEGUI::System::getSingleton().getDefaultGUIContext().setRootWindow(_rootWindow);
-/*
-	FrameWindow* wnd = (FrameWindow*)CEGUI::WindowManager::getSingleton().createWindow("TaharezLook/FrameWindow", "Demo Window");
-	_rootWindow->addChild(wnd);
-	wnd->setPosition(UVector2(cegui_reldim(0.25f), cegui_reldim( 0.25f)));
-    wnd->setSize(USize(cegui_reldim(0.5f), cegui_reldim( 0.5f)));
-    wnd->setMaxSize(USize(cegui_reldim(1.0f), cegui_reldim( 1.0f)));
-    wnd->setMinSize(USize(cegui_reldim(0.1f), cegui_reldim( 0.1f)));
-    wnd->setText("Hello World!");*/
 
 	std::cout << "Editor created" << std::endl;
 

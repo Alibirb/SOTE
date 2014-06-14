@@ -2,31 +2,27 @@
 
 TODO:
 	DoneThisCommit:
-		Added Light class
-		Began work on LightAndDark level
-		Added shaders for multitextured objects
-		Lots of work to get passable lighting and materials
-		Malhela character
+		Reorganization:
+			Use factory function to create GameObjects and other Saveables.
+			Attachment system
+			Objects are now parented to a node owned by the Level they're in
+		Bug fixes for new graphics card
 
 	Current Task:
-		Create LightAndDark level:
-			Malhela character
-			Light Crystal
-			Outdoor scene
+
 
 	Next Steps:
-		Reorganization:
-			Use factory function to create game objects and other Saveables. Also have a function that finds the proper destructor.
-			Light should NOT inherit from GameObject. Instead, it should be an "Attachment", owned and controlled by a GameObject. The same should be done with DangerZone. That way, any object type can have a Light or DangerZone attached to it (e.g. an enemy with a flashlight can just be a normal Fighter with a Light attachment, an electric fence is a normal GameObject with a DangerZone, et cetera.)
-		Perhaps some cleanup
+		Clean up
+		Create Windows and OS X build targets and get it working on those platforms.
+		Documentation.
 
 
-		Need path-finding. Recast/Detour sounds good. Automatically creates navmesh.
+
 		Improve import/export to allow it to link to prototypes.
 
+		Need path-finding. Recast/Detour sounds good. Automatically creates navmesh.
+
 		Make a class to wrap around the physics stuff
-			Should also expose the physics info to the object files.
-		Add mechanism for key bindings
 		Expose all GameObject-derived classes to AngelScript (also exposing the type hierarchy (see http://www.angelcode.com/angelscript/sdk/docs/manual/doc_adv_class_hierarchy.html))
 
 	Minor Tasks:
@@ -36,30 +32,27 @@ TODO:
 	Changes under consideration:
 		Perhaps GameObjectData getter methods should use pass-by-reference so you can just pass in the variable you want to assign.
 		the MainEventHandler should probably act as an event dispatcher that determines what object handles the events
-		A component-entity system (or similar) might be useful to some extent to allow greater flexibility.
 		Get rid of ControlledObject class and put that functionality into GameObject.
+		Get rid of Fighter and just put that functionality into Entity
+		Get rid of Player and give Entities an EntityController, either an AIController or PlayerController. Player characters will have an EntityController of both types, and switch between the two as appropriate.
 
-	Suggestions for design/organization:
-		Use factory function to create game objects and other Saveables. Also have a function that finds the proper destructor.
-		Light should NOT inherit from GameObject. Instead, it should be an "Attachment", owned and controlled by a GameObject. The same should be done with DangerZone. That way, any object type can have a Light or DangerZone attached to it (e.g. an enemy with a flashlight can just be a normal Fighter with a Light attachment, an electric fence is a normal GameObject with a DangerZone, et cetera.)
-
-	Much later (after I've made the prototype)
+	Much later
 		Possibly create my own data storage language:
 			uses {} to denote elements (with matching-brace highlighting, it's much clearer than having to follow the indentation like in YAML)
 			allows references to an element in a different file (like what I was doing with XML before)
 				may not be a language feature, could just be part of GameObjectData's loading process
 			C and C++ style comments
 
+	Use macros to automatically generate methods for serialization and creation.
+
 
 	Objects:
 		Some mechanism by which you can easily move between a set list of places (teleportation, taxicab, etc.). Long glides, jumps, etc. may leave you stranded otherwise.
-		Figure out how best to use AngelScript to specify object behavior (AngelScript class cannot inherit a C++ class, so it's not that simple.)
 	Scripting:
 		Add ability to load (not run) an AngelScript file, adding functions, variables, object types, etc to the current context/module.
 			Can use the CompileFunction and CompileGlobalVar functions to add functions and variables.
 	AI:
 		Enemies need more intelligent behavior (e.g. dodge)
-	Stuff for first playable
 	Input:
 		Should be able to register a function to be executed on key press/release. Function will likely be in AngelScript.
 	Use a game clock that's separate from the real-time clock. For debugging purposes. Allows the game to run in slow/fast motion.
@@ -77,15 +70,19 @@ TODO:
 
 BUGS:
 	input handler does not respond to releasing a key if Ctrl is pressed. Most likely due to the way OSG reports the button. I think it's a different value if a modkey is pressed.
-	Console does not appear until window is resized
+	Various 2D overlay stuff (TextDisplay and CEGUI) have rendering bugs that can be solved by resizing the window. Likely due to some calculations that use cached values of some sort. Parameters change (e.g. the window is moved so text should move with it), and things need to be recalculated. Change the window size, and you force recalculation.
 	Weapons do not point in the correct direction (rotated relative to the owner)
 	Collision checking (in Level) may call onCollision() multiple times for the same pair of objects if they have multiple manifolds, or if Bullet takes multiple simulation steps for one rendering step.
 	In the text editor, pressing the Delete key inserts a character.
 	Can easily push through doors.
 	Warping/teleporting is based on osg objects (not physics objects), and will warp the player to the skybox
 	Lighting has issues if I try to use GL_LIGHT0. Currently using GL_LIGHT1 only.
-	Specular lighting is screwed up. On a few objects (eyes and pants), it seems to show up only if the shadows. Probably an issue with the shader.
+	Specular lighting is screwed up. On a few objects (eyes and pants), it seems to show up only in the shadows. Probably an issue with the shader.
+	Seems like CEGUI can only create windows in the rendering thread.
+		As a temporary work-around, I'm loading all windows through Viewer::realize() (with a GraphicsOperation). However, this does not allow new windows to be loaded after the program is set up.
+		I think I can do stuff on the graphics thread by obtaining the GraphicsContext and calling add() on it, passing in an object that inherits from osg::Operation. If I make an Operation class to create a CEGUI object, I should be able to get it working.
 	Low Priority (it works, but might be ugly):
+		Inefficient debug rendering. Before getting the new graphics card, I thought it was just too much for my Integrated graphics. However, a look at the NVIDIA settings program shows that the GPU utilization DROPS when I turn on debug rendering. I believe the issue is that the debug drawing is done sequentially, line-by-line. Perhaps I need to split it up so it can render in parallel.
 
 Bugs/issues I expect to see later:
 
@@ -124,9 +121,14 @@ Scripting Uses:
 Engine features:
 	Adaptive. Designed to minimize the amount of custom code that must be written.
 	Objects are defined with YAML (or other serialization format).
-		Can embed in the level file, link to an external file, or both (using external file as prototype and making necessary alterations in the level file).
-			Can also define an object using another as a prototype (e.g. multiple versions of an enemy use a common base).
-		Can embed AngelScript inside the YAML file, further increasing adaptability.
-			Can attach functions to an object, to be used elsewhere (e.g. a door has the functions "open()" and "close()" defined in a central location, and called in response to signals from a switch.)
+		A level file will contain a list of all objects in the level. Objects can link to prototypes defined in separate files. The prototypes can link to more prototypes and allow for similar objects to share a common base.
+		Can embed AngelScript inside the YAML file to define an object's behaviors.
+		Will have some mechanism to selectively choose the parameters that get loaded (e.g. load a simpler model on devices with less resources, give the enemy less health on lower difficulty settings, et cetera)
 	Views a game as a collection of objects, behaviors, and relationships.
+
+
+Libraries to check out later:
+	Recast/Detour
+	Clipper-- for clipping and offsetting polygons. Used in Broken Age (http://www.angusj.com/delphi/clipper.php)
+	GLSL Optimizer
 

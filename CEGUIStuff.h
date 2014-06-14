@@ -25,6 +25,7 @@
 
 #include <CEGUI/System.h>
 #include <CEGUI/RendererModules/OpenGL/GLRenderer.h>
+//#include <CEGUI/RendererModules/OpenGL/GL3Renderer.h>
 #include <CEGUI/ScriptModule.h>
 #include <CEGUI/FontManager.h>
 #include <CEGUI/SchemeManager.h>
@@ -59,10 +60,22 @@ protected:
 
     virtual ~CEGUIDrawable();
 
-    unsigned int _activeContextID;
+    mutable unsigned int _activeContextID;
+    mutable bool _initialized = false;
 
 };
 
+
+/// CEGUI calls glewInit() when setting up the system. GlewInit() has to be called from the graphics thread (not the main thread), so this wrapper is needed.
+class CEGUIInitOperation : public osg::GraphicsOperation
+{
+public:
+	CEGUIInitOperation():
+		osg::GraphicsOperation("CEGUI Setup", false)
+		{}
+
+	virtual void operator() (osg::GraphicsContext* gc);
+};
 
 struct CEGUIEventCallback : public osgGA::GUIEventHandler
 {

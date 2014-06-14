@@ -27,6 +27,16 @@
 #include "PhysicsData.h"
 #include "PhysicsNodeCallback.h"
 
+#include "Attachment.h"
+
+#include "ControlledObject.h"
+#include "Door.h"
+#include "Controller.h"
+#include "Fighter.h"
+#include "Player.h"
+#include "Light.h"
+#include "DangerZone.h"
+
 
 struct AnimationManagerFinder : public osg::NodeVisitor
 {
@@ -47,21 +57,21 @@ struct AnimationManagerFinder : public osg::NodeVisitor
 };
 
 
-
-
-GameObject::GameObject() : _physicsBody(NULL), _collisionShapeGenerationMethod("none"), _shaderProgram(NULL)
+GameObject::GameObject(osg::Group* parentNode) : _physicsBody(NULL), _collisionShapeGenerationMethod("none"), _shaderProgram(NULL)
 {
 	registerGameObject();
 
+	_objectType = "GameObject";
+
 	//_transformNode = new osg::PositionAttitudeTransform();
 	_transformNode = new ImprovedMatrixTransform();
-	addToSceneGraph(_transformNode);
+	addToSceneGraph(_transformNode, parentNode);
 	_updateNode = new osg::Node();
 	_updateNode->addUpdateCallback(new OwnerUpdateCallback<GameObject>(this));	/// NOTE: Due to virtual inheritance, should be able to remove the template-ness of OwnerUpdateCallback.
 	_transformNode->addChild(_updateNode);
 }
 
-GameObject::GameObject(GameObjectData* dataObj) : GameObject()
+GameObject::GameObject(GameObjectData* dataObj, osg::Group* parentNode) : GameObject(parentNode)
 {
 	load(dataObj);
 }
@@ -72,7 +82,9 @@ GameObject::~GameObject()
 		logError("GameObject with no parents found.");
 	if(_transformNode->getNumParents() > 1)
 		logError("GameObject with multiple parents found.");
-	_transformNode->getParent(0)->removeChild(_transformNode);	// remove the node from the scenegraph.
+
+	for(int i = 0; i < _transformNode->getNumParents(); ++i)
+		_transformNode->getParent(i)->removeChild(_transformNode);	// remove the node from the scenegraph.
 
 	if(_physicsBody)
 	{
@@ -84,8 +96,35 @@ GameObject::~GameObject()
 #endif
 	}
 
+	for(Attachment* attachment : _attachments)
+		markForRemoval(attachment, attachment->getType());
+
 	getCurrentLevel()->removeObject(this);
 }
+
+GameObject* GameObject::create(GameObjectData* dataObj, osg::Group* parentNode)
+{
+	#define GameObject_create_elseif(objectType) else if(type == #objectType) return new objectType (dataObj, parentNode);
+
+	std::string type = dataObj->getType();
+	if(type == "GameObject") return new GameObject(dataObj, parentNode);
+	GameObject_create_elseif(ControlledObject)
+	GameObject_create_elseif(Door)
+	GameObject_create_elseif(Controller)
+	GameObject_create_elseif(Fighter)
+	GameObject_create_elseif(Player)
+
+	GameObject_create_elseif(Light)
+	GameObject_create_elseif(DangerZone)
+
+	else
+		logError("Unknown GameObject type '" + type + "' requested.");
+
+	#undef GameObject_create_elseif
+}
+
+
+
 
 void GameObject::loadModel(std::string modelFilename)
 {
@@ -194,7 +233,8 @@ void GameObject::saveGameObjectVariables(GameObjectData* dataObj)
 {
 	dataObj->addData("position", getLocalPosition());
 	dataObj->addData("rotation", getLocalRotation());
-	dataObj->addData("geometry", _modelFilename);
+	if(_modelFilename != "")
+		dataObj->addData("geometry", _modelFilename);
 	//dataObj->addData("autoGenerateCollisionBody", _autoGenerateCollisionBody);
 	dataObj->addData("physicsBodyGeneration", _collisionShapeGenerationMethod);
 	for(auto kv : _functionSources)
@@ -214,6 +254,11 @@ void GameObject::saveGameObjectVariables(GameObjectData* dataObj)
 #endif
 	}
 
+	std::vector<Saveable*> attachmentVector;
+	for(Attachment* attachment : _attachments)
+		attachmentVector.push_back(attachment);
+	dataObj->addData("attachments", attachmentVector);
+
 
 	// TODO: animation.
 }
@@ -225,7 +270,8 @@ void GameObject::loadGameObjectVariables(GameObjectData* dataObj)
 {
 	setPosition(dataObj->getVec3("position"));
 	setRotation(dataObj->getQuat("rotation"));
-	loadModel(dataObj->getString("geometry"));
+	if(dataObj->hasString("geometry"))
+		loadModel(dataObj->getString("geometry"));
 	for(auto kv : dataObj->getFunctionSources())
 		setFunction(kv.first, kv.second);
 	_collisionShapeGenerationMethod = dataObj->getString("physicsBodyGeneration");
@@ -234,6 +280,15 @@ void GameObject::loadGameObjectVariables(GameObjectData* dataObj)
 	if(_collisionShapeGenerationMethod != "none")
 		generateRigidBody(dataObj->getFloat("mass"), _collisionShapeGenerationMethod);
 
+	for(auto attachmentData : dataObj->getObjectList("attachments"))
+		addAttachment(Attachment::create(attachmentData, _transformNode));
+
+}
+
+void GameObject::addAttachment(Attachment* attachment)
+{
+	_attachments.push_back(attachment);
+	attachment->parentTo(_transformNode);
 }
 
 void GameObject::reset()
@@ -307,21 +362,6 @@ void GameObject::generateRigidBody(double mass, std::string generationMethod)
 	else
 		std::cout << "Could not determine collision shape generation method for \"" << generationMethod << "\"." << std::endl;
 
-
-
-	/*
-	btTransform transform = btTransform();
-	transform.setIdentity();
-	transform.setOrigin(osgbCollision::asBtVector3(getWorldPosition() + physicsToModelAdjustment));
-	btVector4 vector4 = osgbCollision::asBtVector4(getWorldRotation().asVec4());
-	transform.setRotation(btQuaternion(vector4.x(), vector4.y(), vector4.z(), vector4.w()));
-	btVector3 localInertia;
-	shape->calculateLocalInertia(mass, localInertia);
-	_physicsBody = new btRigidBody(mass, new btDefaultMotionState(transform), shape, localInertia);
-	getCurrentLevel()->getBulletWorld()->addRigidBody((btRigidBody*)_physicsBody);
-	_transformNode->setUpdateCallback(new BulletPhysicsNodeCallback(_physicsBody, -physicsToModelAdjustment));
-	*/
-
 	btTransform transform = btTransform();
 	transform.setIdentity();
 	transform.setOrigin(osgbCollision::asBtVector3(getWorldPosition() + physicsToModelAdjustment));
@@ -333,13 +373,10 @@ void GameObject::generateRigidBody(double mass, std::string generationMethod)
 	osgbDynamics::MotionState* motionState = new osgbDynamics::MotionState();
 	motionState->setTransform(_transformNode);
 	motionState->setWorldTransform(transform);
-	//osg::Matrix* parentTransform = getWorldCoordinates(_transformNode);
-	//motionState->setParentTransform(*parentTransform);
 
 
 	_physicsBody = new btRigidBody(mass, motionState, shape, localInertia);
 	getCurrentLevel()->getBulletWorld()->addRigidBody((btRigidBody*)_physicsBody);
-	//_transformNode->setUpdateCallback(new BulletPhysicsNodeCallback(_physicsBody, -physicsToModelAdjustment));
 
 #endif
 
@@ -525,7 +562,9 @@ namespace AngelScriptWrapperFunctions
 {
 	GameObject* GameObjectFactoryFunction()
 	{
-		return new GameObject();
+		GameObjectData* dataObj = new GameObjectData("GameObject");
+		return GameObject::create(dataObj, root);
+		//return new GameObject(root);
 	}
 }
 

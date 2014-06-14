@@ -25,6 +25,8 @@
 
 class asIScriptFunction;
 
+class Attachment;
+
 
 /// Class for an object
 class GameObject : public Saveable
@@ -54,16 +56,20 @@ protected:
 	//bool _autoGenerateCollisionBody;
 	std::string _collisionShapeGenerationMethod;
 
-
 	osg::Program* _shaderProgram;
 
-public:
-	std::string _objectType = "GameObject";
+	std::list<Attachment*> _attachments;
+
+
+protected:
+
+	GameObject(osg::Group* parentNode);
+	GameObject(GameObjectData* dataObj, osg::Group* parentNode);
 
 public:
-	GameObject();
-	GameObject(GameObjectData* dataObj);
 	virtual ~GameObject();
+
+	static GameObject* create(GameObjectData* dataObj, osg::Group* parentNode);
 
 	virtual void setPosition(osg::Vec3 newPosition);
 	virtual void setRotation(osg::Quat newRotation);
@@ -105,6 +111,8 @@ public:
 #ifndef USING_BOX2D_PHYSICS
 	btCollisionObject* getPhysicsBody();
 #endif
+
+	void addAttachment(Attachment* attachment);
 
 protected:
 	void saveGameObjectVariables(GameObjectData* dataObj);	/// Saves the variables declared in GameObject.

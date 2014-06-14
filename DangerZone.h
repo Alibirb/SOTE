@@ -1,14 +1,14 @@
 #ifndef DANGERZONE_H
 #define DANGERZONE_H
 
-#include "GameObject.h"
+#include "Attachment.h"
 
 #include "Damage.h"
 
 
 
 /// An object representing a zone of danger (e.g. fire)
-class DangerZone : public GameObject
+class DangerZone : public Attachment
 {
 protected:
 	Damages _damages;
@@ -16,8 +16,8 @@ protected:
 	std::string _team;	/// Allows the effect to be masked by team.
 
 public:
-	DangerZone();
-	DangerZone(GameObjectData* dataObj);
+	DangerZone(osg::Group* parentNode);
+	DangerZone(GameObjectData* dataObj, osg::Group* parentNode);
 	virtual ~DangerZone();
 
 	Damages getDamages();

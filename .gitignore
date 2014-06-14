@@ -7,4 +7,6 @@ obj/
 *.blend1
 *.blend2
 ./gnom.out
+output/
+*.log
 *.cscope_file_list

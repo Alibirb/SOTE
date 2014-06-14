@@ -1,37 +1,49 @@
 dataType: Level
 children:
   - dataType: GameObject
-    geometry: LightAndDark/Skybox.osgt
     physicsBodyGeneration: none
+    geometry: LightAndDark/Skybox.osgt
+    position: [0, 0, 0]
+    rotation: [0, 0, 0, 1]
+  - dataType: GameObject
+    mass: 0
+    geometry: LightAndDark/Level0x0.osgt
+    physicsBodyGeneration: triangleMeshShape
     position: [0, 0, 0]
     rotation: [0, 0, 0, 1]
   - dataType: GameObject
     mass: 0
     physicsBodyGeneration: triangleMeshShape
-    geometry: LightAndDark/Level0x0.osgt
-    position: [0, 0, 0]
+    geometry: LightAndDark/LightCrystal.osgt
+    position: [0, 0, 25]
     rotation: [0, 0, 0, 1]
-  - dataType: GameObject
-    geometry: LightAndDark/Malhela.osgt
-    physicsBodyGeneration: none
-    position: [100, 100, 5]
-    rotation: [0, 0, 0, 1]
+    attachments:
+      - dataType: Light
+        constantAttenuation: 9.9999998245167e-14
+        quadraticAttenuation: 1.000000003627494e-15
+        linearAttenuation: 1.000000003627494e-15
+        physicsBodyGeneration: none
+        position: [0, 0, 0]
+        rotation: [0, 0, 0, 1]
+        ambient: [1, 1, 1, 1]
+        specular: [1, 1, 1, 1]
+        diffuse: [1, 1, 1, 1]
   - dataType: Player
-    capsuleRadius: 0.4000000059604645
-    mass: 2.190172317935672e+40
+    capsuleHeight: 1.25
+    mass: 0
     maxHealth: 100
     maxSpeed: 6
-    capsuleHeight: 1.25
-    geometry: tiger.osgt
-    name: Malhela
+    capsuleRadius: 0.4000000059604645
+    geometry: LightAndDark/Malhela.osgt
     physicsBodyGeneration: none
+    name: Malhela
     team: Player
-    position: [29.00991, 23.77239, 1.328475]
+    position: [27.03654, 24.88564, 1.528182]
     rotation: [0, 0, 0, 1]
     resistances:
       dataType: unordered_map
-      COLD: 0
       PURE_MAGIC: 0
+      COLD: 0
       ACID: 0
       FIRE: 0
     stateMachine:

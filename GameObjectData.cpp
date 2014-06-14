@@ -5,8 +5,6 @@
 
 #include "GameObject.h"
 
-#include "tinyxml/tinyxml2.h"
-
 #include "AngelScriptEngine.h"
 
 #include "yaml-cpp/yaml.h"
@@ -48,7 +46,6 @@ void GameObjectData::addData(std::string name, osg::Vec4 data){
 	_vec4s[name] = data;
 }
 void GameObjectData::addData(std::string name, osg::Quat data){
-	//_quats[name] = data;
 	_vec4s[name] = osg::Vec4(data.x(), data.y(), data.z(), data.w());
 }
 void GameObjectData::addData(std::string name, GameObjectData* data) {
@@ -63,22 +60,7 @@ void GameObjectData::addData(std::string name, std::unordered_map<string, GameOb
 void GameObjectData::addData(std::string name, Saveable* data) {
 	_objects[name] = data->save();
 }
-/*
-void GameObjectData::addData(std::string name, std::vector<Saveable*> objectList) {
-	for(auto object : objectList)
-		_objectLists[name].push_back(object->save());
-}
-*/
-/*void GameObjectData::addChild(GameObject* child){
-	_children.push_back(child->save());
-}
-void GameObjectData::addChildren(std::vector<GameObject*> children){
-	for(auto child : children)
-		_children.push_back(child->save());
-}
-void GameObjectData::addChild(GameObjectData* child){
-	_children.push_back(child);
-}*/
+
 void GameObjectData::addScriptFunction(std::string name, asIScriptFunction* func){
 	_scriptFunctions[name.c_str()] = func;
 }
@@ -116,7 +98,6 @@ osg::Vec4 GameObjectData::getVec4(std::string name) {
 	return _vec4s[name];
 }
 osg::Quat GameObjectData::getQuat(std::string name) {
-	//return _quats[name];
 	return osg::Quat(_vec4s[name]);
 }
 std::string GameObjectData::getFunctionSource(std::string name) {
@@ -153,9 +134,6 @@ std::unordered_map<std::string, osg::Vec3> GameObjectData::getAllVec3s() {
 std::unordered_map<std::string, osg::Vec4> GameObjectData::getAllVec4s() {
 	return _vec4s;
 }
-/*std::unordered_map<std::string, osg::Quat> GameObjectData::getAllQuats() {
-	return _quats;
-}*/
 
 bool GameObjectData::hasInt(std::string name) {
 	return ints.count(name.c_str());
@@ -180,44 +158,6 @@ std::string GameObjectData::getType() {
 }
 
 
-
-
-XMLElement* GameObjectData::toXML(XMLDocument* doc)
-{
-	XMLElement* element = doc->NewElement(objectType.c_str());
-
-	for(auto kv : ints) {
-		element->SetAttribute(kv.first.c_str(), kv.second);
-	}
-	for(auto kv : floats) {
-		element->SetAttribute(kv.first.c_str(), kv.second);
-	}
-	for(auto kv : bools) {
-		element->SetAttribute(kv.first.c_str(), kv.second);
-	}
-	for(auto kv : strings) {
-		element->SetAttribute(kv.first.c_str(), kv.second.c_str());
-	}
-	for(auto kv : _vec3s) {
-		//logWarning("Exporting vectors through XML is not yet implemented.");
-		std::ostringstream value;
-		value << kv.second.x() << ", " << kv.second.y() << ", " << kv.second.z();
-		element->SetAttribute(kv.first.c_str(), value.str().c_str());
-	}
-	for(auto kv : _scriptFunctionSource) {
-		XMLElement* codeElement = doc->NewElement("function");
-		codeElement->SetAttribute("name", kv.first.c_str());
-		codeElement->SetText(kv.second.c_str());
-		element->InsertEndChild(codeElement);
-	}
-
-	/*for(auto obj : _children) {
-		element->InsertEndChild(obj->toXML(doc));
-	}*/
-
-	return element;
-
-}
 
 YAML::Emitter& GameObjectData::toYAML(YAML::Emitter& emitter)
 {
@@ -251,11 +191,6 @@ YAML::Emitter& GameObjectData::toYAML(YAML::Emitter& emitter)
 		emitter << YAML::Key << kv.first.c_str();
 		emitter << YAML::Value;
 		emitter << YAML::Flow;
-		/*emitter << YAML::BeginMap;
-		emitter << YAML::Key << "x" << YAML::Value << theVector.x();
-		emitter << YAML::Key << "y" << YAML::Value << theVector.y();
-		emitter << YAML::Key << "z" << YAML::Value << theVector.z();
-		emitter << YAML::EndMap;*/
 		emitter << YAML::BeginSeq;
 		emitter << theVector.x();
 		emitter << theVector.y();
@@ -265,19 +200,13 @@ YAML::Emitter& GameObjectData::toYAML(YAML::Emitter& emitter)
 	}
 	for(auto kv : _vec4s)
 	{
-		// TODO: should specialize YAML convert template class for Vec3
+		// TODO: should specialize YAML convert template class for Vec4
 		// See http://code.google.com/p/yaml-cpp/wiki/Tutorial
 		osg::Vec4 theVector = kv.second;
 
 		emitter << YAML::Key << kv.first.c_str();
 		emitter << YAML::Value;
 		emitter << YAML::Flow;
-		/*emitter << YAML::BeginMap;
-		emitter << YAML::Key << "x" << YAML::Value << theVector.x();
-		emitter << YAML::Key << "y" << YAML::Value << theVector.y();
-		emitter << YAML::Key << "z" << YAML::Value << theVector.z();
-		emitter << YAML::Key << "w" << YAML::Value << theVector.w();
-		emitter << YAML::EndMap;*/
 		emitter << YAML::BeginSeq;
 		emitter << theVector.x();
 		emitter << theVector.y();

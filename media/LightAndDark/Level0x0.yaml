@@ -14,18 +14,22 @@ children:
     mass: 0
     physicsBodyGeneration: triangleMeshShape
     
-  - dataType: Light
+  - dataType: GameObject
     geometry: LightAndDark/LightCrystal.osgt
     position: [0, 0, 25]
     rotation: [0, 0, 0, 1]
     mass: 0
     physicsBodyGeneration: triangleMeshShape
-    ambient: [1, 1, 1, 1]
-    diffuse: [1, 1, 1, 1]
-    specular: [1, 1, 1, 1]
-    constantAttenuation: .00000000001
-    linearAttenuation: .000000000000001
-    quadraticAttenuation: .000000000000001
+    attachments:
+      - dataType: Light
+        position: [0, 0, 0]
+        rotation: [0, 0, 0, 1]
+        ambient: [1, 1, 1, 1]
+        diffuse: [1, 1, 1, 1]
+        specular: [1, 1, 1, 1]
+        constantAttenuation: .000000000000001
+        linearAttenuation: .0000000000000001
+        quadraticAttenuation: .0000000000000001
     
   - dataType: Player
     name: Malhela

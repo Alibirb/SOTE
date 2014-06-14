@@ -62,12 +62,11 @@ vertex groups False False
 Type of Grid.006 is MESH
 exporting object Grid.006
 mesh_object is Grid.006
-mesh Grid.006 with material Clover
+mesh Grid.006 with material Grass
 vertexes 324
 faces 81
 uvs channels 1 - dict_keys(['UVMap'])
-WARNING update material animation not yet supported
-----------------------------------
+---------------------------------
 vertex groups False False 
 
 Type of Grid.007 is MESH
@@ -111,6 +110,5 @@ geode GeodeGrid.008
 geode GeodeGrid.009
 write file to /run/media/daniel/SeagateExternal/ScumOfTheEarth/media/LightAndDark/Level0x0.osgt
 error while trying to copy file grass2.png to /run/media/daniel/SeagateExternal/ScumOfTheEarth/media/LightAndDark/textures: `/run/media/daniel/SeagateExternal/ScumOfTheEarth/media/LightAndDark/textures/grass2.png` and `/run/media/daniel/SeagateExternal/ScumOfTheEarth/media/LightAndDark/textures/grass2.png` are the same file
-error while trying to copy file clover 1.png to /run/media/daniel/SeagateExternal/ScumOfTheEarth/media/LightAndDark/textures: `/run/media/daniel/SeagateExternal/ScumOfTheEarth/media/LightAndDark/textures/clover 1.png` and `/run/media/daniel/SeagateExternal/ScumOfTheEarth/media/LightAndDark/textures/clover 1.png` are the same file
 error while trying to copy file FlatNormalMap.png to /run/media/daniel/SeagateExternal/ScumOfTheEarth/media/LightAndDark/textures: `/run/media/daniel/SeagateExternal/ScumOfTheEarth/media/LightAndDark/textures/FlatNormalMap.png` and `/run/media/daniel/SeagateExternal/ScumOfTheEarth/media/LightAndDark/textures/FlatNormalMap.png` are the same file
 Check log file /run/media/daniel/SeagateExternal/ScumOfTheEarth/media/LightAndDark/Level0x0.log

@@ -21,61 +21,15 @@
 
 #include "Level.h"
 
-Door::Door() : _inner(NULL)
+Door::Door(osg::Group* parentNode) : ControlledObject(parentNode), _inner(NULL)
 {
 	registerDoor();
 	_objectType = "Door";
 }
-Door::Door(GameObjectData* dataObj) : Door()
+Door::Door(GameObjectData* dataObj, osg::Group* parentNode) : Door(parentNode)
 {
 	load(dataObj);
 
-
-	//setPosition(osg::Vec3(0,8,0));
-	//setRotation(osg::Quat(0,0,0,1));
-	//_inner->setPosition(osg::Vec3(0,-4,0));
-/*
-	{
-		osgbDynamics::MotionState* motionState = (osgbDynamics::MotionState*) ((btRigidBody*) getPhysicsBody())->getMotionState();
-		//osg::Matrix* parentTransform = getWorldCoordinates(_inner->getTransformNode());
-		//osg::Matrix* parentTransform = getWorldCoordinates(_transformNode);
-		//motionState->setParentTransform(*parentTransform);
-		//osg::Matrix parentTransform = osg::Matrix::identity();
-		//osg::Matrix parentTransform = osg::Matrix::translate(osg::Vec3(0,8,0));
-		osg::Matrix parentTransform = osg::Matrix::translate(osg::Vec3(0,8,0));
-		motionState->setParentTransform(parentTransform);
-		motionState->setTransform(_transformNode.get());
-	//	btTransform transform = btTransform();
-	//	transform.setIdentity();
-		//transform.setOrigin(osgbCollision::asBtVector3(getWorldPosition() + physicsToModelAdjustment));
-		//btVector4 vector4 = osgbCollision::asBtVector4(getWorldRotation().asVec4());
-		//transform.setRotation(btQuaternion(vector4.x(), vector4.y(), vector4.z(), vector4.w()));
-		//transform.setOrigin(btVector3(8,-8,8));
-	//	motionState->setWorldTransform(transform);
-	}*/
-
-/*
-	{
-		osgbDynamics::MotionState* motionState = (osgbDynamics::MotionState*) ((btRigidBody*) _inner->getPhysicsBody())->getMotionState();
-		//osg::Matrix* parentTransform = getWorldCoordinates(_inner->getTransformNode());
-		//osg::Matrix* parentTransform = getWorldCoordinates(_transformNode);
-		//motionState->setParentTransform(*parentTransform);
-		osg::Matrix parentTransform = osg::Matrix::translate(osg::Vec3(0,8,0));
-		motionState->setParentTransform(parentTransform);
-		motionState->setTransform(_inner->getTransformNode().get());
-		btTransform worldTransform;
-        worldTransform.setIdentity();
-        worldTransform.setOrigin(btVector3(0,8,0));
-		motionState->setWorldTransform(worldTransform);
-	}*/
-
-	//_inner->setPosition(osg::Vec3(0,0,0));
-
-	//getPhysicsBody()->setActivationState(DISABLE_DEACTIVATION);
-	//_inner->getPhysicsBody()->setActivationState(DISABLE_DEACTIVATION);
-	//std::cout << getPhysicsBody()->getCollisionFlags() << std::endl;
-	//getPhysicsBody()->setCollisionFlags(0);
-	//getPhysicsBody()->set
 	btTransform frameInA = btTransform::getIdentity();
 	btTransform frameInB = btTransform::getIdentity();
 	frameInA.setOrigin(btVector3(0, 1,0));
@@ -95,25 +49,12 @@ Door::Door(GameObjectData* dataObj) : Door()
 
 	_stateMachine->changeState(_stateMachine->getStateName());	/// Dirty hack to ensure the door is properly positioned (must call the onEnter() function of the original state)
 
-/*
-	{
-		btTransform testTransform;
-		testTransform.setIdentity();
-		testTransform.setOrigin(btVector3(8, 0, 160));
-		btDefaultMotionState* testMotionState = new btDefaultMotionState(testTransform);
-		btRigidBody* testBody = new btRigidBody(10, testMotionState, new btBoxShape(btVector3(2, 2, 2)));
-		getCurrentLevel()->getBulletWorld()->addRigidBody(testBody);
-
-	}*/
-
-
 }
 
 Door::~Door()
 {
 	getCurrentLevel()->getBulletWorld()->removeConstraint(_constraint);
 	markForRemoval(_inner, _inner->_objectType);
-
 }
 
 
@@ -140,11 +81,8 @@ void Door::load(GameObjectData* dataObj)
 }
 void Door::loadDoorVariables(GameObjectData* dataObj)
 {
-	_inner = new GameObject(dataObj->getObject("innerPart"));
-	//_inner = new GameObject();
-	//_inner->parentTo(_transformNode);
-	//_inner->load(dataObj->getObject("innerPart"));
-	//_inner->setPosition(osg::Vec3(0,0,0));
+	//_inner = new GameObject(dataObj->getObject("innerPart"), root);
+	_inner = GameObject::create(dataObj->getObject("innerPart"), root);
 }
 
 void Door::open()
@@ -167,7 +105,7 @@ namespace AngelScriptWrapperFunctions
 {
 	Door* DoorFactoryFunction()
 	{
-		return new Door();
+		return new Door(root);
 	}
 }
 

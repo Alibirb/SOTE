@@ -19,7 +19,8 @@ protected:
 
 public:
 	Controller();
-	Controller(GameObjectData* dataObj);
+	Controller(osg::Group* parentNode);
+	Controller(GameObjectData* dataObj, osg::Group* parentNode);
 	virtual ~Controller();
 
 	void addControlledObject(ControlledObject* object);
