@@ -2,8 +2,6 @@
 
 #include "ControlledObject.h"
 
-#include "tinyxml/tinyxml2.h"
-
 #ifndef USE_BOX2D_PHYSICS
 	#include "BulletCollision/CollisionDispatch/btGhostObject.h"
 #endif // USE_BOX2D_PHYSICS

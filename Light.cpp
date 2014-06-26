@@ -2,7 +2,6 @@
 
 #include "globals.h"
 
-#include "tinyxml/tinyxml2.h"
 
 #include "AngelScriptEngine.h"
 

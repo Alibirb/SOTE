@@ -39,7 +39,6 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 			<Add directory="/usr/local/include" />
-			<Add directory="../Box2D_v2.3.0/Box2D" />
 			<Add directory="/home/daniel/Downloads/AngelScript/sdk" />
 			<Add directory="/usr/local/Bullet2.81/include/bullet" />
 			<Add directory="../../../Downloads/yaml-cpp-0.5.1/include" />
@@ -58,23 +57,21 @@
 			<Add library="osgAnimation" />
 			<Add library="osgUtil" />
 			<Add library="OpenThreads" />
-			<Add library="/usr/local/lib/libangelscript.a" />
+			<Add library="angelscript" />
 			<Add library="pthread" />
 			<Add library="BulletSoftBody" />
 			<Add library="BulletDynamics" />
 			<Add library="BulletCollision" />
 			<Add library="LinearMath" />
 			<Add library="yaml-cpp" />
-			<Add library="/usr/local/lib64/libCEGUIBase-0.so" />
-			<Add library="/usr/local/lib64/libCEGUICommonDialogs-0.so" />
+			<Add library="CEGUIBase-0" />
+			<Add library="CEGUICommonDialogs-0" />
 			<Add library="GL" />
 			<Add library="CEGUIOpenGLRenderer-0" />
 			<Add library="GLEW" />
 			<Add directory="/usr/local/lib" />
 			<Add directory="/usr/local/lib64" />
 			<Add directory="../ScumOfTheEarth" />
-			<Add directory="../Box2D_v2.3.0/Box2D/Box2D" />
-			<Add directory="tinyxml" />
 			<Add directory="/usr/local/lib64/cegui-0" />
 		</Linker>
 		<Unit filename="AngelScript.notes" />
@@ -147,8 +144,6 @@
 		<Unit filename="TextEditor.h" />
 		<Unit filename="ThirdPersonCameraManipulator.cpp" />
 		<Unit filename="ThirdPersonCameraManipulator.h" />
-		<Unit filename="TwoDimensionalCameraManipulator.cpp" />
-		<Unit filename="TwoDimensionalCameraManipulator.h" />
 		<Unit filename="Weapon.cpp" />
 		<Unit filename="Weapon.h" />
 		<Unit filename="WritingAndDesign/Ideas" />
@@ -220,8 +215,6 @@
 		<Unit filename="scriptstl.h" />
 		<Unit filename="stdvector.h" />
 		<Unit filename="tests.as" />
-		<Unit filename="tinyxml/tinyxml2.cpp" />
-		<Unit filename="tinyxml/tinyxml2.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />

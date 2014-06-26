@@ -19,9 +19,9 @@ children:
     rotation: [0, 0, 0, 1]
     attachments:
       - dataType: Light
-        quadraticAttenuation: 1.000000003627494e-15
-        linearAttenuation: 1.000000003627494e-15
-        constantAttenuation: 9.9999998245167e-14
+        quadraticAttenuation: 1.000000016862384e-16
+        linearAttenuation: 1.000000016862384e-16
+        constantAttenuation: 1.000000003627494e-15
         physicsBodyGeneration: none
         position: [0, 0, 0]
         specular: [1, 1, 1, 1]
@@ -33,23 +33,34 @@ children:
     capsuleHeight: 1.25
     maxSpeed: 6
     maxHealth: 100
-    mass: 0
+    mass: 2.192662220712161e+40
     team: Player
     name: Malhela
     physicsBodyGeneration: none
     geometry: LightAndDark/Malhela.osgt
-    position: [27.03654, 24.88564, 1.528182]
-    rotation: [0, 0, 0, 1]
+    position: [14.55633, -1.903439, 5.06471]
+    rotation: [0, 0, 0.6771547, 0.7358407]
     resistances:
       dataType: unordered_map
-      PURE_MAGIC: 0
       ACID: 0
       FIRE: 0
       COLD: 0
+      PURE_MAGIC: 0
     stateMachine:
       dataType: StateMachine
       defaultState: idle
       states:
+        attacking:
+          dataType: State
+          name: attacking
+          functions:
+            onUpdate: |
+              void onUpdate(Fighter@ self)
+              {
+                if(self.getCurrentAttack().done())
+                	self.returnToPreviousState();
+              }
+              
         idle:
           dataType: State
           name: idle
@@ -61,17 +72,6 @@ children:
               	//	self.useBestAttackOn(self.getClosestEnemy());
                 //else
               	//	print("No nearby enemies");
-              }
-              
-        attacking:
-          dataType: State
-          name: attacking
-          functions:
-            onUpdate: |
-              void onUpdate(Fighter@ self)
-              {
-                if(self.getCurrentAttack().done())
-                	self.returnToPreviousState();
               }
               
     attacks:

@@ -2,17 +2,14 @@
 
 TODO:
 	DoneThisCommit:
-		Reorganization:
-			Use factory function to create GameObjects and other Saveables.
-			Attachment system
-			Objects are now parented to a node owned by the Level they're in
-		Bug fixes for new graphics card
+		Clean up.
+			Remove all the 2D stuff
+			Get rid of the dependencies on libraries that aren't actually used.
 
 	Current Task:
 
 
 	Next Steps:
-		Clean up
 		Create Windows and OS X build targets and get it working on those platforms.
 		Documentation.
 
