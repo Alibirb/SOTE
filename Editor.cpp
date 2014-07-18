@@ -1,3 +1,7 @@
+#ifdef _WIN32
+	#include <windows.h>	/// Windows does some crazy shit if you don't include this file.
+#endif
+
 #include <GL/glew.h>
 
 #include "Editor.h"
@@ -23,7 +27,7 @@
 #include <CEGUI/CEGUI.h>
 
 #include <stdio.h>
-#ifdef WINDOWS
+#ifdef _WIN32
     #include <direct.h>
 #else
     #include <unistd.h>

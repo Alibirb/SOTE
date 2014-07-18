@@ -1,8 +1,7 @@
+#include "globals.h"
 #include "Level.h"
 
 
-
-#include "globals.h"
 
 #include "Player.h"
 #include "ControlledObject.h"

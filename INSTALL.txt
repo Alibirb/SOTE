@@ -1,0 +1,94 @@
+Building on Linux:
+	
+	Install a few essential applications:
+		cmake
+		make
+		codeblocks
+	Install library dependencies. To make things simpler, try to use your package manager where possible, rather than building everything from source. Remember to install the development packages as well so you have header files. If you can't find a suitable package for your system, download and compile from source.
+		OpenSceneGraph
+		CEGUI
+			Must use version 0.8
+		Bullet
+		AngelScript
+			Don't use your package manager for this one, because we're using some of the addons that come with it.
+			Download the latest version from http://angelcode.com/angelscript/downloads.html and extract it to the "dependencies/" folder, then use the makefile in "angelscript/sdk/angelscript/projects/gnuc/"
+		yaml-cpp
+		
+
+
+
+
+Building on Windows:
+		
+	TDM-gcc Mingw method (recommended):
+		First, install a few programs you'll need.
+			CMake
+			TDM-gcc
+				http://tdm-gcc.tdragon.net/
+				Make sure not to install TDM-gcc over an existing MinGW/GCC installation. It messes things up, especially if the previous installation is for 32 bit and you want to compile for 64 bit, or vice versa. If you have a folder named "C:/MinGW" or something like that, either delete it or rename it.
+				If you need a different version of MinGW for some other project, you can try to compile SOTE with that. It should work, but I can't guarantee it.
+			Code::Blocks
+				http://codeblocks.org/
+		Install library dependencies. All libraries should be downloaded and extracted to the "dependencies/" folder (you'll need to create the folder). The procedure to compile them usually comes down to using cmake-gui to configure options and generate project files, then using make to compile. Make sure to tell cmake to create files for mingw, not Visual Studio. Once cmake has generated the files, open up the TDM MinGW command prompt, and navigate to the folder with the newly-generated Makefile. To compile, enter "mingw32-make".
+			CEGUI
+				Compile the dependencies package first.
+					CEGUI has a bunch of options for which libraries to use as the backend. For the most part, it doesn't matter what you choose here. You'll need and xml parser, image loaders, and the GL stuff (GLEW, GLFW, and GLM). I chose expat, freetype2, GLEW, GLFW, GLM, PCRE, and Silly.
+					You may get some errors from .def files for some dependencies. If so, open the offending files, and comment out any lines that say "LIBRARY" (add a semicolon to the beginning of the line). This occured for me in src/libpng-1.4.7/scripts/pngwin.def and src/expat-2.0.1/lib/libexpat.def, but depending on which libraries you selected, you may get it in more/other/no places.
+					Once the dependencies are built, copy the cegui-deps-0.8.x-src/dependencies folder to cegui-0.8.4 (actual folder names/paths may differ).
+				When configuring CEGUI in cmake-gui, make sure to select the same libraries you selected when you build the dependencies.
+			OpenSceneGraph
+				You'll need the dependencies source package
+					http://www.osgvisual.org/public_download/3rdParty_x86_x64-src_V9.7z
+					extract that to the dependencies folder, alongside OpenSceneGraph.
+					Start by building zlib
+						Run "mingw32-make -fwin32/Makefile.gcc" from the zlib directory.
+					Then do libpng
+						You'll need to check the advanced options in cmake-gui, and point ZLIB_INCLUDE_DIR and ZLIB_LIBRARY to the right places.
+					If you use other image formats (jpeg, tiff, et cetera), you'll need to build those, too.
+					Copy the DLLs into the base "dependencies" folder (you'll need "zlib1.dll" and "libpng16.dll"
+				Tell cmake to build the binaries in the root OSG directory (same place with CMakeLists.txt)
+				Point ZLIB_INCLUDE_DIR and ZLIB_LIBRARY to the right places, then reconfigure and point PNG_LIBRARY_RELEASE and PNG_PNG_INCLUDE_DIR to the right places.
+			Bullet
+				Use Bullet 2.x, not Bullet 3 (We'll likely update to Bullet 3 when appropriate).
+				May need to add "#include <algorithm>" to any files that complain about std::max and std::min not being found
+				If you get errors about fmin and fmax being redefined, try unchecking the options for building examples in cmake-gui.
+				As of the time of this writing, there's a bug that causes gcc to seg fault when you compile Bullet with level 2 or 3 optimizations. As a workaround, specify build type "none" in cmake-gui so no optimizations are performed.
+			AngelScript
+				http://angelcode.com/angelscript/downloads.html
+				Use "angelscript/sdk/angelscript/projects/mingw/makefile" to compile.
+			yaml-cpp
+				https://code.google.com/p/yaml-cpp/downloads/list	(note these are .tar.gz files, not .zip files. To extract them, you'll need an archive manager like peazip (http://peazip.sourceforge.net/).)
+				This also requires boost, available at http://www.boost.org/
+					Go for 1.55.0
+					Boost is just header files, so just extract the archive to the dependencies folder. No compiling needed.
+				After configuring, cmake-gui will tell you it couldn't find boost. Check the box marked "advanced" to see all cmake variables. Change "Boost_INCLUDE_DIR" to point to the folder with Boost.
+				May need to add "#include <algorithm>" to any files that complain about std::max and std::min not being found
+		Open the Code::Blocks project file and hit "build".
+		Troubleshooting:
+			When compiling the framework, you may get errors about libraries not being found. Check the build log to see if it says something like "skipping incompatible <the file you want it to link to>". This may mean you compiled the library as 32 bit instead of 64. Rerun cmake-gui (deleting the cache so it starts over), and make sure it's set to use the TDM-gcc compiler.
+			If there are linker errors you don't understand, or the program fails to start, download Dependency Walker (http://www.dependencywalker.com/), which can help you fix any dependency errors. Note that using it directly on the project's executable doesn't work very well, because the search paths are relative to the SOTE base directory, not the directory where the executable is. My recommendation is try using it on the libraries you're linking with, or any of their example programs.
+			If debugging isn't working, check to make sure you have your environment set up to use the TDM version of gdb (not the version that came with Code::Blocks)
+			
+	
+	Visual Studio compiler method:		NOT RECOMMENDED, DOES NOT WORK WELL
+		First, you need a few programs in order to compile the dependencies:
+			Visual Studio 2013 For Windows Desktop (VS 2012 should also work.)
+			Windows SDK (see http://msdn.microsoft.com/en-us/windows/desktop/bg162891.aspx for the Windows 8.1 SDK)
+			CMake
+		Install library dependencies. All libraries should be downloaded and extracted to the dependencies folder. Check for files like INSTALL, README, et cetera for instructions on compiling each library. Run Visual Studio as administrator in order to install stuff.
+			CEGUI
+				Compile the dependencies package first.
+				The CEGUI documentation says not to use the "INSTALL" target.
+			OpenSceneGraph
+			Bullet
+				Must add "#include <algorithm>" to any files that complain about std::max and std::min not being found
+				If you get errors about fmin and fmax being redefined, try unchecking the options for building examples in cmake-gui.
+			AngelScript
+				http://angelcode.com/angelscript/downloads.html
+				After compiling, rename "angelscript64.lib" to "angelscript.lib"
+			yaml-cpp
+				https://code.google.com/p/yaml-cpp/downloads/list	(note these are .tar.gz files, not .zip files. To extract them, you'll need an archive manager like peazip (http://peazip.sourceforge.net/).)
+				This also requires boost, available at http://www.boost.org/
+				Go for 1.55.0
+				Add a variable in cmake-gui called "BOOST_ROOT", of type PATH, pointing to the folder with Boost.
+				Must add "#include <algorithm>" to any files that complain about std::max and std::min not being found

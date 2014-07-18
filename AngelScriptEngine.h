@@ -17,6 +17,8 @@
 	#include <windows.h> // timeGetTime()
 #endif
 
+#define AS_DEPRECATED	/// Allow deprecated AngelScript stuff.
+
 #include <angelscript.h>
 #include "scriptbuilder/scriptbuilder.h"
 #include "scripthelper/scripthelper.h"

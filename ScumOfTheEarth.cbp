@@ -6,48 +6,62 @@
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
-			<Target title="Debug">
+			<Target title="Linux Debug">
+				<Option platforms="Unix;" />
 				<Option output="bin/Debug/ScumOfTheEarth" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-Wall" />
 					<Add option="-pg" />
 					<Add option="-g" />
-					<Add directory="include" />
 				</Compiler>
 				<Linker>
 					<Add option="-pg" />
+					<Add option="-pthread" />
+					<Add library="pthread" />
+					<Add library="GL" />
 				</Linker>
 			</Target>
-			<Target title="Release">
-				<Option output="bin/Release/ScumOfTheEarth" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Release/" />
+			<Target title="Windows Debug">
+				<Option platforms="Windows;" />
+				<Option output="bin/Debug/ScumOfTheEarth" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
 				<Option type="1" />
-				<Option compiler="gcc" />
+				<Option compiler="tdm_mingw_64" />
 				<Compiler>
-					<Add option="-O2" />
-					<Add directory="include" />
+					<Add option="-Wall" />
+					<Add option="-pg" />
+					<Add option="-g" />
 				</Compiler>
 				<Linker>
-					<Add option="-s" />
+					<Add option="-pg -lgmon" />
+					<Add option="-pg" />
+					<Add library="OpenGL32" />
 				</Linker>
 			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-std=c++11" />
-			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 			<Add directory="/usr/local/include" />
 			<Add directory="/home/daniel/Downloads/AngelScript/sdk" />
 			<Add directory="/usr/local/Bullet2.81/include/bullet" />
-			<Add directory="../../../Downloads/yaml-cpp-0.5.1/include" />
 			<Add directory="/usr/include/bullet" />
 			<Add directory="/usr/lib/x86_64-linux-gnu" />
 			<Add directory="/usr/local/include/cegui-0" />
+			<Add directory="dependencies" />
+			<Add directory="dependencies/yaml-cpp-0.5.1/include" />
+			<Add directory="dependencies/angelscript/sdk/angelscript/include" />
+			<Add directory="dependencies/cegui-deps-0.8.x-src/lib/dependencies/include" />
+			<Add directory="dependencies/boost_1_55_0" />
+			<Add directory="dependencies/angelscript/sdk/add_on" />
+			<Add directory="dependencies/bullet-2.82-r2704/src" />
+			<Add directory="dependencies/OpenSceneGraph-3.2.1/include" />
+			<Add directory="dependencies/cegui-0.8.4/cegui/include" />
 		</Compiler>
 		<Linker>
-			<Add option="-pthread" />
 			<Add library="osg" />
 			<Add library="osgDB" />
 			<Add library="osgGA" />
@@ -58,21 +72,30 @@
 			<Add library="osgUtil" />
 			<Add library="OpenThreads" />
 			<Add library="angelscript" />
-			<Add library="pthread" />
 			<Add library="BulletSoftBody" />
 			<Add library="BulletDynamics" />
 			<Add library="BulletCollision" />
 			<Add library="LinearMath" />
-			<Add library="yaml-cpp" />
 			<Add library="CEGUIBase-0" />
 			<Add library="CEGUICommonDialogs-0" />
-			<Add library="GL" />
 			<Add library="CEGUIOpenGLRenderer-0" />
 			<Add library="GLEW" />
+			<Add library="yaml-cpp" />
 			<Add directory="/usr/local/lib" />
 			<Add directory="/usr/local/lib64" />
 			<Add directory="../ScumOfTheEarth" />
 			<Add directory="/usr/local/lib64/cegui-0" />
+			<Add directory="dependencies" />
+			<Add directory="dependencies/angelscript/sdk/angelscript/lib" />
+			<Add directory="dependencies/yaml-cpp-0.5.1/build/" />
+			<Add directory="dependencies/cegui-0.8.4/build/bin" />
+			<Add directory="dependencies/cegui-0.8.4/build/lib" />
+			<Add directory="dependencies/cegui-0.8.4/dependencies/bin" />
+			<Add directory="dependencies/cegui-0.8.4/dependencies/lib/static" />
+			<Add directory="dependencies/bullet-2.82-r2704/build/lib" />
+			<Add directory="dependencies/OpenSceneGraph-3.2.1/lib" />
+			<Add directory="dependencies/OpenSceneGraph-3.2.1/bin" />
+			<Add directory="dependencies/OpenSceneGraph-3.2.1/bin/osgPlugins-3.2.1" />
 		</Linker>
 		<Unit filename="AngelScript.notes" />
 		<Unit filename="AngelScriptConsole.cpp" />
@@ -146,7 +169,15 @@
 		<Unit filename="ThirdPersonCameraManipulator.h" />
 		<Unit filename="Weapon.cpp" />
 		<Unit filename="Weapon.h" />
-		<Unit filename="WritingAndDesign/Ideas" />
+		<Unit filename="dependencies/angelscript/sdk/add_on/scriptarray/scriptarray.cpp" />
+		<Unit filename="dependencies/angelscript/sdk/add_on/scriptarray/scriptarray.h" />
+		<Unit filename="dependencies/angelscript/sdk/add_on/scriptbuilder/scriptbuilder.cpp" />
+		<Unit filename="dependencies/angelscript/sdk/add_on/scriptbuilder/scriptbuilder.h" />
+		<Unit filename="dependencies/angelscript/sdk/add_on/scripthelper/scripthelper.cpp" />
+		<Unit filename="dependencies/angelscript/sdk/add_on/scripthelper/scripthelper.h" />
+		<Unit filename="dependencies/angelscript/sdk/add_on/scriptstdstring/scriptstdstring.cpp" />
+		<Unit filename="dependencies/angelscript/sdk/add_on/scriptstdstring/scriptstdstring.h" />
+		<Unit filename="dependencies/angelscript/sdk/add_on/scriptstdstring/scriptstdstring_utils.cpp" />
 		<Unit filename="globals.h" />
 		<Unit filename="initialize.as" />
 		<Unit filename="input.cpp" />
@@ -203,15 +234,6 @@
 		<Unit filename="osgwTools/Transform.h" />
 		<Unit filename="osgwTools/Version.h" />
 		<Unit filename="script.as" />
-		<Unit filename="scriptarray/scriptarray.cpp" />
-		<Unit filename="scriptarray/scriptarray.h" />
-		<Unit filename="scriptbuilder/scriptbuilder.cpp" />
-		<Unit filename="scriptbuilder/scriptbuilder.h" />
-		<Unit filename="scripthelper/scripthelper.cpp" />
-		<Unit filename="scripthelper/scripthelper.h" />
-		<Unit filename="scriptstdstring/scriptstdstring.cpp" />
-		<Unit filename="scriptstdstring/scriptstdstring.h" />
-		<Unit filename="scriptstdstring/scriptstdstring_utils.cpp" />
 		<Unit filename="scriptstl.h" />
 		<Unit filename="stdvector.h" />
 		<Unit filename="tests.as" />

@@ -23,7 +23,8 @@
 #ifndef __OSGBDYNAMICS_EXPORT_H__
 #define __OSGBDYNAMICS_EXPORT_H__ 1
 
-
+/// The files in this folder really shouldn't be part of the project. I took them from an existing library, and was too lazy to do things properly. The preprocessor definitions below (which seem to only apply on Windows) cause linker errors when we compile like this, so I commented them out.
+/*
 #if defined( _MSC_VER ) || defined( __CYGWIN__ ) || defined( __MINGW32__ ) || defined( __BCPLUSPLUS__ ) || defined( __MWERKS__ )
     #if defined( OSGBULLET_STATIC )
         #define OSGBDYNAMICS_EXPORT
@@ -35,7 +36,9 @@
 #else
     #define OSGBDYNAMICS_EXPORT
 #endif
+*/
 
+#define OSGBDYNAMICS_EXPORT
 
 // __OSGBDYNAMICS_EXPORT_H__
 #endif

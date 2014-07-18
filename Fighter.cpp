@@ -383,7 +383,8 @@ void registerFighter()
 	getScriptEngine()->registerObjectType("Fighter", sizeof(Fighter), asOBJ_REF | asOBJ_NOCOUNT );
 	getScriptEngine()->registerFactoryFunction("Fighter", "Fighter@ f()", asFUNCTION(FighterFactoryFunction));
 
-	getScriptEngine()->registerListType<Fighter*>("FighterList", "Fighter@");
+	getScriptEngine()->registerVector<Fighter*>("FighterList", "Fighter@");
+	//getScriptEngine()->registerListType<Fighter*>("FighterList", "Fighter@");
 	getScriptEngine()->registerFunction("FighterList getFighters()", asFUNCTION(getFighters), asCALL_CDECL);
 
 	getScriptEngine()->registerObjectMethod("Fighter", "Fighter@ getClosestEnemy(FighterList = getFighters())", asMETHOD(Fighter, getClosestEnemy), asCALL_THISCALL);

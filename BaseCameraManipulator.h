@@ -1,10 +1,10 @@
 #ifndef BASECAMERAMANIPULATOR_H
 #define BASECAMERAMANIPULATOR_H
 
-
+#include "globals.h"
 #include <osgGA/CameraManipulator>
 #include <osg/Quat>
-#include "globals.h"
+
 
 using namespace osgGA;
 

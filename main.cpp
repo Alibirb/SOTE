@@ -1,5 +1,9 @@
 #include <iostream>
 
+#ifdef _WIN32
+	#include <windows.h>	/// Windows does some crazy shit if you don't include this file.
+#endif
+
 #include <GL/glew.h>
 
 #include "globals.h"
@@ -76,7 +80,7 @@ protected:
 #include "Editor.h"
 
 #include <stdio.h>
-#ifdef WINDOWS
+#ifdef _WIN32
     #include <direct.h>
 #else
     #include <unistd.h>
@@ -277,11 +281,8 @@ osgViewer::Viewer* getViewer()
 
 
 
-
-
 int main()
 {
-
 	root = new osg::Group();
 	safeToAddRemoveNodes = true;
 

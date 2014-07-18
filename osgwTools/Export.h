@@ -21,7 +21,8 @@
 #ifndef __OSGWTOOLS_EXPORT__
 #define __OSGWTOOLS_EXPORT__ 1
 
-
+/// The files in this folder really shouldn't be part of the project. I took them from an existing library, and was too lazy to do things properly. The preprocessor definitions below (which seem to only apply on Windows) cause linker errors when we compile like this, so I commented them out.
+/*
 #if defined ( _MSC_VER ) || defined ( __CYGWIN__ ) || defined ( __MINGW32__ ) || defined ( __BCPLUSPLUS__ ) || defined ( __MWERKS__ )
  #if defined ( OSGWTOOLS_LIBRARY )
   #define OSGWTOOLS_EXPORT __declspec( dllexport )
@@ -31,7 +32,9 @@
 #else
  #define OSGWTOOLS_EXPORT
 #endif
+*/
 
+#define OSGWTOOLS_EXPORT
 
 // __OSGWTOOLS_EXPORT__
 #endif

@@ -6,7 +6,9 @@ obj/
 *~
 *.blend1
 *.blend2
-./gnom.out
+gnom.out
 output/
 *.log
 *.cscope_file_list
+dependencies/
+*Thumbs.db

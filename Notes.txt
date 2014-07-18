@@ -2,15 +2,14 @@
 
 TODO:
 	DoneThisCommit:
-		Clean up.
-			Remove all the 2D stuff
-			Get rid of the dependencies on libraries that aren't actually used.
+		Got it working on Winblows so Josh can finally check out the framework properly
 
 	Current Task:
+		Get it working on Winblows.
 
 
 	Next Steps:
-		Create Windows and OS X build targets and get it working on those platforms.
+		Get it working on OS X
 		Documentation.
 
 
@@ -32,6 +31,12 @@ TODO:
 		Get rid of ControlledObject class and put that functionality into GameObject.
 		Get rid of Fighter and just put that functionality into Entity
 		Get rid of Player and give Entities an EntityController, either an AIController or PlayerController. Player characters will have an EntityController of both types, and switch between the two as appropriate.
+
+	Before releasing this to the public in any way:
+		FIX LICENSING ISSUES!!
+			The osgBullet stuff and osgwTools are under a license that would require SOTE to be under the same or compatible license if I don't move them.
+			The AngelScript addons may have some issues to fix, along with stdvector and some other stuff.
+			The CEGUI implementation may contain files modified from someone else's code
 
 	Much later
 		Possibly create my own data storage language:
@@ -57,7 +62,6 @@ TODO:
 		Changing game speed
 	Physics fixes:
 		figure out proper collision filtering technique for ghost objects (there should be no collision response, but it still needs to be detected.)
-	Make sure it all works on Windows
 	Figure out what to do about YAML's hatred of tabs (either put a hack into the text editor so it treats spaces like tabs, or alter yaml-cpp so it allows tabs. Or use a different data language)
 	Make it possible to have multiple levels loaded at once (and have all objects in one level ignore objects in others)
 	Will probably want the light crystals to use special shaders that give them mysterious effects (rainbow colors and such)

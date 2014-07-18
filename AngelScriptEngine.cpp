@@ -9,6 +9,16 @@
 #include "Player.h"
 #include "Weapon.h"
 
+
+#ifdef __linux__
+	DWORD timeGetTime()
+	{
+		timeval time;
+		gettimeofday(&time, NULL);
+		return time.tv_sec*1000 + time.tv_usec/1000;
+	}
+#endif
+
 using namespace osg;
 
 namespace AngelScriptWrapperFunctions
@@ -35,13 +45,6 @@ namespace AngelScriptWrapperFunctions
 
 using namespace AngelScriptWrapperFunctions;
 
-
-DWORD timeGetTime()
-{
-	timeval time;
-	gettimeofday(&time, NULL);
-	return time.tv_sec*1000 + time.tv_usec/1000;
-}
 
 void print(std::string& msg)
 {
