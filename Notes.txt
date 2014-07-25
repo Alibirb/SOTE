@@ -2,18 +2,24 @@
 
 TODO:
 	DoneThisCommit:
-		Got it working on Winblows so Josh can finally check out the framework properly
+		Got things working on OS X.
 
 	Current Task:
-		Get it working on Winblows.
-
 
 	Next Steps:
-		Get it working on OS X
-		Documentation.
+		Editor stuff:
+			Improve the text editor so it can actually be used to edit the level file.
+				File loading and saving
+				Buttons to:
+					Load file
+					Save file
+					Export current scene to file.
+					Import scene from file.
+				For simplicity, no dialogs for file selection. it will only deal with the file that the current level is loaded from.
+				Fix those glitches.
 
 
-
+		Figure out a better system for displaying warnings and errors (currently the screen gets filled up with warnings from osg and CEGUI and if one of MY warnings shows up, it's lost in the mess)
 		Improve import/export to allow it to link to prototypes.
 
 		Need path-finding. Recast/Detour sounds good. Automatically creates navmesh.
@@ -50,16 +56,11 @@ TODO:
 
 	Objects:
 		Some mechanism by which you can easily move between a set list of places (teleportation, taxicab, etc.). Long glides, jumps, etc. may leave you stranded otherwise.
-	Scripting:
-		Add ability to load (not run) an AngelScript file, adding functions, variables, object types, etc to the current context/module.
-			Can use the CompileFunction and CompileGlobalVar functions to add functions and variables.
 	AI:
 		Enemies need more intelligent behavior (e.g. dodge)
 	Input:
 		Should be able to register a function to be executed on key press/release. Function will likely be in AngelScript.
 	Use a game clock that's separate from the real-time clock. For debugging purposes. Allows the game to run in slow/fast motion.
-	Development cheats and features:
-		Changing game speed
 	Physics fixes:
 		figure out proper collision filtering technique for ghost objects (there should be no collision response, but it still needs to be detected.)
 	Figure out what to do about YAML's hatred of tabs (either put a hack into the text editor so it treats spaces like tabs, or alter yaml-cpp so it allows tabs. Or use a different data language)
@@ -83,7 +84,7 @@ BUGS:
 		As a temporary work-around, I'm loading all windows through Viewer::realize() (with a GraphicsOperation). However, this does not allow new windows to be loaded after the program is set up.
 		I think I can do stuff on the graphics thread by obtaining the GraphicsContext and calling add() on it, passing in an object that inherits from osg::Operation. If I make an Operation class to create a CEGUI object, I should be able to get it working.
 	Low Priority (it works, but might be ugly):
-		Inefficient debug rendering. Before getting the new graphics card, I thought it was just too much for my Integrated graphics. However, a look at the NVIDIA settings program shows that the GPU utilization DROPS when I turn on debug rendering. I believe the issue is that the debug drawing is done sequentially, line-by-line. Perhaps I need to split it up so it can render in parallel.
+		Inefficient debug rendering. Before getting the new graphics card, I thought it was just too much for my integrated graphics. However, a look at the NVIDIA settings program shows that the GPU utilization DROPS when I turn on debug rendering. I believe the issue is that the debug drawing is done sequentially, line-by-line. I need to split it up so it can render in parallel.
 
 Bugs/issues I expect to see later:
 
@@ -116,7 +117,7 @@ Scripting Uses:
 	Testing purposes.
 	"You want to expose capable, but soulless actors to your scripting code. The scripting code describes what the actors should do, but the C++ code takes care of the how."	-- http://stackoverflow.com/questions/609076/the-role-of-scripting-languages-in-game-programming
 	Used to define the behavior of objects. C++ will only contain a handful of game object classes. AngelScript is responsible for determing the properties and behavior of each object.
-	scene definition (movement, special effects, camera, sounds, etc.)
+	Scripted events
 
 
 Engine features:
@@ -125,7 +126,6 @@ Engine features:
 		A level file will contain a list of all objects in the level. Objects can link to prototypes defined in separate files. The prototypes can link to more prototypes and allow for similar objects to share a common base.
 		Can embed AngelScript inside the YAML file to define an object's behaviors.
 		Will have some mechanism to selectively choose the parameters that get loaded (e.g. load a simpler model on devices with less resources, give the enemy less health on lower difficulty settings, et cetera)
-	Views a game as a collection of objects, behaviors, and relationships.
 
 
 Libraries to check out later:

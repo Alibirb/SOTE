@@ -30,15 +30,39 @@
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="tdm_mingw_64" />
+				<Option projectCompilerOptionsRelation="0" />
+				<Option projectLinkerOptionsRelation="0" />
+				<Option projectIncludeDirsRelation="0" />
+				<Option projectResourceIncludeDirsRelation="0" />
+				<Option projectLibDirsRelation="0" />
+				<MakeCommands>
+					<Build command="" />
+					<CompileFile command="" />
+					<Clean command="" />
+					<DistClean command="" />
+					<AskRebuildNeeded command="" />
+					<SilentBuild command=" &gt; $(CMD_NULL)" />
+				</MakeCommands>
+			</Target>
+			<Target title="OS X Debug">
+				<Option platforms="Mac;" />
+				<Option output="bin/Debug/ScumOfTheEarth" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="clang" />
 				<Compiler>
-					<Add option="-Wall" />
-					<Add option="-pg" />
+					<Add option="-std=c++11" />
 					<Add option="-g" />
+					<Add option="-pg" />
+					<Add directory="/sw/opt/boost-1_55/include" />
 				</Compiler>
 				<Linker>
-					<Add option="-pg -lgmon" />
 					<Add option="-pg" />
-					<Add library="OpenGL32" />
+					<Add option="-pthread" />
+					<Add option="-framework OpenGL" />
+					<Add option="-stdlib=libc++" />
+					<Add library="pthread" />
+					<Add directory="/System/Library/Frameworks" />
 				</Linker>
 			</Target>
 		</Build>
@@ -46,7 +70,6 @@
 			<Add option="-std=c++11" />
 			<Add option="-fexceptions" />
 			<Add directory="/usr/local/include" />
-			<Add directory="/home/daniel/Downloads/AngelScript/sdk" />
 			<Add directory="/usr/local/Bullet2.81/include/bullet" />
 			<Add directory="/usr/include/bullet" />
 			<Add directory="/usr/lib/x86_64-linux-gnu" />
@@ -60,6 +83,7 @@
 			<Add directory="dependencies/bullet-2.82-r2704/src" />
 			<Add directory="dependencies/OpenSceneGraph-3.2.1/include" />
 			<Add directory="dependencies/cegui-0.8.4/cegui/include" />
+			<Add directory="dependencies/cegui-0.8.4/dependencies/include" />
 		</Compiler>
 		<Linker>
 			<Add library="osg" />
@@ -83,19 +107,16 @@
 			<Add library="yaml-cpp" />
 			<Add directory="/usr/local/lib" />
 			<Add directory="/usr/local/lib64" />
-			<Add directory="../ScumOfTheEarth" />
 			<Add directory="/usr/local/lib64/cegui-0" />
 			<Add directory="dependencies" />
 			<Add directory="dependencies/angelscript/sdk/angelscript/lib" />
-			<Add directory="dependencies/yaml-cpp-0.5.1/build/" />
-			<Add directory="dependencies/cegui-0.8.4/build/bin" />
-			<Add directory="dependencies/cegui-0.8.4/build/lib" />
+			<Add directory="dependencies/yaml-cpp-0.5.1/" />
+			<Add directory="dependencies/cegui-0.8.4/bin" />
+			<Add directory="dependencies/cegui-0.8.4/lib" />
 			<Add directory="dependencies/cegui-0.8.4/dependencies/bin" />
 			<Add directory="dependencies/cegui-0.8.4/dependencies/lib/static" />
 			<Add directory="dependencies/bullet-2.82-r2704/build/lib" />
 			<Add directory="dependencies/OpenSceneGraph-3.2.1/lib" />
-			<Add directory="dependencies/OpenSceneGraph-3.2.1/bin" />
-			<Add directory="dependencies/OpenSceneGraph-3.2.1/bin/osgPlugins-3.2.1" />
 		</Linker>
 		<Unit filename="AngelScript.notes" />
 		<Unit filename="AngelScriptConsole.cpp" />

@@ -1,3 +1,10 @@
+Recommended Dependency versions:
+	AngelScript: 2.29.0
+	OpenSceneGraph: 3.2.x
+	CEGUI: 0.8.x
+
+
+
 Building on Linux:
 	
 	Install a few essential applications:
@@ -18,9 +25,69 @@ Building on Linux:
 
 
 
+Building on OS X:
+	
+	The way Code::Blocks launches the OS X Terminal launches it in your home directory, not the project directory. Since we have files we need to load, you'll need to modify the launching script (settings->Environment->"general settings"->"Terminal to launch console programs" to read:
+		osascript -e 'tell app "Terminal"' -e 'activate' -e 'do script "cd Documents/SOTE; $SCRIPT"' -e 'end tell'
+	If the base directory of SOTE is not "/Users/(yourName)/Documents/SOTE", you'll need to change the "cd" to reflect where you put SOTE.
+	
+	Install a few essential applications:
+		cmake
+		Code::Blocks
+			http://codeblocks.org/downloads
+		Xcode
+
+	Install library dependencies: Create a folder named "dependencies" in the base SOTE directory and extract all the dependencies to that folder, then use CMake to generate Unix makefiles for each dependency and use make to compile.
+		OpenSceneGraph
+			http://openscenegraph.org
+			As of the time of this writing, OSG doesn't set itself up to compile the way we want it to. We need to edit CMakeLists.txt a bit, around line 816:
+				Change CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD from "c++98" to "c++11"
+				Change CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY from "libstdc++" to "libc++"
+				Change CMAKE_CXX_FLAGS so that it has "-std=c++11" and "-stdlib=libc++".	
+		CEGUI
+			http://cegui.org.uk/download
+			Must use version 0.8
+			Compile the dependencies package first.
+				CEGUI has a bunch of options for which libraries to use as the backend. For the most part, it doesn't matter what you choose here. You'll need and xml parser, image loaders, and the GL stuff (GLEW, GLFW, and GLM). I chose expat, freetype2, GLEW, GLFW, GLM, PCRE, and Silly.
+				Once the dependencies are built, copy the cegui-deps-0.8.x-src/dependencies folder to cegui-0.8.4 (actual folder names/paths may differ).
+			When configuring CEGUI in cmake-gui, make sure to select the same libraries you selected when you build the dependencies.
+			Apparently OS X has system libraries with the same names as standard open source libraries (e.g. libjpeg) included in CEGUI's dependencies. To avoid confusing the linker (SOTE uses the open source libs through CEGUI, and the OS X libs through OSG, so we need both), you need to tell CEGUI to link to its dependencies staticly so they won't interfere. To do so, enable "CEGUI_BUILD_SHARED_LIBS_WITH_STATIC_DEPENDENCIES" in cmake-gui.
+			You may get an error about undefined symbols (specifically stuff like "_inflate") when building the SILLY codec. This is due to cmake screwing up and not telling the linker to link with libzlib.a To fix it:
+				 Edit the file "cegui/src/ImageCodecModules/SILLY/CMakeFiles/CEGUISILLYImageCodec.dir/link.txt", adding "../../../../dependencies/lib/static/libzlib.a" to the end of it
+				 You may also need to edit the file "cegui/src/ImageCodecModules/SILLY/CMakeFiles/CEGUISILLYImageCodec.dir/build.make". Around line 109, it should list a bunch of the dependencies that should be linked to. Add a line telling it to link to "dependencies/lib/static/libzlib.a"
+		Bullet
+			http://code.google.com/p/bullet/downloads/list
+			May have to copy the libraries into build/lib/ after compiling.
+		AngelScript
+			Download from http://angelcode.com/angelscript/downloads.html and extract it to the "dependencies/" folder. If it comes out as a folder named "sdk", create a new folder named "angelscript" and put "sdk" in that.
+			Use "angelscript/sdk/angelscript/projects/xcode/angelscript.xcodeproj"
+			For some reason (maybe I did things wrong), XCode puts the library in a crazy location. Move libangelscript.a to "angelscript/sdk/angelscript/lib/"
+			On OS X, we're using clang, which has AngelScript fails to account for when checking for C++11.
+				In angelscript/sdk/addons/scripthelper/scripthelper.h, add "|| defined(__clang__)" to the end of the line that says "#if defined(__GNUC__) && __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8) " (line 53)
+				Also replace
+					bool hasAssignmentOperator = std::is_copy_assignable<T>::value && !std::has_trivial_copy_assign<T>::value;
+					bool hasCopyConstructor = std::is_copy_constructible<T>::value && !std::has_trivial_copy_constructor<T>::value;
+				with
+					#if defined(__clang__)
+						bool hasAssignmentOperator = std::is_copy_assignable<T>::value && !std::is_trivially_copy_assignable<T>::value;
+						bool hasCopyConstructor = std::is_copy_constructible<T>::value && !std::is_trivially_copy_constructible<T>::value;
+					#else
+						bool hasAssignmentOperator = std::is_copy_assignable<T>::value && !std::has_trivial_copy_assign<T>::value;
+						bool hasCopyConstructor = std::is_copy_constructible<T>::value && !std::has_trivial_copy_constructor<T>::value;
+					#endif
+		yaml-cpp
+			https://code.google.com/p/yaml-cpp/downloads/list
+			You'll need to install boost for yaml-cpp. You can do so through Fink, or just download Boost manually and put it in the dependencies folder
+	
+	There's some chance that we may have a HUGE rendering efficiency issue on OS X. The only Mac I have to test on is a fairly crappy old Macbook Pro with 128 MB of VRAM, and it got around 3 FPS or something. I think it's just a crappy video card, but I can't be sure.
+
+
+
+
+
 Building on Windows:
 		
-	TDM-gcc Mingw method (recommended):
+	TDM-gcc Mingw method:
 		First, install a few programs you'll need.
 			CMake
 			TDM-gcc
@@ -49,6 +116,7 @@ Building on Windows:
 				Tell cmake to build the binaries in the root OSG directory (same place with CMakeLists.txt)
 				Point ZLIB_INCLUDE_DIR and ZLIB_LIBRARY to the right places, then reconfigure and point PNG_LIBRARY_RELEASE and PNG_PNG_INCLUDE_DIR to the right places.
 			Bullet
+				http://code.google.com/p/bullet/downloads/list
 				Use Bullet 2.x, not Bullet 3 (We'll likely update to Bullet 3 when appropriate).
 				May need to add "#include <algorithm>" to any files that complain about std::max and std::min not being found
 				If you get errors about fmin and fmax being redefined, try unchecking the options for building examples in cmake-gui.
@@ -68,27 +136,3 @@ Building on Windows:
 			When compiling the framework, you may get errors about libraries not being found. Check the build log to see if it says something like "skipping incompatible <the file you want it to link to>". This may mean you compiled the library as 32 bit instead of 64. Rerun cmake-gui (deleting the cache so it starts over), and make sure it's set to use the TDM-gcc compiler.
 			If there are linker errors you don't understand, or the program fails to start, download Dependency Walker (http://www.dependencywalker.com/), which can help you fix any dependency errors. Note that using it directly on the project's executable doesn't work very well, because the search paths are relative to the SOTE base directory, not the directory where the executable is. My recommendation is try using it on the libraries you're linking with, or any of their example programs.
 			If debugging isn't working, check to make sure you have your environment set up to use the TDM version of gdb (not the version that came with Code::Blocks)
-			
-	
-	Visual Studio compiler method:		NOT RECOMMENDED, DOES NOT WORK WELL
-		First, you need a few programs in order to compile the dependencies:
-			Visual Studio 2013 For Windows Desktop (VS 2012 should also work.)
-			Windows SDK (see http://msdn.microsoft.com/en-us/windows/desktop/bg162891.aspx for the Windows 8.1 SDK)
-			CMake
-		Install library dependencies. All libraries should be downloaded and extracted to the dependencies folder. Check for files like INSTALL, README, et cetera for instructions on compiling each library. Run Visual Studio as administrator in order to install stuff.
-			CEGUI
-				Compile the dependencies package first.
-				The CEGUI documentation says not to use the "INSTALL" target.
-			OpenSceneGraph
-			Bullet
-				Must add "#include <algorithm>" to any files that complain about std::max and std::min not being found
-				If you get errors about fmin and fmax being redefined, try unchecking the options for building examples in cmake-gui.
-			AngelScript
-				http://angelcode.com/angelscript/downloads.html
-				After compiling, rename "angelscript64.lib" to "angelscript.lib"
-			yaml-cpp
-				https://code.google.com/p/yaml-cpp/downloads/list	(note these are .tar.gz files, not .zip files. To extract them, you'll need an archive manager like peazip (http://peazip.sourceforge.net/).)
-				This also requires boost, available at http://www.boost.org/
-				Go for 1.55.0
-				Add a variable in cmake-gui called "BOOST_ROOT", of type PATH, pointing to the folder with Boost.
-				Must add "#include <algorithm>" to any files that complain about std::max and std::min not being found

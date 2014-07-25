@@ -9,7 +9,7 @@
 #include <osg/Vec4>
 #include <osg/Quat>
 
-
+#include <string>
 
 
 

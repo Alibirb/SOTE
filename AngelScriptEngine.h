@@ -7,32 +7,38 @@
 
 #include <assert.h>  // assert()
 #include <string.h>  // strstr()
-#ifdef __linux__
-	#include <sys/time.h>
+#ifdef _WIN32
+	#include <conio.h>   // kbhit(), getch()
+	#include <windows.h> // timeGetTime()
+#else
+    #include <sys/time.h>
 	#include <stdio.h>
 	#include <termios.h>
 	#include <unistd.h>
-#else
-	#include <conio.h>   // kbhit(), getch()
-	#include <windows.h> // timeGetTime()
 #endif
 
 #define AS_DEPRECATED	/// Allow deprecated AngelScript stuff.
 
+#if __cplusplus >= 201103L
+	#define AS_CAN_USE_CPP11 1	/// AngelScript does not properly detect C++11 on clang (clang defines __GNUC__ and __GNUC_MINOR_, which makes AngelScript think it's an outdated GCC compiler.
+#endif
+/// Note that SOTE requires C++11.
+
+#ifdef __clang__
+	/// Clang does not supply std::has_trivial_default_constructor
+	#include <type_traits>
+	namespace std {
+	template<typename T>
+	struct has_trivial_default_constructor
+	{
+		static bool const value = __is_trivially_constructible(T);
+	};
+	}
+#endif
+
 #include <angelscript.h>
 #include "scriptbuilder/scriptbuilder.h"
 #include "scripthelper/scripthelper.h"
-
-
-#ifdef __linux__
-
-	#define UINT unsigned int
-	typedef unsigned int DWORD;
-
-	// Linux doesn't have timeGetTime(), this essentially does the same thing, except this is milliseconds since Epoch (Jan 1st 1970) instead of system start. It will work the same though...
-	DWORD timeGetTime();
-
-#endif
 
 
 #include "globals.h"

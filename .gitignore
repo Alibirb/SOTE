@@ -10,5 +10,6 @@ gnom.out
 output/
 *.log
 *.cscope_file_list
-dependencies/
+dependencies/*
 *Thumbs.db
+*.DS_Store
