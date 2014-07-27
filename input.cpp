@@ -51,9 +51,7 @@ bool MainEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIAction
 
 		if(ea.getKey() == osgGA::GUIEventAdapter::KEY_Escape)
 		{
-			std::cout << "Detected escape key" << std::endl;
 			runCleanup();
-			std::cout << "Cleanup finished" << std::endl;
 		}
 
 
@@ -71,9 +69,6 @@ bool MainEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIAction
 			case 'p':
 				getCurrentLevel()->getDebugDrawer()->setEnabled(!getCurrentLevel()->getDebugDrawer()->getEnabled());
 				break;
-			/*case 'o':
-				writeOutSceneGraph();
-				break;*/
 
 			case 'q':
 				if(getActivePlayer()->getClosestEnemy())

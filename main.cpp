@@ -261,12 +261,7 @@ void runCleanup()
 void writeOutSceneGraph()
 {
 	osgDB::writeNodeFile(*root, "output/sceneGraph.osg");
-	level->saveAsYaml("output/exportedScene.yaml");
-
-	GameObjectData::testYamlImportExport("output/exportedScene.yaml", "output/doublyExportedScene.yaml");
-
-	level->reload("output/exportedScene.yaml");
-	//level->reload("media/DemoLevel.yaml");
+	level->saveAsFile("output/exportedScene.yaml");
 }
 
 
@@ -343,7 +338,7 @@ int main()
 
 
 	//getEditor()->setupDefaultWindows();
-	getEditor()->setMode(Editor::Play);
+	getEditor()->setMode(Editor::Edit);
 
 	addAndRemoveQueuedNodes();
 

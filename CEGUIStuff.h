@@ -83,88 +83,13 @@ struct CEGUIEventCallback : public osgGA::GUIEventHandler
 
     CEGUI::Key::Scan osgToCEGUIKey(int osgKey);
 
+    bool isPrintableCEGUIKey(int ceguiKey);
+
     /** do customized Event code. */
     virtual bool handle(const osgGA::GUIEventAdapter& ea,osgGA::GUIActionAdapter& aa, osg::Object* obj, osg::NodeVisitor* nv);
 };
 
 
-/*
-int main( int argc, char **argv )
-{
-
-    // use an ArgumentParser object to manage the program arguments.
-    osg::ArgumentParser arguments(&argc,argv);
-
-
-    // construct the viewer.
-    osgViewer::Viewer viewer;
-
-
-    osg::ref_ptr<osg::Geode> geode = new osg::Geode;
-    osg::ref_ptr<CEGUIDrawable> cd = new CEGUIDrawable();
-    geode->addDrawable(cd.get());
-
-    std::string scheme;
-    while(arguments.read("--scheme",scheme))
-    {
-        cd->loadScheme(scheme);
-    }
-
-    std::string font;
-    while(arguments.read("--font",font))
-    {
-        cd->loadFont(font);
-    }
-
-    std::string layout;
-    while(arguments.read("--layout",layout))
-    {
-        cd->loadLayout(layout);
-    }
-
-    osg::Timer_t start_tick = osg::Timer::instance()->tick();
-
-    // read the scene from the list of file specified command line args.
-    osg::ref_ptr<osg::Node> loadedModel = osgDB::readNodeFiles(arguments);
-
-    // if no model has been successfully loaded report failure.
-    if (!loadedModel)
-    {
-        std::cout << arguments.getApplicationName() <<": No data loaded" << std::endl;
-        return 1;
-    }
-
-    osg::ref_ptr<osg::Group> group = new osg::Group;
-    group->addChild(loadedModel.get());
-
-    group->addChild(geode.get());
-
-
-    // any option left unread are converted into errors to write out later.
-    arguments.reportRemainingOptionsAsUnrecognized();
-
-    // report any errors if they have occurred when parsing the program arguments.
-    if (arguments.errors())
-    {
-        arguments.writeErrorMessages(std::cout);
-    }
-
-    osg::Timer_t end_tick = osg::Timer::instance()->tick();
-
-    std::cout << "Time to load = "<<osg::Timer::instance()->delta_s(start_tick,end_tick)<<std::endl;
-
-
-    // optimize the scene graph, remove redundant nodes and state etc.
-    osgUtil::Optimizer optimizer;
-    optimizer.optimize(loadedModel.get());
-
-    // pass the loaded scene graph to the viewer.
-    viewer.setSceneData(group.get());
-
-    // run the viewer
-    return viewer.run();
-}
-*/
 
 
 #endif

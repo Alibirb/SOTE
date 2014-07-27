@@ -130,12 +130,13 @@ Level::Level(std::string filename)
 	_debugDrawer = new osgbCollision::GLDebugDrawer();
 	_physicsWorld->setDebugDrawer(_debugDrawer);
 	_debugDrawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);
+	_debugDrawer->setEnabled(false);
 	addToSceneGraph(_debugDrawer->getSceneGraph(), levelRoot);
 	_physicsWorld->setInternalTickCallback(myTickCallback);
 #endif
 
 	_filename = filename;
-	load(filename);
+	loadFromFile(filename);
 }
 
 Level::~Level()
@@ -157,41 +158,50 @@ GameObjectData* Level::save()
 }
 
 
-void Level::saveAsYaml(std::string filename)
+void Level::saveAsFile(std::string filename)
 {
 	YAML::Emitter emitter;
-	//emitter << this->save()->toYAML();
 	this->save()->toYAML(emitter);
-	//emitter << YAML::Flow << this->save()->toYAML();
 	std::ofstream fout(filename);
 	fout << emitter.c_str();
-	//fout << this->save()->toYAML();
 }
-void Level::loadFromYaml(std::string filename)
+std::string Level::saveAsString()
 {
+	YAML::Emitter emitter;
+	this->save()->toYAML(emitter);
+	return emitter.c_str();
+}
+void Level::loadFromString(std::string text)
+{
+	clear();
+
+	GameObjectData* dataObj = new GameObjectData(YAML::Load(text));
+
+	for(auto child : dataObj->getObjectList("children"))
+		addObject(GameObject::create(child, levelRoot));
+}
+void Level::loadFromFile(std::string filename)
+{
+	clear();
+
+	_filename = filename;
+
 	GameObjectData* dataObj = new GameObjectData(YAML::LoadFile(filename));
 
 	for(auto child : dataObj->getObjectList("children"))
 		addObject(GameObject::create(child, levelRoot));
 }
-void Level::load(std::string filename)
-{
-	loadFromYaml(filename);
-}
-void Level::reload(std::string filename)
-{
-	std::cout << "reloading" << std::endl;
 
+void Level::reload()
+{
+	loadFromFile(_filename);
+}
+void Level::clear()
+{
 	for(auto obj : _objects)
 		markForRemoval(obj, obj->_objectType);
 
 	_playerNames.clear();
-
-	loadFromYaml(filename);
-}
-void Level::reload()
-{
-	reload(_filename);
 }
 
 void Level::addObject(GameObject* obj)
@@ -293,6 +303,10 @@ std::unordered_map<std::string, Player*> Level::getPlayers()
 	return _players;
 }
 
+std::string Level::getFilename()
+{
+	return _filename;
+}
 
 
 Level* currentLevel;

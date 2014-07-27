@@ -65,8 +65,8 @@ children:
               void onUpdate(Fighter@ self)
               {
               	//if(self.getClosestEnemy() !is null)
-              	//	self.useBestAttackOn(self.getClosestEnemy());
-                //else
+              	//self.useBestAttackOn(self.getClosestEnemy());
+              	//else
               	//	print("No nearby enemies");
               }
         attacking:

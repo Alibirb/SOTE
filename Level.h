@@ -91,11 +91,13 @@ public:
 
 	virtual GameObjectData* save();	/// Saves the object's data
 
-	void saveAsYaml(std::string filename);
+	void saveAsFile(std::string filename);
+	std::string saveAsString();
 
-	void load(std::string filename);
-	void reload(std::string filename);
+	void loadFromFile(std::string filename);
+	void loadFromString(std::string text);
 	void reload();
+	void clear();	/// Removes everything from the Level.
 
 	void removeObject(GameObject* obj);
 
@@ -107,9 +109,9 @@ public:
 	void addPlayer(std::string playerName, Player* thePlayer);
 	std::unordered_map<std::string, Player*> getPlayers();
 	std::list<std::string> getPlayerNames();
+	std::string getFilename();
 
 protected:
-	void loadFromYaml(std::string filename);
 
 	void addObject(GameObject* obj);
 

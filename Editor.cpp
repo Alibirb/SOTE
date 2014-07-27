@@ -8,11 +8,6 @@
 
 
 
-#include <osgWidget/Box>
-#include <osgWidget/WindowManager>
-#include <osgWidget/ViewerEventHandlers>
-#include <osgWidget/Input>
-
 #include "globals.h"
 
 #include "input.h"
@@ -97,10 +92,6 @@ Editor::~Editor()
 	_mode = EditorMode::Play;
 }
 
-/*
-osgWidget::WindowManager* Editor::getWindowManager() {
-	return _wm;
-}*/
 
 void Editor::setMode(EditorMode mode)
 {
@@ -127,7 +118,7 @@ void Editor::addWindow(CEGUI::Window* window)
 
 void Editor::setupDefaultWindows()
 {
-	TextEditor* textEditor = new TextEditor(600.0, 400.0);
+	TextEditor* textEditor = new TextEditor(UVector2(cegui_reldim(2.0/3), cegui_reldim(0)), USize(cegui_reldim(1.0/3), cegui_reldim(1)));
 }
 
 
@@ -137,3 +128,4 @@ Editor* getEditor() {
 	static Editor* editor = new Editor();
 	return editor;
 }
+

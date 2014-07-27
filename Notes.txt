@@ -2,24 +2,38 @@
 
 TODO:
 	DoneThisCommit:
-		Got things working on OS X.
+		Improved the text editor so it can actually be used to edit the level file.
+			File loading and saving
+			Buttons to:
+				Load file
+				Save file
+				Apply current buffer to scene.
+				Load current scene into buffer.
+			Fixed the input bugs.
+			Got mouse wheel scrolling and clipboard to work.
 
 	Current Task:
 
 	Next Steps:
 		Editor stuff:
-			Improve the text editor so it can actually be used to edit the level file.
-				File loading and saving
-				Buttons to:
-					Load file
-					Save file
-					Export current scene to file.
-					Import scene from file.
-				For simplicity, no dialogs for file selection. it will only deal with the file that the current level is loaded from.
-				Fix those glitches.
+			Game should pause when in Edit mode.
+			Undo/Redo
+			Text editor improvements:
+				Syntax highlighting
+					This will take quite a bit of work. We need to figure out not only how to parse the text and determine proper highlighting, we also need to figure out how to actually draw the highlighting.
+					We'll need to create a subclass of FalagardMultiLineEditbox with a new draw implementation that will perform syntax highlighting.
+						See http://cegui.org.uk/wiki/Performing_custom_rendering_at_the_right_time for example of deriving your own subclasses with customized drawing.
+						FalagardMultiLineEditbox: cegui/src/WindowRendererSets/Core/MultiLineEditbox.cpp
+						The best way to do it would probably be to use the existing formatting tag system in CEGUI, which currently only works for static text. We could make our editbox pass its text through an object that parses it and adds appropriate formatting tags, then send the formatted text through the rendering system instead of the actual text in the box. See http://cegui.org.uk/wiki/Formatting_Tags_in_CEGUI for an explanation of how the formatting tags work.
+				Line numbers
+				Use a monospace font
+				Allow you to select which file to load/save
+			Better GUI theme
+			Cats
 
 
-		Figure out a better system for displaying warnings and errors (currently the screen gets filled up with warnings from osg and CEGUI and if one of MY warnings shows up, it's lost in the mess)
+
+		Figure out a better system for displaying warnings and errors (currently the screen gets filled up with warnings from OSG and CEGUI and if one of MY warnings shows up, it's lost in the mess)
 		Improve import/export to allow it to link to prototypes.
 
 		Need path-finding. Recast/Detour sounds good. Automatically creates navmesh.
@@ -28,7 +42,7 @@ TODO:
 		Expose all GameObject-derived classes to AngelScript (also exposing the type hierarchy (see http://www.angelcode.com/angelscript/sdk/docs/manual/doc_adv_class_hierarchy.html))
 
 	Minor Tasks:
-		logError and logWarning should allow multiple parameters.
+		logError and logWarning should be stream things like std::cout and std::cerr;
 		Use a namespace for all my classes
 
 	Changes under consideration:
@@ -42,7 +56,8 @@ TODO:
 		FIX LICENSING ISSUES!!
 			The osgBullet stuff and osgwTools are under a license that would require SOTE to be under the same or compatible license if I don't move them.
 			The AngelScript addons may have some issues to fix, along with stdvector and some other stuff.
-			The CEGUI implementation may contain files modified from someone else's code
+			The CEGUI implementation (CEGUIStuff) uses code from an old part of OSG and possibly some code from osgRecipes. The old OSG part isn't a problem (license does not require releasing the source code), but the osgRecipes part is a little unclear. The osgRecipes project is in the public domain, but it says individual recipes may have their own license.
+			The classes beginning with "Improved" are improved versions of classes from other libraries, and may contain some of the original code of the base class.
 
 	Much later
 		Possibly create my own data storage language:
@@ -83,6 +98,9 @@ BUGS:
 	Seems like CEGUI can only create windows in the rendering thread.
 		As a temporary work-around, I'm loading all windows through Viewer::realize() (with a GraphicsOperation). However, this does not allow new windows to be loaded after the program is set up.
 		I think I can do stuff on the graphics thread by obtaining the GraphicsContext and calling add() on it, passing in an object that inherits from osg::Operation. If I make an Operation class to create a CEGUI object, I should be able to get it working.
+		Another possibility is to do the loading inside CEGUIDrawable::DrawImplementation().
+	CRITICAL:
+		Not enough cats!!
 	Low Priority (it works, but might be ugly):
 		Inefficient debug rendering. Before getting the new graphics card, I thought it was just too much for my integrated graphics. However, a look at the NVIDIA settings program shows that the GPU utilization DROPS when I turn on debug rendering. I believe the issue is that the debug drawing is done sequentially, line-by-line. I need to split it up so it can render in parallel.
 
@@ -120,16 +138,20 @@ Scripting Uses:
 	Scripted events
 
 
-Engine features:
+Engine features/design:
 	Adaptive. Designed to minimize the amount of custom code that must be written.
 	Objects are defined with YAML (or other serialization format).
 		A level file will contain a list of all objects in the level. Objects can link to prototypes defined in separate files. The prototypes can link to more prototypes and allow for similar objects to share a common base.
 		Can embed AngelScript inside the YAML file to define an object's behaviors.
 		Will have some mechanism to selectively choose the parameters that get loaded (e.g. load a simpler model on devices with less resources, give the enemy less health on lower difficulty settings, et cetera)
+	Allows subsystems to be swapped out to better suit the developers or the game.
 
 
 Libraries to check out later:
 	Recast/Detour
 	Clipper-- for clipping and offsetting polygons. Used in Broken Age (http://www.angusj.com/delphi/clipper.php)
 	GLSL Optimizer
+	libGizmo
+		https://github.com/CedricGuillemet/LibGizmo
+		3D manipulation widgets
 

@@ -57,7 +57,7 @@ CEGUIDrawable::CEGUIDrawable()
 	getOrCreateStateSet()->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
 	getOrCreateStateSet()->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF );
 	getOrCreateStateSet()->setTextureMode(0, GL_TEXTURE_2D, osg::StateAttribute::ON);	/// To avoid CEGUI bug when using multitextured objects.
-	getOrCreateStateSet()->setRenderBinDetails(12, "CEGUI RenderBin");               	/// Also for that bug
+	getOrCreateStateSet()->setRenderBinDetails(12, "RenderBin");                     	/// Also for that bug
 	getOrCreateStateSet()->setMode(GL_BLEND,osg::StateAttribute::ON);
 
 	setEventCallback(new CEGUIEventCallback());
@@ -250,21 +250,49 @@ bool CEGUIEventCallback::handle(const osgGA::GUIEventAdapter& ea,osgGA::GUIActio
 			return true;
 		}
 		case(osgGA::GUIEventAdapter::KEYDOWN):
-			//CEGUI::System::getSingleton().getDefaultGUIContext().injectKeyDown( static_cast<CEGUI::uint>(ea.getKey()) );
-			//CEGUI::System::getSingleton().getDefaultGUIContext().injectKeyDown( static_cast<CEGUI::Key::Scan>(ea.getKey()) );
-			CEGUI::System::getSingleton().getDefaultGUIContext().injectKeyDown( osgToCEGUIKey(ea.getKey()) );
-			//CEGUI::System::getSingleton().getDefaultGUIContext().injectChar( static_cast<CEGUI::utf32>( ea.getKey() ) );
-			CEGUI::System::getSingleton().getDefaultGUIContext().injectChar( osgToCEGUIKey(ea.getKey()) );
-			std::cout << "OSG: " << ea.getKey() << std::endl;
-			//std::cout << "Fed to CEGUI: " << static_cast<CEGUI::Key::Scan>(ea.getKey()) << std::endl;
-			std::cout << "Fed to CEGUI: " << osgToCEGUIKey(ea.getKey()) << std::endl;
-			//std::cout << "Char fed to CEGUI: " << static_cast<CEGUI::utf32>( ea.getKey() ) << std::endl;
-			std::cout << "Char fed to CEGUI: " << osgToCEGUIKey(ea.getKey()) << std::endl;
-			//std::cout << ea.getKey() << std::endl;
+			std::cout << "OSG Key: " << ea.getKey() << std::endl;
+			std::cout << "OSG Key (Unmodified): " << ea.getUnmodifiedKey() << std::endl;
+			CEGUI::System::getSingleton().getDefaultGUIContext().injectKeyDown(osgToCEGUIKey(ea.getUnmodifiedKey()));
+			std::cout << "CEGUI Key code: " << osgToCEGUIKey(ea.getUnmodifiedKey()) << std::endl;
+
+
+			if(isPrintableCEGUIKey(osgToCEGUIKey(ea.getKey())))	/// Only inject the character if it's meant to be printed. (Don't inject the arrow keys or that stuff)
+			{
+				//CEGUI::System::getSingleton().getDefaultGUIContext().injectChar(osgToCEGUIKey(ea.getKey()));
+				CEGUI::System::getSingleton().getDefaultGUIContext().injectChar(ea.getKey());
+				std::cout << "Char fed to CEGUI: " << ea.getKey() << std::endl;
+			}
+
+			if(ea.getModKeyMask() & osgGA::GUIEventAdapter::MODKEY_CTRL)
+			{
+				switch(ea.getUnmodifiedKey())
+				{
+				case 'c':
+					std::cout << "Injecting copy request" << std::endl;
+					CEGUI::System::getSingleton().getDefaultGUIContext().injectCopyRequest();
+					break;
+				case 'v':
+					std::cout << "Injecting paste request" << std::endl;
+					CEGUI::System::getSingleton().getDefaultGUIContext().injectPasteRequest();
+					break;
+				case 'x':
+					std::cout << "Injecting cut request" << std::endl;
+					CEGUI::System::getSingleton().getDefaultGUIContext().injectCutRequest();
+					break;
+				}
+			}
+
+
 			return true;
 		case(osgGA::GUIEventAdapter::KEYUP):
-			//CEGUI::System::getSingleton().getDefaultGUIContext().injectKeyUp( static_cast<CEGUI::Key::Scan>(ea.getKey()) );
-			CEGUI::System::getSingleton().getDefaultGUIContext().injectKeyUp( osgToCEGUIKey(ea.getKey()) );
+			CEGUI::System::getSingleton().getDefaultGUIContext().injectKeyUp( osgToCEGUIKey(ea.getUnmodifiedKey()) );
+			return true;
+		case osgGA::GUIEventAdapter::SCROLL:
+
+			if(ea.getScrollingMotion() == osgGA::GUIEventAdapter::SCROLL_UP)
+				CEGUI::System::getSingleton().getDefaultGUIContext().injectMouseWheelChange(1);
+			else if(ea.getScrollingMotion() == osgGA::GUIEventAdapter::SCROLL_DOWN)
+				CEGUI::System::getSingleton().getDefaultGUIContext().injectMouseWheelChange(-1);
 			return true;
 		default:
 			break;
@@ -273,12 +301,131 @@ bool CEGUIEventCallback::handle(const osgGA::GUIEventAdapter& ea,osgGA::GUIActio
 	return false;
 }
 
+bool CEGUIEventCallback::isPrintableCEGUIKey(int ceguiKey)
+{
+	#define NOT_PRINTABLE(ceguiKeyName) case CEGUI::Key::ceguiKeyName:
+
+	return true;
+
+	switch(ceguiKey)
+	{
+		NOT_PRINTABLE(Unknown)
+        NOT_PRINTABLE(Escape)
+        NOT_PRINTABLE(LeftControl)
+        NOT_PRINTABLE(LeftShift)
+        NOT_PRINTABLE(LeftAlt)
+        NOT_PRINTABLE(Capital)
+        NOT_PRINTABLE(F1)
+        NOT_PRINTABLE(F2)
+        NOT_PRINTABLE(F3)
+        NOT_PRINTABLE(F4)
+        NOT_PRINTABLE(F5)
+        NOT_PRINTABLE(F6)
+        NOT_PRINTABLE(F7)
+        NOT_PRINTABLE(F8)
+        NOT_PRINTABLE(F9)
+		NOT_PRINTABLE(F10)
+        NOT_PRINTABLE(NumLock)
+        NOT_PRINTABLE(ScrollLock)
+      //  OEM_102         =0x56,    /* < > | on UK/Germany keyboards */
+        NOT_PRINTABLE(F11)
+        NOT_PRINTABLE(F12)
+        NOT_PRINTABLE(F13)
+        NOT_PRINTABLE(F14)
+        NOT_PRINTABLE(F15)
+       /* Kana            =0x70,    // (Japanese keyboard)
+        ABNT_C1         =0x73,    // / ? on Portugese (Brazilian) keyboards
+        Convert         =0x79,    // (Japanese keyboard)
+        NoConvert       =0x7B,    // (Japanese keyboard)
+        Yen             =0x7D,    // (Japanese keyboard)
+        ABNT_C2         =0x7E,    // Numpad . on Portugese (Brazilian) keyboards
+        PrevTrack       =0x90,    // Previous Track (KC_CIRCUMFLEX on Japanese keyboard)
+        At              =0x91,    //                     (NEC PC98)
+        Underline       =0x93,    //                     (NEC PC98)
+        Kanji           =0x94,    // (Japanese keyboard)
+        Stop            =0x95,    //                     (NEC PC98)
+        AX              =0x96,    //                     (Japan AX)
+        Unlabeled       =0x97,    //                        (J3100)
+        */
+        NOT_PRINTABLE(NextTrack)
+        NOT_PRINTABLE(RightControl)
+        NOT_PRINTABLE(Mute)
+        NOT_PRINTABLE(Calculator)
+        NOT_PRINTABLE(PlayPause)
+        NOT_PRINTABLE(MediaStop)
+        NOT_PRINTABLE(VolumeDown)
+        NOT_PRINTABLE(VolumeUp)
+        NOT_PRINTABLE(WebHome)
+        NOT_PRINTABLE(SysRq)
+        NOT_PRINTABLE(RightAlt)
+        NOT_PRINTABLE(Pause)
+        NOT_PRINTABLE(Home)
+        NOT_PRINTABLE(ArrowUp)
+        NOT_PRINTABLE(PageUp)
+        NOT_PRINTABLE(ArrowLeft)
+        NOT_PRINTABLE(ArrowRight)
+        NOT_PRINTABLE(End)
+        NOT_PRINTABLE(ArrowDown)
+        NOT_PRINTABLE(PageDown)
+        NOT_PRINTABLE(Insert)
+        NOT_PRINTABLE(Delete)
+        NOT_PRINTABLE(LeftWindows)
+        NOT_PRINTABLE(RightWindows)
+        NOT_PRINTABLE(AppMenu)
+        NOT_PRINTABLE(Power)
+        NOT_PRINTABLE(Sleep)
+        NOT_PRINTABLE(Wake)
+        NOT_PRINTABLE(WebSearch)
+        NOT_PRINTABLE(WebFavorites)
+        NOT_PRINTABLE(WebRefresh)
+        NOT_PRINTABLE(WebStop)
+        NOT_PRINTABLE(WebForward)
+        NOT_PRINTABLE(WebBack)
+        NOT_PRINTABLE(MyComputer)
+        NOT_PRINTABLE(Mail)
+        NOT_PRINTABLE(MediaSelect)
+
+		return false;
+	default:
+		return true;
+	}
+}
+
  CEGUI::Key::Scan CEGUIEventCallback::osgToCEGUIKey(int osgKey)
 {
-	#define UNKNOWN_KEY_CASE(osgKeyName) case osgGA::GUIEventAdapter::osgKeyName: std::cout << "Key unregonized by CEGUI, osg keycode is " << osgKeyName << "." << std::endl return 0;
+	#define UNKNOWN_KEY_CASE(osgKeyName) case osgGA::GUIEventAdapter::osgKeyName: std::cout << "Key unrecognized by CEGUI, osg keycode is " << osgKeyName << "." << std::endl return 0;
 	#define KEY_CASE(osgKeyName, CEGUIKeyName) case osgGA::GUIEventAdapter::osgKeyName: return CEGUI::Key::CEGUIKeyName;
 	switch(osgKey)
 	{
+
+	//KEY_Exclaim         = 0x21,
+	KEY_CASE(KEY_Quotedbl, Grave)
+	//KEY_Hash,
+	//KEY_Dollar          = 0x24,
+	//KEY_CASE(KEY_Ampersand, Ampersand)
+	KEY_CASE(KEY_Quote, Apostrophe)
+	//KEY_Leftparen       = 0x28,
+	//KEY_Rightparen      = 0x29,
+	//KEY_CASE(KEY_Asterisk, Asterisk)
+	//KEY_CASE(KEY_Plus, Plus)
+	KEY_CASE(KEY_Comma, Comma)
+	KEY_CASE(KEY_Minus, Minus)
+	KEY_CASE(KEY_Period, Period)
+	KEY_CASE(KEY_Slash, Slash)
+	KEY_CASE(KEY_Colon, Colon)
+	KEY_CASE(KEY_Semicolon, Semicolon)
+	//KEY_Less,
+	KEY_CASE(KEY_Equals, Equals)
+	//KEY_Greater         = 0x3E,
+	//KEY_Question        = 0x3F,
+	KEY_CASE(KEY_At, At)
+	KEY_CASE(KEY_Leftbracket, LeftBracket)
+	KEY_CASE(KEY_Backslash, Backslash)
+	KEY_CASE(KEY_Rightbracket, RightBracket)
+	//KEY_Caret           = 0x5E,
+	//KEY_Underscore      = 0x5F,
+	//KEY_Backquote       = 0x60,
+
 
 	KEY_CASE(KEY_BackSpace, Backspace)
 	KEY_CASE(KEY_Tab, Tab)
@@ -390,12 +537,47 @@ bool CEGUIEventCallback::handle(const osgGA::GUIEventAdapter& ea,osgGA::GUIActio
 	//KEY_CASE(KEY_Hyper_L,
 	//KEY_CASE(KEY_Hyper_R,
 
+	KEY_CASE(KEY_A, A)
+	KEY_CASE(KEY_B, B)
+	KEY_CASE(KEY_C, C)
+	KEY_CASE(KEY_D, D)
+	KEY_CASE(KEY_E, E)
+	KEY_CASE(KEY_F, F)
+	KEY_CASE(KEY_G, G)
+	KEY_CASE(KEY_H, H)
+	KEY_CASE(KEY_I, I)
+	KEY_CASE(KEY_J, J)
+	KEY_CASE(KEY_K, K)
+	KEY_CASE(KEY_L, L)
+	KEY_CASE(KEY_M, M)
+	KEY_CASE(KEY_N, N)
+	KEY_CASE(KEY_O, O)
+	KEY_CASE(KEY_P, P)
+	KEY_CASE(KEY_Q, Q)
+	KEY_CASE(KEY_R, R)
+	KEY_CASE(KEY_S, S)
+	KEY_CASE(KEY_T, T)
+	KEY_CASE(KEY_U, U)
+	KEY_CASE(KEY_V, V)
+	KEY_CASE(KEY_W, W)
+	KEY_CASE(KEY_X, X)
+	KEY_CASE(KEY_Y, Y)
+	KEY_CASE(KEY_Z, Z)
 
+	KEY_CASE(KEY_0, Zero)
+	KEY_CASE(KEY_1, One)
+	KEY_CASE(KEY_2, Two)
+	KEY_CASE(KEY_3, Three)
+	KEY_CASE(KEY_4, Four)
+	KEY_CASE(KEY_5, Five)
+	KEY_CASE(KEY_6, Six)
+	KEY_CASE(KEY_7, Seven)
+	KEY_CASE(KEY_8, Eight)
+	KEY_CASE(KEY_9, Nine)
 
 
 	default:
-		return (CEGUI::Key::Scan)osgKey;
-
+		return CEGUI::Key::Unknown;
 	}
 	#undef KEY_CASE
 
