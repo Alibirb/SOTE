@@ -105,6 +105,7 @@
 			<Add library="CEGUIOpenGLRenderer-0" />
 			<Add library="GLEW" />
 			<Add library="yaml-cpp" />
+			<Add library="boost_regex" />
 			<Add directory="/usr/local/lib" />
 			<Add directory="/usr/local/lib64" />
 			<Add directory="/usr/local/lib64/cegui-0" />
@@ -165,6 +166,8 @@
 		<Unit filename="Level.h" />
 		<Unit filename="Light.cpp" />
 		<Unit filename="Light.h" />
+		<Unit filename="MultiLineCodeEditbox.cpp" />
+		<Unit filename="MultiLineCodeEditbox.h" />
 		<Unit filename="Notes.txt" />
 		<Unit filename="OwnerUpdateCallback.cpp" />
 		<Unit filename="OwnerUpdateCallback.h" />
@@ -180,6 +183,8 @@
 		<Unit filename="Sprite.h" />
 		<Unit filename="StateMachine.cpp" />
 		<Unit filename="StateMachine.h" />
+		<Unit filename="SyntaxHighlighter.cpp" />
+		<Unit filename="SyntaxHighlighter.h" />
 		<Unit filename="TemporaryText.cpp" />
 		<Unit filename="TemporaryText.h" />
 		<Unit filename="TextDisplay.cpp" />

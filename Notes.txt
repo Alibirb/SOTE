@@ -2,34 +2,35 @@
 
 TODO:
 	DoneThisCommit:
-		Improved the text editor so it can actually be used to edit the level file.
-			File loading and saving
-			Buttons to:
-				Load file
-				Save file
-				Apply current buffer to scene.
-				Load current scene into buffer.
-			Fixed the input bugs.
-			Got mouse wheel scrolling and clipboard to work.
+		Text editor improvements:
+			Now using a monospace font
+			Syntax highlighting
 
 	Current Task:
 
 	Next Steps:
+		Make it a bit more accessible and less rough:
+			put the CEGUI "datafiles" folder inside "media"
+			Implement a way to switch levels inside the game (or the editor).
+			Move code to an "src" folder.
 		Editor stuff:
+			Text editor improvements:
+				Line numbers
+				Allow you to select which file to load/save
+				Search function
+				Should use the native clipboard
 			Game should pause when in Edit mode.
 			Undo/Redo
-			Text editor improvements:
-				Syntax highlighting
-					This will take quite a bit of work. We need to figure out not only how to parse the text and determine proper highlighting, we also need to figure out how to actually draw the highlighting.
-					We'll need to create a subclass of FalagardMultiLineEditbox with a new draw implementation that will perform syntax highlighting.
-						See http://cegui.org.uk/wiki/Performing_custom_rendering_at_the_right_time for example of deriving your own subclasses with customized drawing.
-						FalagardMultiLineEditbox: cegui/src/WindowRendererSets/Core/MultiLineEditbox.cpp
-						The best way to do it would probably be to use the existing formatting tag system in CEGUI, which currently only works for static text. We could make our editbox pass its text through an object that parses it and adds appropriate formatting tags, then send the formatted text through the rendering system instead of the actual text in the box. See http://cegui.org.uk/wiki/Formatting_Tags_in_CEGUI for an explanation of how the formatting tags work.
-				Line numbers
-				Use a monospace font
-				Allow you to select which file to load/save
 			Better GUI theme
+				EditorLook was copied from TaharezLook, which is a pretty cool theme, but NOT what we want for the editor. I chose it because it was the most complete theme that CEGUI came with.
 			Cats
+			Script console (AngelScriptConsole is outdated and uses osgWidgets. We ought to turn it into a proper scripting console using CEGUI, and make it part of the editor).
+			Level editor
+				Drag objects around, rotate them, et cetera.
+		Basic engine features needed to convey story:
+			Event triggering
+			Dialog
+			Rudimentary AI so we can have NPCs.
 
 
 
@@ -43,7 +44,7 @@ TODO:
 
 	Minor Tasks:
 		logError and logWarning should be stream things like std::cout and std::cerr;
-		Use a namespace for all my classes
+
 
 	Changes under consideration:
 		Perhaps GameObjectData getter methods should use pass-by-reference so you can just pass in the variable you want to assign.
@@ -58,30 +59,23 @@ TODO:
 			The AngelScript addons may have some issues to fix, along with stdvector and some other stuff.
 			The CEGUI implementation (CEGUIStuff) uses code from an old part of OSG and possibly some code from osgRecipes. The old OSG part isn't a problem (license does not require releasing the source code), but the osgRecipes part is a little unclear. The osgRecipes project is in the public domain, but it says individual recipes may have their own license.
 			The classes beginning with "Improved" are improved versions of classes from other libraries, and may contain some of the original code of the base class.
+			Check to make sure I actually do copy the license notices properly (I don't want to end up accidentally releasing my own code under that license)
 
-	Much later
-		Possibly create my own data storage language:
-			uses {} to denote elements (with matching-brace highlighting, it's much clearer than having to follow the indentation like in YAML)
-			allows references to an element in a different file (like what I was doing with XML before)
-				may not be a language feature, could just be part of GameObjectData's loading process
-			C and C++ style comments
+	Possibly create my own data storage language:
+		uses {} to denote elements (with matching-brace highlighting, it's much clearer than having to follow the indentation like in YAML)
+		allows references to an element in a different file (like what I was doing with XML before)
+			may not be a language feature, could just be part of GameObjectData's loading process
+		C and C++ style comments
 
 	Use macros to automatically generate methods for serialization and creation.
 
 
-	Objects:
-		Some mechanism by which you can easily move between a set list of places (teleportation, taxicab, etc.). Long glides, jumps, etc. may leave you stranded otherwise.
-	AI:
-		Enemies need more intelligent behavior (e.g. dodge)
 	Input:
 		Should be able to register a function to be executed on key press/release. Function will likely be in AngelScript.
 	Use a game clock that's separate from the real-time clock. For debugging purposes. Allows the game to run in slow/fast motion.
 	Physics fixes:
 		figure out proper collision filtering technique for ghost objects (there should be no collision response, but it still needs to be detected.)
 	Figure out what to do about YAML's hatred of tabs (either put a hack into the text editor so it treats spaces like tabs, or alter yaml-cpp so it allows tabs. Or use a different data language)
-	Make it possible to have multiple levels loaded at once (and have all objects in one level ignore objects in others)
-	Will probably want the light crystals to use special shaders that give them mysterious effects (rainbow colors and such)
-	Clean up:
 
 
 
@@ -90,7 +84,6 @@ BUGS:
 	Various 2D overlay stuff (TextDisplay and CEGUI) have rendering bugs that can be solved by resizing the window. Likely due to some calculations that use cached values of some sort. Parameters change (e.g. the window is moved so text should move with it), and things need to be recalculated. Change the window size, and you force recalculation.
 	Weapons do not point in the correct direction (rotated relative to the owner)
 	Collision checking (in Level) may call onCollision() multiple times for the same pair of objects if they have multiple manifolds, or if Bullet takes multiple simulation steps for one rendering step.
-	In the text editor, pressing the Delete key inserts a character.
 	Can easily push through doors.
 	Warping/teleporting is based on osg objects (not physics objects), and will warp the player to the skybox
 	Lighting has issues if I try to use GL_LIGHT0. Currently using GL_LIGHT1 only.

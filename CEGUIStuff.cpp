@@ -1,4 +1,5 @@
-
+/// Initially taken from http://trac.openscenegraph.org/projects/osg/browser/OpenSceneGraph/trunk/examples/osgcegui/osgcegui.cpp?rev=11931
+/// Initial copyright notice:
 /* -*-c++-*- OpenSceneGraph - Copyright (C) 1998-2006 Robert Osfield
  *
  * This application is open source and may be redistributed and/or modified
@@ -10,7 +11,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
-// Initially taken from http://trac.openscenegraph.org/projects/osg/browser/OpenSceneGraph/trunk/examples/osgcegui/osgcegui.cpp?rev=11931
+
 
 #include <GL/glew.h>
 
@@ -20,7 +21,11 @@
 
 #include "Editor.h"
 
+#include "MultiLineCodeEditbox.h"
 
+
+
+using namespace CEGUI;
 
 void CEGUIInitOperation::operator() (osg::GraphicsContext* gc)
 {
@@ -28,7 +33,6 @@ void CEGUIInitOperation::operator() (osg::GraphicsContext* gc)
 
 	// initialise the required dirs for the DefaultResourceProvider
 	CEGUI::DefaultResourceProvider* rp = static_cast<CEGUI::DefaultResourceProvider*>(CEGUI::System::getSingleton().getResourceProvider());
-	//CEGUI::ResourceProvider* rp = CEGUI::System::getSingleton().getResourceProvider();
 	rp->setResourceGroupDirectory("schemes", "./datafiles/schemes/");
 	rp->setResourceGroupDirectory("imagesets", "./datafiles/imagesets/");
 	rp->setResourceGroupDirectory("fonts", "./datafiles/fonts/");
@@ -44,8 +48,14 @@ void CEGUIInitOperation::operator() (osg::GraphicsContext* gc)
 	CEGUI::WindowManager::setDefaultResourceGroup("layouts");
 	CEGUI::ScriptModule::setDefaultResourceGroup("lua_scripts");
 
-	CEGUI::SchemeManager::getSingleton().createFromFile("TaharezLook.scheme");
-	CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().setDefaultImage("TaharezLook/MouseArrow");
+	CEGUI::SchemeManager::getSingleton().createFromFile("EditorLook.scheme");
+
+	CEGUI::WindowFactoryManager::getSingleton().addFactory<TplWindowFactory<MultiLineCodeEditbox> >();
+	CEGUI::WindowRendererManager::getSingleton().addWindowRendererType<MultiLineCodeEditboxWindowRenderer>();
+	WindowFactoryManager::getSingleton().addFalagardWindowMapping("EditorLook/MultiLineCodeEditbox",
+                                                                  "MultiLineCodeEditbox",
+                                                                  "EditorLook/MultiLineEditbox",
+                                                                  "MultiLineCodeEditbox");
 
 	getEditor()->setupDefaultWindows();
 }
@@ -62,33 +72,7 @@ CEGUIDrawable::CEGUIDrawable()
 
 	setEventCallback(new CEGUIEventCallback());
 
-	//new CEGUI::System( CEGUI::OpenGLRenderer::create() );
-
-
-	//CEGUI::OpenGLRenderer::bootstrapSystem(CEGUI::OpenGLRenderer::TTT_NONE);
-/*
-
-    // initialise the required dirs for the DefaultResourceProvider
-	CEGUI::DefaultResourceProvider* rp = static_cast<CEGUI::DefaultResourceProvider*>(CEGUI::System::getSingleton().getResourceProvider());
-	//CEGUI::ResourceProvider* rp = CEGUI::System::getSingleton().getResourceProvider();
-	rp->setResourceGroupDirectory("schemes", "./datafiles/schemes/");
-	rp->setResourceGroupDirectory("imagesets", "./datafiles/imagesets/");
-	rp->setResourceGroupDirectory("fonts", "./datafiles/fonts/");
-	rp->setResourceGroupDirectory("layouts", "./datafiles/layouts/");
-	rp->setResourceGroupDirectory("looknfeels", "./datafiles/looknfeel/");
-	rp->setResourceGroupDirectory("lua_scripts", "./datafiles/lua_scripts/");
-
-	// set the default resource groups to be used
-	CEGUI::ImageManager::setImagesetDefaultResourceGroup("imagesets");
-	CEGUI::Font::setDefaultResourceGroup("fonts");
-	CEGUI::Scheme::setDefaultResourceGroup("schemes");
-	CEGUI::WidgetLookManager::setDefaultResourceGroup("looknfeels");
-	CEGUI::WindowManager::setDefaultResourceGroup("layouts");
-	CEGUI::ScriptModule::setDefaultResourceGroup("lua_scripts");
-
-*/
     _activeContextID = 0;
-
 }
 
 CEGUIDrawable::~CEGUIDrawable()
@@ -250,17 +234,14 @@ bool CEGUIEventCallback::handle(const osgGA::GUIEventAdapter& ea,osgGA::GUIActio
 			return true;
 		}
 		case(osgGA::GUIEventAdapter::KEYDOWN):
-			std::cout << "OSG Key: " << ea.getKey() << std::endl;
-			std::cout << "OSG Key (Unmodified): " << ea.getUnmodifiedKey() << std::endl;
 			CEGUI::System::getSingleton().getDefaultGUIContext().injectKeyDown(osgToCEGUIKey(ea.getUnmodifiedKey()));
-			std::cout << "CEGUI Key code: " << osgToCEGUIKey(ea.getUnmodifiedKey()) << std::endl;
 
 
 			if(isPrintableCEGUIKey(osgToCEGUIKey(ea.getKey())))	/// Only inject the character if it's meant to be printed. (Don't inject the arrow keys or that stuff)
 			{
-				//CEGUI::System::getSingleton().getDefaultGUIContext().injectChar(osgToCEGUIKey(ea.getKey()));
-				CEGUI::System::getSingleton().getDefaultGUIContext().injectChar(ea.getKey());
-				std::cout << "Char fed to CEGUI: " << ea.getKey() << std::endl;
+				uint32 unicodeChar;
+				unicodeChar = ea.getKey();
+				CEGUI::System::getSingleton().getDefaultGUIContext().injectChar(unicodeChar);
 			}
 
 			if(ea.getModKeyMask() & osgGA::GUIEventAdapter::MODKEY_CTRL)

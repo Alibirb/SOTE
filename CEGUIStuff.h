@@ -1,4 +1,5 @@
-
+/// Initially taken from http://trac.openscenegraph.org/projects/osg/browser/OpenSceneGraph/trunk/examples/osgcegui/osgcegui.cpp?rev=11931
+/// Initial copyright notice:
 /* -*-c++-*- OpenSceneGraph - Copyright (C) 1998-2006 Robert Osfield
  *
  * This application is open source and may be redistributed and/or modified
@@ -10,9 +11,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
-// Initially taken from http://trac.openscenegraph.org/projects/osg/browser/OpenSceneGraph/trunk/examples/osgcegui/osgcegui.cpp?rev=11931
-
 // See also https://github.com/xarray/osgRecipes/tree/master/cookbook/chapter9/ch09_04 for very similar implementation
+
+
 
 #ifndef CEGUI_STUFF_H
 #define CEGUI_STUFF_H
