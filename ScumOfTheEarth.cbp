@@ -31,10 +31,10 @@
 				<Option type="1" />
 				<Option compiler="tdm_mingw_64" />
 				<Option projectCompilerOptionsRelation="0" />
-				<Option projectLinkerOptionsRelation="0" />
-				<Option projectIncludeDirsRelation="0" />
-				<Option projectResourceIncludeDirsRelation="0" />
-				<Option projectLibDirsRelation="0" />
+				<Linker>
+					<Add library="opengl32" />
+					<Add directory="C:/Boost/lib" />
+				</Linker>
 				<MakeCommands>
 					<Build command="" />
 					<CompileFile command="" />
@@ -118,6 +118,9 @@
 			<Add directory="dependencies/cegui-0.8.4/dependencies/lib/static" />
 			<Add directory="dependencies/bullet-2.82-r2704/build/lib" />
 			<Add directory="dependencies/OpenSceneGraph-3.2.1/lib" />
+			<Add directory="dependencies/OpenSceneGraph-3.2.1/bin" />
+			<Add directory="dependencies/cegui-0.8.4/build/bin" />
+			<Add directory="dependencies/cegui-0.8.4/build/lib" />
 		</Linker>
 		<Unit filename="AngelScript.notes" />
 		<Unit filename="AngelScriptConsole.cpp" />

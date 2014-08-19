@@ -13,12 +13,12 @@ private:
 	CEGUI::MultiLineEditbox* _editbox;
 	CEGUI::Window* _window;
 
-	uint _saveMenuItemID;
-	uint _loadFileMenuItemID;
-	uint _applyMenuItemID;
-	uint _loadSceneMenuItemID;
+	unsigned int _saveMenuItemID;
+	unsigned int _loadFileMenuItemID;
+	unsigned int _applyMenuItemID;
+	unsigned int _loadSceneMenuItemID;
 
-	uint _itemIDsUsed;
+	unsigned int _itemIDsUsed;
 
 	std::string _currentFilename;
 
