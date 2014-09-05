@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<projectile name="Magic" >
-	<geometry source="circle.png"/>
-	<damage type="PURE_MAGIC" amount="2.0"/>
-</projectile>

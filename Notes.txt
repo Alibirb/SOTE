@@ -2,48 +2,50 @@
 
 TODO:
 	DoneThisCommit:
-		Text editor improvements:
-			Now using a monospace font
-			Syntax highlighting
+		Organization and documentation, minor conveniences
+			put the CEGUI "datafiles" folder inside "media"
+			Moved code to an "src" folder.
+			The window size is now dependent on the size of your screen.
+			Added a README
 
 	Current Task:
 
 	Next Steps:
-		Make it a bit more accessible and less rough:
-			put the CEGUI "datafiles" folder inside "media"
-			Implement a way to switch levels inside the game (or the editor).
-			Move code to an "src" folder.
 		Editor stuff:
+			Level editor
+				Transformation tools
+					With ability to constrain to x/y/z axes
+				Selection tools
 			Text editor improvements:
 				Line numbers
 				Allow you to select which file to load/save
 				Search function
 				Should use the native clipboard
-			Game should pause when in Edit mode.
 			Undo/Redo
 			Better GUI theme
 				EditorLook was copied from TaharezLook, which is a pretty cool theme, but NOT what we want for the editor. I chose it because it was the most complete theme that CEGUI came with.
 			Cats
 			Script console (AngelScriptConsole is outdated and uses osgWidgets. We ought to turn it into a proper scripting console using CEGUI, and make it part of the editor).
-			Level editor
-				Drag objects around, rotate them, et cetera.
+
+		Fix any bugs that cause the program to crash if you load an invalid scene
+
 		Basic engine features needed to convey story:
 			Event triggering
 			Dialog
 			Rudimentary AI so we can have NPCs.
 
 
-
+		Game should pause when in Edit mode.
+			A bit more complicated than I thought. We want to stop updating the objects in the scene, but still allow them to be moved around by the manipulators.
 		Figure out a better system for displaying warnings and errors (currently the screen gets filled up with warnings from OSG and CEGUI and if one of MY warnings shows up, it's lost in the mess)
 		Improve import/export to allow it to link to prototypes.
-
-		Need path-finding. Recast/Detour sounds good. Automatically creates navmesh.
 
 		Make a class to wrap around the physics stuff
 		Expose all GameObject-derived classes to AngelScript (also exposing the type hierarchy (see http://www.angelcode.com/angelscript/sdk/docs/manual/doc_adv_class_hierarchy.html))
 
 	Minor Tasks:
 		logError and logWarning should be stream things like std::cout and std::cerr;
+		Use doubles instead of floats where appropriate.
 
 
 	Changes under consideration:
@@ -60,6 +62,7 @@ TODO:
 			The CEGUI implementation (CEGUIStuff) uses code from an old part of OSG and possibly some code from osgRecipes. The old OSG part isn't a problem (license does not require releasing the source code), but the osgRecipes part is a little unclear. The osgRecipes project is in the public domain, but it says individual recipes may have their own license.
 			The classes beginning with "Improved" are improved versions of classes from other libraries, and may contain some of the original code of the base class.
 			Check to make sure I actually do copy the license notices properly (I don't want to end up accidentally releasing my own code under that license)
+			The shaders in GameObject.cpp came from osgwnormalmap.cpp
 
 	Possibly create my own data storage language:
 		uses {} to denote elements (with matching-brace highlighting, it's much clearer than having to follow the indentation like in YAML)
@@ -127,17 +130,9 @@ Scripting Uses:
 	AI
 	Testing purposes.
 	"You want to expose capable, but soulless actors to your scripting code. The scripting code describes what the actors should do, but the C++ code takes care of the how."	-- http://stackoverflow.com/questions/609076/the-role-of-scripting-languages-in-game-programming
-	Used to define the behavior of objects. C++ will only contain a handful of game object classes. AngelScript is responsible for determing the properties and behavior of each object.
+	Used to define the behavior of objects. C++ will only contain a handful of game object classes. AngelScript is responsible for determining the properties and behavior of each object.
 	Scripted events
 
-
-Engine features/design:
-	Adaptive. Designed to minimize the amount of custom code that must be written.
-	Objects are defined with YAML (or other serialization format).
-		A level file will contain a list of all objects in the level. Objects can link to prototypes defined in separate files. The prototypes can link to more prototypes and allow for similar objects to share a common base.
-		Can embed AngelScript inside the YAML file to define an object's behaviors.
-		Will have some mechanism to selectively choose the parameters that get loaded (e.g. load a simpler model on devices with less resources, give the enemy less health on lower difficulty settings, et cetera)
-	Allows subsystems to be swapped out to better suit the developers or the game.
 
 
 Libraries to check out later:

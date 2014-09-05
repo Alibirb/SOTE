@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<weapon name="Staff" coolDownTime="2.5">
-	<geometry source="staff.png"/>
-	<projectile source="Magic.xml"/>
-</weapon>

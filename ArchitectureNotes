@@ -1,2 +1,0 @@
-
-In Penumbra, enemy behavior is very much state-driven. Functions like "OnSeePlayer", "OnDamage", et cetera call the appropriate function in the state object. Very neat. Might want to do that, too.

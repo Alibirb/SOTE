@@ -38,7 +38,8 @@ Building on OS X:
 			http://codeblocks.org/downloads
 		Xcode
 
-	Install library dependencies: Create a folder named "dependencies" in the base SOTE directory and extract all the dependencies to that folder, then use CMake to generate Unix makefiles for each dependency and use make to compile.
+	Install library dependencies:
+		Create a folder named "dependencies" in the base SOTE directory and extract all the dependencies to that folder, then use CMake to generate Unix makefiles for each dependency and use make to compile.
 		OpenSceneGraph
 			http://openscenegraph.org
 			As of the time of this writing, OSG doesn't set itself up to compile the way we want it to. We need to edit CMakeLists.txt a bit, around line 816:
@@ -88,17 +89,38 @@ Building on OS X:
 
 Building on Windows:
 		
-	TDM-gcc Mingw method:
-		First, install a few programs you'll need.
-			CMake
-			TDM-gcc
-				http://tdm-gcc.tdragon.net/
-				Make sure not to install TDM-gcc over an existing MinGW/GCC installation. It messes things up, especially if the previous installation is for 32 bit and you want to compile for 64 bit, or vice versa. If you have a folder named "C:/MinGW" or something like that, either delete it or rename it.
-				If you need a different version of MinGW for some other project, you can try to compile SOTE with that. It should work, but I can't guarantee it.
-			Code::Blocks
-				http://codeblocks.org/
+	First, install a few programs you'll need.
+		CMake
+		TDM-gcc
+			http://tdm-gcc.tdragon.net/
+			Make sure not to install TDM-gcc over an existing MinGW/GCC installation. It messes things up, especially if the previous installation is for 32 bit and you want to compile for 64 bit, or vice versa. If you have a folder named "C:/MinGW" or something like that, either delete it or rename it.
+			If you need a different version of MinGW for some other project, you can try to compile SOTE with that. It should work, but I can't guarantee it.
+		Code::Blocks
+			http://codeblocks.org/
+			
+	Install library dependencies.
+		The easy way:
+			Download the dependencies zip file from http://alicrow.org/sote/dependencies-WindowsBinaries.zip and extract to the base directory of SOTE.
 				
-		Install library dependencies. All libraries should be downloaded and extracted to the "dependencies/" folder (you'll need to create the folder). The procedure to compile them usually comes down to using cmake-gui to configure options and generate project files, then using make to compile. Make sure to tell cmake to create files for mingw, not Visual Studio. Once cmake has generated the files, open up the TDM MinGW command prompt, and navigate to the folder with the newly-generated Makefile. To compile, enter "mingw32-make".
+		Build SOTE itself:
+			You need to set up Code::Blocks to recognize TDM MinGW.
+				In "Settings->Compiler...", copy the GCC compiler entry
+					name the new entry "TDM MinGW 64"
+					edit the search directory to point to "C:\TDM-GCC-64"
+					C compiler is "gcc.exe"
+					C++ compiler is "g++.exe"
+					Linker for dynamic libs is "g++.exe"
+			Open the Code::Blocks project file ("ScumOfTheEarth.cbp") and hit "build".
+		
+		Troubleshooting:
+			When compiling the framework, you may get errors about libraries not being found. Check the build log to see if it says something like "skipping incompatible <the file you want it to link to>". This may mean you compiled the library as 32 bit instead of 64. Rerun cmake-gui (deleting the cache so it starts over), and make sure it's set to use the TDM-gcc compiler.
+			Another reason for the linker not finding the libraries is if you don't have the same directory structure that the project expects (e.g. you have a different revision of the dependency and it has a different name for its folder). If this happens, just add the right search directory to the Code::Blocks file.
+			If there are linker errors you don't understand, or the program fails to start, download Dependency Walker (http://www.dependencywalker.com/), which can help you fix any dependency errors. Note that using it directly on the project's executable doesn't work very well, because the search paths are relative to the SOTE base directory, not the directory where the executable is. My recommendation is try using it on the libraries you're linking with, or any of their example programs.
+			If debugging isn't working, check to make sure you have your environment set up to use the TDM version of gdb (not the version that came with Code::Blocks)
+			
+			
+		Installing dependencies from source (it's a pain in the ass, but necessary in some cases)
+			All libraries should be downloaded and extracted to the "dependencies/" folder (you'll need to create the folder). The procedure to compile them usually comes down to using cmake-gui to configure options and generate project files, then using make to compile. Make sure to tell cmake to create files for mingw, not Visual Studio. Once cmake has generated the files, open up the TDM MinGW command prompt, and navigate to the folder with the newly-generated Makefile. To compile, enter "mingw32-make".
 			CEGUI
 				http://prdownloads.sourceforge.net/crayzedsgui/cegui-0.8.4.zip?download
 				Compile the dependencies package first.
@@ -138,26 +160,11 @@ Building on Windows:
 					open the boost folder in the MinGW Command Prompt and run:
 						bootstrap.bat
 						bjam.exe toolset=gcc link=static threading=multi --layout=versioned --prefix=c:/Boost --without-context install
-					Copy "C:/Boost/lib/libboost_regex-mgw48-mt-1_55.a" (or similarly-named file) to "C:/Boost/lib/libboost_regex.a"
-					
+					Copy "libboost_regex-mgw48-mt-1_55.a" (or similarly-named file) to "libboost_regex.a"
+					May need to do the same for any other Boost libraries we use in the future
+					If making a dependencies package, you'll need to copy the libraries you want from the installation directory to your dependencies folder.		
 			yaml-cpp
 				https://code.google.com/p/yaml-cpp/downloads/list	(note these are .tar.gz files, not .zip files. To extract them, you'll need an archive manager like peazip (http://peazip.sourceforge.net/).)
 				This requires boost, so get boost first.
 				After configuring, cmake-gui will tell you it couldn't find boost. Check the box marked "advanced" to see all cmake variables. Change "Boost_INCLUDE_DIR" to point to the folder with Boost.
 				May need to add "#include <algorithm>" to any files that complain about std::max and std::min not being found
-				
-		Build SOTE itself:
-			You need to set up Code::Blocks to recognize TDM MinGW.
-				In "Settings->Compiler...", copy the GCC compiler entry
-					name the new entry "TDM MinGW 64"
-					edit the search directory to point to "C:\TDM-GCC-64"
-					C compiler is "gcc.exe"
-					C++ compiler is "g++.exe"
-					Linker for dynamic libs is "g++.exe"
-			Open the Code::Blocks project file and hit "build".
-		
-		Troubleshooting:
-			When compiling the framework, you may get errors about libraries not being found. Check the build log to see if it says something like "skipping incompatible <the file you want it to link to>". This may mean you compiled the library as 32 bit instead of 64. Rerun cmake-gui (deleting the cache so it starts over), and make sure it's set to use the TDM-gcc compiler.
-			Another reason for the linker not finding the libraries is if you don't have the same directory structure that the project expects (e.g. you have a different revision of the dependency and it has a different name for its folder). If this happens, just add the right search directory to the Code::Blocks file.
-			If there are linker errors you don't understand, or the program fails to start, download Dependency Walker (http://www.dependencywalker.com/), which can help you fix any dependency errors. Note that using it directly on the project's executable doesn't work very well, because the search paths are relative to the SOTE base directory, not the directory where the executable is. My recommendation is try using it on the libraries you're linking with, or any of their example programs.
-			If debugging isn't working, check to make sure you have your environment set up to use the TDM version of gdb (not the version that came with Code::Blocks)
