@@ -14,6 +14,10 @@ public:
 	osg::Vec3 getPosition();
 	void setAttitude(osg::Quat attitude);
 	osg::Quat getAttitude();
+	void setScale(osg::Vec3 scale);
+	osg::Vec3 getScale();
+
+	void makeIdentity();
 
 protected:
 private:

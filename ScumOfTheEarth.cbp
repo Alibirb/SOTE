@@ -16,12 +16,14 @@
 					<Add option="-Wall" />
 					<Add option="-pg" />
 					<Add option="-g" />
+					<Add directory="src/Editor" />
 				</Compiler>
 				<Linker>
 					<Add option="-pg" />
 					<Add option="-pthread" />
 					<Add library="pthread" />
 					<Add library="GL" />
+					<Add directory="/lib/x86_64-linux-gnu" />
 				</Linker>
 			</Target>
 			<Target title="Windows Debug">
@@ -31,6 +33,9 @@
 				<Option type="1" />
 				<Option compiler="tdm_mingw_64" />
 				<Option projectCompilerOptionsRelation="0" />
+				<Compiler>
+					<Add directory="src/Editor" />
+				</Compiler>
 				<Linker>
 					<Add library="opengl32" />
 					<Add directory="C:/Boost/lib" />
@@ -55,6 +60,7 @@
 					<Add option="-g" />
 					<Add option="-pg" />
 					<Add directory="/sw/opt/boost-1_55/include" />
+					<Add directory="src/Editor" />
 				</Compiler>
 				<Linker>
 					<Add option="-pg" />
@@ -69,11 +75,6 @@
 		<Compiler>
 			<Add option="-std=c++11" />
 			<Add option="-fexceptions" />
-			<Add directory="/usr/local/include" />
-			<Add directory="/usr/local/Bullet2.81/include/bullet" />
-			<Add directory="/usr/include/bullet" />
-			<Add directory="/usr/lib/x86_64-linux-gnu" />
-			<Add directory="/usr/local/include/cegui-0" />
 			<Add directory="dependencies" />
 			<Add directory="dependencies/yaml-cpp-0.5.1/include" />
 			<Add directory="dependencies/angelscript/sdk/angelscript/include" />
@@ -84,6 +85,15 @@
 			<Add directory="dependencies/cegui-0.8.4/cegui/include" />
 			<Add directory="dependencies/cegui-0.8.4/dependencies/include" />
 			<Add directory="./" />
+			<Add directory="src" />
+			<Add directory="src/" />
+			<Add directory="src/Editor/" />
+			<Add directory="src/Editor" />
+			<Add directory="/usr/local/include" />
+			<Add directory="/usr/local/Bullet2.81/include/bullet" />
+			<Add directory="/usr/include/bullet" />
+			<Add directory="/usr/lib/x86_64-linux-gnu" />
+			<Add directory="/usr/local/include/cegui-0" />
 		</Compiler>
 		<Linker>
 			<Add library="osg" />
@@ -106,9 +116,6 @@
 			<Add library="GLEW" />
 			<Add library="yaml-cpp" />
 			<Add library="boost_regex" />
-			<Add directory="/usr/local/lib" />
-			<Add directory="/usr/local/lib64" />
-			<Add directory="/usr/local/lib64/cegui-0" />
 			<Add directory="dependencies" />
 			<Add directory="dependencies/angelscript/sdk/angelscript/lib" />
 			<Add directory="dependencies/yaml-cpp-0.5.1/" />
@@ -122,6 +129,9 @@
 			<Add directory="dependencies/cegui-0.8.4/build/bin" />
 			<Add directory="dependencies/cegui-0.8.4/build/lib" />
 			<Add directory="dependencies/boost_1_55_0/lib" />
+			<Add directory="/usr/local/lib" />
+			<Add directory="/usr/local/lib64" />
+			<Add directory="/usr/local/lib64/cegui-0" />
 		</Linker>
 		<Unit filename="Notes.txt" />
 		<Unit filename="dependencies/angelscript/sdk/add_on/scriptarray/scriptarray.cpp" />
@@ -205,10 +215,30 @@
 		<Unit filename="src/DangerZone.h" />
 		<Unit filename="src/Door.cpp" />
 		<Unit filename="src/Door.h" />
-		<Unit filename="src/Editor.cpp" />
-		<Unit filename="src/Editor.h" />
+		<Unit filename="src/Editor/Editor.cpp" />
+		<Unit filename="src/Editor/Editor.h" />
+		<Unit filename="src/Editor/EditorCameraManipulator.cpp" />
+		<Unit filename="src/Editor/EditorCameraManipulator.h" />
+		<Unit filename="src/Editor/MultiLineCodeEditbox.cpp" />
+		<Unit filename="src/Editor/MultiLineCodeEditbox.h" />
+		<Unit filename="src/Editor/ObjectOverlay.cpp" />
+		<Unit filename="src/Editor/ObjectOverlay.h" />
+		<Unit filename="src/Editor/SelectionTool.cpp" />
+		<Unit filename="src/Editor/SelectionTool.h" />
+		<Unit filename="src/Editor/SyntaxHighlighter.cpp" />
+		<Unit filename="src/Editor/SyntaxHighlighter.h" />
+		<Unit filename="src/Editor/TextEditor.cpp" />
+		<Unit filename="src/Editor/TextEditor.h" />
+		<Unit filename="src/Editor/Tool.cpp" />
+		<Unit filename="src/Editor/Tool.h" />
+		<Unit filename="src/Editor/Toolbar.cpp" />
+		<Unit filename="src/Editor/Toolbar.h" />
+		<Unit filename="src/Editor/TransformTool.cpp" />
+		<Unit filename="src/Editor/TransformTool.h" />
 		<Unit filename="src/Entity.cpp" />
 		<Unit filename="src/Entity.h" />
+		<Unit filename="src/Event.cpp" />
+		<Unit filename="src/Event.h" />
 		<Unit filename="src/ExpiredObjectRemoval.cpp" />
 		<Unit filename="src/ExpiredObjectRemoval.h" />
 		<Unit filename="src/Fighter.cpp" />
@@ -227,8 +257,6 @@
 		<Unit filename="src/Level.h" />
 		<Unit filename="src/Light.cpp" />
 		<Unit filename="src/Light.h" />
-		<Unit filename="src/MultiLineCodeEditbox.cpp" />
-		<Unit filename="src/MultiLineCodeEditbox.h" />
 		<Unit filename="src/OwnerUpdateCallback.cpp" />
 		<Unit filename="src/OwnerUpdateCallback.h" />
 		<Unit filename="src/PhysicsData.h" />
@@ -243,14 +271,10 @@
 		<Unit filename="src/Sprite.h" />
 		<Unit filename="src/StateMachine.cpp" />
 		<Unit filename="src/StateMachine.h" />
-		<Unit filename="src/SyntaxHighlighter.cpp" />
-		<Unit filename="src/SyntaxHighlighter.h" />
 		<Unit filename="src/TemporaryText.cpp" />
 		<Unit filename="src/TemporaryText.h" />
 		<Unit filename="src/TextDisplay.cpp" />
 		<Unit filename="src/TextDisplay.h" />
-		<Unit filename="src/TextEditor.cpp" />
-		<Unit filename="src/TextEditor.h" />
 		<Unit filename="src/ThirdPersonCameraManipulator.cpp" />
 		<Unit filename="src/ThirdPersonCameraManipulator.h" />
 		<Unit filename="src/Weapon.cpp" />
@@ -259,6 +283,7 @@
 		<Unit filename="src/input.cpp" />
 		<Unit filename="src/input.h" />
 		<Unit filename="src/main.cpp" />
+		<Unit filename="src/osgNodeUserData.h" />
 		<Unit filename="src/scriptstl.h" />
 		<Unit filename="src/stdvector.h" />
 		<Unit filename="tests.as" />

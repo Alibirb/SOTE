@@ -20,6 +20,7 @@ children:
     geometry: LightAndDark/LightCrystal.osgt
     position: [0, 0, 25]
     rotation: [0, 0, 0, 1]
+    scale: [1, 1, 1]
     mass: 0
     physicsBodyGeneration: triangleMeshShape
     attachments:
@@ -295,6 +296,7 @@ children:
     physicsBodyGeneration: none
     geometry: Fire.osgt
     position: {x: 50, y: 14, z: 6}
+    scale: [2, 2, 2]
     damages:
       - dataType: damage
         amount: .5

@@ -9,9 +9,9 @@ void BaseCameraManipulator::setCenter(osg::Vec3 newCenter)
 {
 	_center = newCenter;
 }
-void BaseCameraManipulator::translate(float dx, float dy, float dz)
+void BaseCameraManipulator::translate(osg::Vec3 translation)
 {
-	this->setCenter(_center+osg::Vec3(dx, dy, dz));
+	this->setCenter(_center+translation);
 }
 
 void BaseCameraManipulator::setByMatrix(const osg::Matrixd& matrix)

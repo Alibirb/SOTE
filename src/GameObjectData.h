@@ -132,6 +132,7 @@ public:
 
 	bool hasInt(std::string name);
 	bool hasFloat(std::string name);
+	bool hasVec3(std::string name);
 	bool hasString(std::string name);
 	bool hasFunctionSource(std::string name);
 

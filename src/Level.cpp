@@ -13,6 +13,8 @@
 #include "PhysicsData.h"
 #include "GameObjectData.h"
 
+#include "ThirdPersonCameraManipulator.h"
+
 #include <osgDB/ReadFile>
 #include <osgDB/FileUtils>
 
@@ -99,12 +101,15 @@ void myTickCallback(btDynamicsWorld* world, btScalar timeStep)
 }
 
 
-Level::Level(std::string filename)
+Level::Level(std::string filename) : _cameraManipulator(NULL)
 {
 	setCurrentLevel(this);
 
-	levelRoot = new osg::Group();
-	addToSceneGraph(levelRoot);
+	_cameraManipulator = new ThirdPersonCameraManipulator();
+	getViewer()->setCameraManipulator(_cameraManipulator);
+
+	_levelRoot = new osg::Group();
+	addToSceneGraph(_levelRoot);
 
 #ifdef USE_BOX2D_PHYSICS
 	gravity = b2Vec2(0.0, 0.0);
@@ -129,9 +134,9 @@ Level::Level(std::string filename)
 	_physicsWorld->setGravity(btVector3(0, 0, -9.81));
 	_debugDrawer = new osgbCollision::GLDebugDrawer();
 	_physicsWorld->setDebugDrawer(_debugDrawer);
-	_debugDrawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);
+	_debugDrawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE & ~btIDebugDraw::DBG_DrawNormals);
 	_debugDrawer->setEnabled(false);
-	addToSceneGraph(_debugDrawer->getSceneGraph(), levelRoot);
+	addToSceneGraph(_debugDrawer->getSceneGraph(), _levelRoot);
 	_physicsWorld->setInternalTickCallback(myTickCallback);
 #endif
 
@@ -178,7 +183,7 @@ void Level::loadFromString(std::string text)
 	GameObjectData* dataObj = new GameObjectData(YAML::Load(text));
 
 	for(auto child : dataObj->getObjectList("children"))
-		addObject(GameObject::create(child, levelRoot));
+		addObject(GameObject::create(child, _levelRoot));
 }
 void Level::loadFromFile(std::string filename)
 {
@@ -189,7 +194,7 @@ void Level::loadFromFile(std::string filename)
 	GameObjectData* dataObj = new GameObjectData(YAML::LoadFile(filename));
 
 	for(auto child : dataObj->getObjectList("children"))
-		addObject(GameObject::create(child, levelRoot));
+		addObject(GameObject::create(child, _levelRoot));
 }
 
 void Level::reload()
@@ -307,6 +312,17 @@ std::string Level::getFilename()
 {
 	return _filename;
 }
+
+void Level::setCameraManipulator(BaseCameraManipulator* cameraManipulator)
+{
+	_cameraManipulator = cameraManipulator;
+}
+
+osg::Group* Level::getRootNode()
+{
+	return _levelRoot;
+}
+
 
 
 Level* currentLevel;

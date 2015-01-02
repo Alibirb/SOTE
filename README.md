@@ -9,9 +9,17 @@ Please note that SOTE is still in the very early stages of development, so expec
 
 See INSTALL.txt for installation instructions.
 
-After compiling, you can run SOTE either through Code::Blocks, or with the shell script provided for your platform (runSOTE-Linux.sh or runSOTE-Windows.bat). (Sorry, OS X users, Daniel's at college, and his crappy old Macbook Pro is at home, but he'll make you a shell script the next time he comes home for the weekend).
+After compiling, you can run SOTE either through Code::Blocks, or with the shell script provided for your platform (runSOTE-Linux.sh or runSOTE-Windows.bat) (OS X script will come soon).
 
 It's a good idea to run "git pull" fairly regularly so you have the most up-to-date version of SOTE. And whenever you pull the latest changes, remember to open the project in Code::Blocks and build it again, so you actually update the binary.
+
+
+Current Library Integrations:
+-----------------------------
+Physics: Bullet Physics
+Rendering: OpenSceneGraph
+Scripting: AngelScript
+GUI: CEGUI
 
 
 License
@@ -23,7 +31,7 @@ Using the Editor
 ----------------
 The SOTE editor is built into the game. Press F1 to toggle between "Edit" and "Play" modes.
 
-The editor contains a text editor box, which can be used to alter the scene and the objects in it. The data is stored as YAML, with AngelScript for update functions, callbacks, and other scripting needs. Take a look at the sample level (loaded into the editor by default) to see how things work.
+The editor contains a text editor box, which can be used to alter the scene and the objects in it. The data is stored as YAML, with AngelScript for update functions, callbacks, and other scripting needs. Take a look at the sample level (loaded into the editor by default, and located at media/SampleLevel.yaml) to see how things work.
 
 
 The Attachment System

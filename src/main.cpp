@@ -77,7 +77,7 @@ protected:
 #include "CEGUIStuff.h"
 
 
-#include "Editor.h"
+#include "Editor/Editor.h"
 
 #include <stdio.h>
 #ifdef _WIN32
@@ -144,7 +144,7 @@ float getDistance(osg::Vec3 a, osg::Vec3 b)
 	return sqrt(pow(a.x() - b.x(), 2) + pow(a.y() - b.y(), 2) + pow(a.z() - b.z(), 2));
 }
 
-
+/// These are used by Player to figure out the right translation to move the player when you press a movement key. They should be moved to Player to prevent confusion (they don't technically do a proper conversion from camera to world coordinates, because they only account for rotation along the z axis).
 osg::Vec3 cameraToWorldTranslation(float x, float y, float z)
 {
 	double camangle = ((BaseCameraManipulator*) getViewer()->getCameraManipulator())->getHeading();
@@ -273,7 +273,10 @@ osgViewer::Viewer* getViewer()
 }
 
 
-
+bool isGamePaused()
+{
+	return !(getEditor()->getMode() == Editor::Play);
+}
 
 
 int main()
@@ -299,7 +302,6 @@ int main()
 
 	wsi->getScreenResolution(osg::GraphicsContext::ScreenIdentifier(0), windowWidth, windowHeight);
 
-
 	getViewer()->setSceneData(root);
 	getViewer()->addEventHandler(getMainEventHandler());
 	getViewer()->apply(new osgViewer::SingleWindow(0, 0, windowWidth, windowHeight, 0));
@@ -311,7 +313,7 @@ int main()
 	getViewer()->setCameraManipulator(new ThirdPersonCameraManipulator());
 #endif
 
-
+	getViewer()->setKeyEventSetsDone(0);	/// By default, osg exits if you press escape. We don't want that.
 
 	osgViewer::StatsHandler* statsHandler = new osgViewer::StatsHandler();
 	statsHandler->setKeyEventTogglesOnScreenStats( osgGA::GUIEventAdapter::KEY_F3);
@@ -354,7 +356,10 @@ int main()
 
 		elapsedTime = osg::Timer::instance()->time_s();
 
-		getCurrentLevel()->updatePhysics(deltaTime);
+		if(!isGamePaused())
+			getCurrentLevel()->updatePhysics(deltaTime);
+		else
+			getCurrentLevel()->updatePhysics(0);
 
 		std::ostringstream hudStream;
 		hudStream << std::endl;		/// I don't know why, but it seems we need to do this or CEGUI won't display.

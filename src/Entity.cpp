@@ -77,20 +77,9 @@ double Entity::getHeading()
 }
 void Entity::setHeading(double angle)
 {
-	this->setAttitude(osg::Quat(angle, osg::Vec3(0,0,1)));
+	this->setRotation(osg::Quat(angle, osg::Vec3(0,0,1)));
 }
 
-const osg::Quat Entity::getAttitude()
-{
-	return _transformNode->getAttitude();
-}
-void Entity::setAttitude(const osg::Quat& newAttitude)
-{
-	_transformNode->setAttitude(newAttitude);
-#ifndef USE_BOX2D_PHYSICS
-	_controller->getGhostObject()->getWorldTransform().setBasis(osgbCollision::asBtMatrix3x3(osg::Matrix(newAttitude)));
-#endif
-}
 
 StateMachine* Entity::getStateMachine() {
 	return _stateMachine;
@@ -200,14 +189,16 @@ void Entity::createController()
 
 	transformNode->setUpdateCallback(new PhysicsNodeCallback(transformNode, physicsBody, box2DToOsgAdjustment));
 #else
-	physicsToModelAdjustment = osg::Vec3(0, 0, _capsuleHeight/2 + _capsuleRadius);
+	physicsToModelAdjustment = osg::Vec3(0, 0, (_capsuleHeight/2 + _capsuleRadius) * getScale().z());
 	btCapsuleShapeZ* shape = new btCapsuleShapeZ(_capsuleRadius, _capsuleHeight);
 
 	btTransform transform = btTransform();
 	transform.setIdentity();
-	transform.setOrigin(osgbCollision::asBtVector3(_transformNode->getPosition() + physicsToModelAdjustment));
-	//transform.setBasis(osgbCollision::asBtMatrix3x3(osg::Matrix(_transformNode->getAttitude())));
-	transform.setBasis(osgbCollision::asBtMatrix3x3(osg::Matrix(osg::Quat(_transformNode->getAttitude().x(), _transformNode->getAttitude().y(), _transformNode->getAttitude().z(), -_transformNode->getAttitude().w()))));	/// NOTE: the angle is reversed here. I think it's because the model doesn't face in the positive direction like it should. Will need to get the rotational stuff working correctly at some point.
+	transform.setOrigin(osgbCollision::asBtVector3(getWorldPosition() + physicsToModelAdjustment));
+	btVector4 vector4 = osgbCollision::asBtVector4(getWorldRotation().asVec4());
+	transform.setRotation(btQuaternion(vector4.x(), vector4.y(), vector4.z(), vector4.w()));
+	shape->setLocalScaling(osgbCollision::asBtVector3(getScale()));
+
 	_physicsBody = new btPairCachingGhostObject();
 	_physicsBody->setWorldTransform(transform);
 	_physicsBody->setCollisionShape(shape);

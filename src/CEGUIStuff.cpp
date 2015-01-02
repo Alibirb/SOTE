@@ -19,13 +19,30 @@
 
 #include "globals.h"
 
-#include "Editor.h"
+#include "Editor/Editor.h"
 
-#include "MultiLineCodeEditbox.h"
+#include "Editor/MultiLineCodeEditbox.h"
 
 
 
 using namespace CEGUI;
+
+
+bool onMouseLeaves(const CEGUI::EventArgs &e)
+{
+	const CEGUI::MouseEventArgs& mouseArgs = static_cast<const CEGUI::MouseEventArgs&>(e);
+	mouseArgs.window->deactivate();
+
+	return true;
+}
+bool onMouseEnters(const CEGUI::EventArgs &e)
+{
+	const CEGUI::MouseEventArgs& mouseArgs = static_cast<const CEGUI::MouseEventArgs&>(e);
+	mouseArgs.window->activate();
+
+	return true;
+}
+
 
 void CEGUIInitOperation::operator() (osg::GraphicsContext* gc)
 {
@@ -58,6 +75,10 @@ void CEGUIInitOperation::operator() (osg::GraphicsContext* gc)
                                                                   "MultiLineCodeEditbox",
                                                                   "EditorLook/MultiLineEditbox",
                                                                   "MultiLineCodeEditbox");
+
+	/// Set up global events to change the input focus based on which window the cursor is over.
+	CEGUI::GlobalEventSet::getSingleton().subscribeEvent(CEGUI::Window::EventNamespace + "/" + CEGUI::Window::EventMouseEntersSurface, CEGUI::Event::Subscriber(&onMouseEnters));
+	CEGUI::GlobalEventSet::getSingleton().subscribeEvent(CEGUI::Window::EventNamespace + "/" + CEGUI::Window::EventMouseLeavesSurface, CEGUI::Event::Subscriber(&onMouseLeaves));
 
 	getEditor()->setupDefaultWindows();
 }

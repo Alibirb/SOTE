@@ -48,6 +48,8 @@ float getDistance(osg::Vec3 a, osg::Vec3 b);
 
 double getDeltaTime();
 
+bool isGamePaused();
+
 /// Called when the game is lost.
 void GameOverYouLose();
 

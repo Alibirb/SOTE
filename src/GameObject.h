@@ -27,6 +27,8 @@ class asIScriptFunction;
 
 class Attachment;
 
+class ObjectOverlay;
+
 
 /// Class for an object
 class GameObject : public Saveable
@@ -54,6 +56,8 @@ protected:
 	std::unordered_map<std::string, std::string> _functionSources;	/// source code for script functions.
 	std::string _collisionShapeGenerationMethod;
 
+	ObjectOverlay* _overlay;
+
 	osg::Program* _shaderProgram;
 
 	std::list<Attachment*> _attachments;
@@ -71,12 +75,17 @@ public:
 
 	virtual void setPosition(osg::Vec3 newPosition);
 	virtual void setRotation(osg::Quat newRotation);
+	virtual void setScale(osg::Vec3 newScale);
 	virtual osg::Vec3 getLocalPosition();
 	virtual osg::Vec3 getWorldPosition();
 	virtual osg::Quat getLocalRotation();
 	virtual osg::Quat getWorldRotation();
+	virtual osg::Vec3 getScale();
+	virtual void translate(osg::Vec3 translation);
+	virtual void rotate(osg::Quat rotation);
 	osg::Vec3 localToWorld(osg::Vec3 localVector);
 	osg::Vec3 worldToLocal(osg::Vec3 worldVector);
+	virtual void recalculatePhysicsTransform();
 
 	osg::ref_ptr<ImprovedMatrixTransform> getTransformNode()
 	{
@@ -91,6 +100,7 @@ public:
 
 	void loadModel(std::string modelFilename);
 	void setModelNode(osg::Node* node);
+	osg::Node* getModelNode();
 
 	void parentTo(osg::Group* parent);
 	void unparentFrom(osg::Group* parent);
@@ -111,6 +121,9 @@ public:
 #endif
 
 	void addAttachment(Attachment* attachment);
+
+	ObjectOverlay* getSelectionOverlay();
+
 
 protected:
 	void saveGameObjectVariables(GameObjectData* dataObj);	/// Saves the variables declared in GameObject.

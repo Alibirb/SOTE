@@ -14,7 +14,9 @@
 
 #include "BaseCameraManipulator.h"
 
-#include "Editor.h"
+#include "Editor/Editor.h"
+
+#include "Event.h"
 
 
 
@@ -44,16 +46,11 @@ bool MainEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIAction
 			getActivePlayer()->processMovementControls(osg::Vec3(0,0,0));	// Send empty controls to player. FIXME: should pause the game instead.
 
 		}
+		return false;
 	}
 	case(osgGA::GUIEventAdapter::KEYDOWN):
 	{
 		keyState[ea.getKey()] = true;
-
-		if(ea.getKey() == osgGA::GUIEventAdapter::KEY_Escape)
-		{
-			runCleanup();
-		}
-
 
 		if(ea.getKey() == osgGA::GUIEventAdapter::KEY_F2)
 			writeOutSceneGraph();
@@ -101,12 +98,8 @@ bool MainEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIAction
 			}
 			break;
 		case InputMode::Editor:
-			switch (ea.getKey())
-			{
-			case osgGA::GUIEventAdapter::KEY_F1:
-				getEditor()->setMode(Editor::Play);
-				break;
-			}
+			Event event = Event(ea);
+			getEditor()->onEvent(event);
 			break;
 		}
 
@@ -119,12 +112,22 @@ bool MainEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIAction
 		return false;
 	}
 	default:
+		switch(_inputMode)
+		{
+		case InputMode::Standard:
+			break;
+
+		case InputMode::Editor:
+			Event event = Event(ea);
+			getEditor()->onEvent(event);
+			break;
+
+		}
 		return false;
 	}
 }
 
 void MainEventHandler::setInputMode(InputMode newMode) {
-	std::cout << "Changing from inputmode " << _inputMode << " to " << newMode << "." << std::endl;
 	_inputMode = newMode;
 }
 

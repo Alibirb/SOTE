@@ -29,15 +29,16 @@ public:
 
 #else
 
-// from bullet-test (slightly modified)
+/// originally from bullet-test.
 class BulletPhysicsNodeCallback: public osg::NodeCallback
 {
 private:
-	btCollisionObject* physicsBody;
-	osg::Vec3 physicsToOsgAdjustment;	// Adjustment between the visual and physical components
+	btCollisionObject* _physicsBody;
+	//osg::Vec3 physicsToOsgAdjustment;	// Adjustment between the visual and physical components
+	osg::Matrix _physicsToOsgAdjustment;	/// Adjustment between the visual and physical components
 
 public:
-	BulletPhysicsNodeCallback(btCollisionObject *physicsBody, osg::Vec3 physicsToOsgAdjustment);
+	BulletPhysicsNodeCallback(btCollisionObject* physicsBody, osg::Vec3 physicsToOsgAdjustment);
 
 	virtual void operator()(osg::Node* node, osg::NodeVisitor* nv);
 };

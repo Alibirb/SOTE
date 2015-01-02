@@ -2,30 +2,30 @@
 
 TODO:
 	DoneThisCommit:
-		Organization and documentation, minor conveniences
-			put the CEGUI "datafiles" folder inside "media"
-			Moved code to an "src" folder.
-			The window size is now dependent on the size of your screen.
-			Added a README
+		Added basic graphical scene manipulation tools:
+			Select objects
+			Transformation tools
+				With ability to constrain to x/y/z axes
+			Camera manipulation in Edit mode
+
 
 	Current Task:
 
 	Next Steps:
 		Editor stuff:
-			Level editor
-				Transformation tools
-					With ability to constrain to x/y/z axes
-				Selection tools
+			Primitive selection
+			Copy and paste objects in scene
+			Undo/Redo
 			Text editor improvements:
 				Line numbers
 				Allow you to select which file to load/save
 				Search function
 				Should use the native clipboard
-			Undo/Redo
 			Better GUI theme
 				EditorLook was copied from TaharezLook, which is a pretty cool theme, but NOT what we want for the editor. I chose it because it was the most complete theme that CEGUI came with.
 			Cats
 			Script console (AngelScriptConsole is outdated and uses osgWidgets. We ought to turn it into a proper scripting console using CEGUI, and make it part of the editor).
+		Allow specifying the level file with command-line argument.
 
 		Fix any bugs that cause the program to crash if you load an invalid scene
 
@@ -35,13 +35,14 @@ TODO:
 			Rudimentary AI so we can have NPCs.
 
 
+	Sometime later:
 		Game should pause when in Edit mode.
 			A bit more complicated than I thought. We want to stop updating the objects in the scene, but still allow them to be moved around by the manipulators.
 		Figure out a better system for displaying warnings and errors (currently the screen gets filled up with warnings from OSG and CEGUI and if one of MY warnings shows up, it's lost in the mess)
 		Improve import/export to allow it to link to prototypes.
-
 		Make a class to wrap around the physics stuff
 		Expose all GameObject-derived classes to AngelScript (also exposing the type hierarchy (see http://www.angelcode.com/angelscript/sdk/docs/manual/doc_adv_class_hierarchy.html))
+		Fix the object initialization system (figure out what goes where in the constructors)
 
 	Minor Tasks:
 		logError and logWarning should be stream things like std::cout and std::cerr;
@@ -55,20 +56,16 @@ TODO:
 		Get rid of Fighter and just put that functionality into Entity
 		Get rid of Player and give Entities an EntityController, either an AIController or PlayerController. Player characters will have an EntityController of both types, and switch between the two as appropriate.
 
-	Before releasing this to the public in any way:
-		FIX LICENSING ISSUES!!
-			The osgBullet stuff and osgwTools are under a license that would require SOTE to be under the same or compatible license if I don't move them.
-			The AngelScript addons may have some issues to fix, along with stdvector and some other stuff.
-			The CEGUI implementation (CEGUIStuff) uses code from an old part of OSG and possibly some code from osgRecipes. The old OSG part isn't a problem (license does not require releasing the source code), but the osgRecipes part is a little unclear. The osgRecipes project is in the public domain, but it says individual recipes may have their own license.
-			The classes beginning with "Improved" are improved versions of classes from other libraries, and may contain some of the original code of the base class.
-			Check to make sure I actually do copy the license notices properly (I don't want to end up accidentally releasing my own code under that license)
-			The shaders in GameObject.cpp came from osgwnormalmap.cpp
 
-	Possibly create my own data storage language:
-		uses {} to denote elements (with matching-brace highlighting, it's much clearer than having to follow the indentation like in YAML)
-		allows references to an element in a different file (like what I was doing with XML before)
-			may not be a language feature, could just be part of GameObjectData's loading process
-		C and C++ style comments
+	FIX LICENSING ISSUES!!
+		The osgBullet stuff and osgwTools are under a license that would require SOTE to be under the same or compatible license if I don't move them.
+		The AngelScript addons may have some issues to fix, along with stdvector and some other stuff.
+		The CEGUI implementation (CEGUIStuff) uses code from an old part of OSG and possibly some code from osgRecipes. The old OSG part isn't a problem (license does not require releasing the source code), but the osgRecipes part is a little unclear. The osgRecipes project is in the public domain, but it says individual recipes may have their own license.
+		The classes beginning with "Improved" are improved versions of classes from other libraries, and may contain some of the original code of the base class.
+		Check to make sure I actually do copy the license notices properly (I don't want to end up accidentally releasing my own code under that license)
+		The shaders in GameObject.cpp came from osgwnormalmap.cpp
+		Event is copying a whole bunch of stuff (mainly enums) from osgGA::GUIEventAdapter. I'm not 100% sure whether that's actually an issue, but we should look into it. Since OSG seems to have once used a more liberal license, we could look at the history of the repository and see if we can find a version of GUIEventAdapter that uses the old license.
+		The camera manipulators are using a lot of code from OSG's camera manipulators.
 
 	Use macros to automatically generate methods for serialization and creation.
 
@@ -88,17 +85,19 @@ BUGS:
 	Weapons do not point in the correct direction (rotated relative to the owner)
 	Collision checking (in Level) may call onCollision() multiple times for the same pair of objects if they have multiple manifolds, or if Bullet takes multiple simulation steps for one rendering step.
 	Can easily push through doors.
-	Warping/teleporting is based on osg objects (not physics objects), and will warp the player to the skybox
+		Perhaps have their mass set to 0 normally, and give them mass temporarily when we want them to move.
+	Warping/teleporting is based on osg objects (not physics objects), and will warp the player to the skybox if it's in the way.
 	Lighting has issues if I try to use GL_LIGHT0. Currently using GL_LIGHT1 only.
 	Specular lighting is screwed up. On a few objects (eyes and pants), it seems to show up only in the shadows. Probably an issue with the shader.
 	Seems like CEGUI can only create windows in the rendering thread.
 		As a temporary work-around, I'm loading all windows through Viewer::realize() (with a GraphicsOperation). However, this does not allow new windows to be loaded after the program is set up.
 		I think I can do stuff on the graphics thread by obtaining the GraphicsContext and calling add() on it, passing in an object that inherits from osg::Operation. If I make an Operation class to create a CEGUI object, I should be able to get it working.
 		Another possibility is to do the loading inside CEGUIDrawable::DrawImplementation().
+	If you delete the current Player from the scene buffer, and load the buffer into the scene, it seg faults.
 	CRITICAL:
 		Not enough cats!!
 	Low Priority (it works, but might be ugly):
-		Inefficient debug rendering. Before getting the new graphics card, I thought it was just too much for my integrated graphics. However, a look at the NVIDIA settings program shows that the GPU utilization DROPS when I turn on debug rendering. I believe the issue is that the debug drawing is done sequentially, line-by-line. I need to split it up so it can render in parallel.
+		Inefficient physics debug rendering. The rendering itself is actually fine, but updating the geometry every frame is horribly inefficient. (You can tell the rendering is fine because the framerate is okay in Edit mode, when Bullet isn't running and the geometry isn't updated.)
 
 Bugs/issues I expect to see later:
 
@@ -139,7 +138,4 @@ Libraries to check out later:
 	Recast/Detour
 	Clipper-- for clipping and offsetting polygons. Used in Broken Age (http://www.angusj.com/delphi/clipper.php)
 	GLSL Optimizer
-	libGizmo
-		https://github.com/CedricGuillemet/LibGizmo
-		3D manipulation widgets
 

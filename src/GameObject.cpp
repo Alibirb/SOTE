@@ -37,6 +37,11 @@
 #include "Light.h"
 #include "DangerZone.h"
 
+#include "osgNodeUserData.h"
+
+#include "Editor/Editor.h"
+#include "Editor/ObjectOverlay.h"
+
 
 struct AnimationManagerFinder : public osg::NodeVisitor
 {
@@ -63,12 +68,14 @@ GameObject::GameObject(osg::Group* parentNode) : _physicsBody(NULL), _collisionS
 
 	_objectType = "GameObject";
 
-	//_transformNode = new osg::PositionAttitudeTransform();
 	_transformNode = new ImprovedMatrixTransform();
 	addToSceneGraph(_transformNode, parentNode);
 	_updateNode = new osg::Node();
 	_updateNode->addUpdateCallback(new OwnerUpdateCallback<GameObject>(this));	/// NOTE: Due to virtual inheritance, should be able to remove the template-ness of OwnerUpdateCallback.
 	_transformNode->addChild(_updateNode);
+
+	_overlay = new ObjectOverlay(this);
+	_transformNode->addChild(_overlay->getNode());
 }
 
 GameObject::GameObject(GameObjectData* dataObj, osg::Group* parentNode) : GameObject(parentNode)
@@ -100,6 +107,7 @@ GameObject::~GameObject()
 		markForRemoval(attachment, attachment->getType());
 
 	getCurrentLevel()->removeObject(this);
+	getEditor()->unselectObject(this);
 }
 
 GameObject* GameObject::create(GameObjectData* dataObj, osg::Group* parentNode)
@@ -148,10 +156,18 @@ void GameObject::setModelNode(osg::Node* node)
 {
 	_transformNode->removeChild(_modelNode);
 	_modelNode = node;
+	osg::ref_ptr<osgNodeUserData> userData = new osgNodeUserData(this);
+	_modelNode->setUserData(userData);
 	_transformNode->addChild(_modelNode);
 	findAnimation();
 
 	tryToSetProperShaders(_modelNode);
+
+	_overlay->computeGeometry();	/// Model node has changed, so the overlay needs to recompute its geometry.
+}
+osg::Node* GameObject::getModelNode()
+{
+	return _modelNode;
 }
 
 
@@ -179,14 +195,39 @@ void GameObject::setRotation(osg::Quat newRotation)
 #ifdef USE_BOX2D_PHYSICS
 		// TODO
 #else
-		btTransform transform;
-		transform = _physicsBody->getWorldTransform();
-		//transform.setOrigin(osgbCollision::asBtVector3(newPosition + physicsToModelAdjustment));	/// FIXME: should convert to world coordinates.
-		btVector4 vector4 = osgbCollision::asBtVector4(newRotation.asVec4());
-		transform.setRotation(btQuaternion(vector4.x(), vector4.y(), vector4.z(), vector4.w()));
-		_physicsBody->setWorldTransform(transform);
+		_physicsBody->getWorldTransform().setBasis(osgbCollision::asBtMatrix3x3(osg::Matrix(newRotation)));
 #endif // USE_BOX2D_PHYSICS
 	}
+}
+void GameObject::setScale(osg::Vec3 newScale)
+{
+	_transformNode->setScale(newScale);
+
+	if(_physicsBody)
+	{
+		_physicsBody->getCollisionShape()->setLocalScaling(osgbCollision::asBtVector3(newScale));
+	}
+}
+
+void GameObject::recalculatePhysicsTransform()
+{
+	if(_physicsBody)
+	{
+#ifdef USE_BOX2D_PHYSICS
+		// TODO
+#else
+		btTransform transform = btTransform();
+		//transform = _physicsBody->getWorldTransform();
+		transform.setIdentity();
+		transform.setOrigin(osgbCollision::asBtVector3(getWorldPosition() + physicsToModelAdjustment));
+		btVector4 vector4 = osgbCollision::asBtVector4(getWorldRotation().asVec4());
+		transform.setRotation(btQuaternion(vector4.x(), vector4.y(), vector4.z(), vector4.w()));
+		_physicsBody->setWorldTransform(transform);
+		_physicsBody->getCollisionShape()->setLocalScaling(osgbCollision::asBtVector3(getScale()));
+
+#endif // USE_BOX2D_PHYSICS
+	}
+
 }
 
 osg::Vec3 GameObject::getLocalPosition()
@@ -203,8 +244,31 @@ osg::Quat GameObject::getLocalRotation()
 }
 osg::Quat GameObject::getWorldRotation()
 {
-	return getWorldCoordinates(_transformNode)->getRotate();
+	osg::Vec3d translation;
+	osg::Quat rotation;
+	osg::Vec3d scale;
+	osg::Quat scaleOrientation;
+
+	getWorldCoordinates(_transformNode)->decompose(translation, rotation, scale, scaleOrientation);
+
+	return rotation;
 }
+osg::Vec3 GameObject::getScale()
+{
+	return _transformNode->getScale();
+}
+
+void GameObject::translate(osg::Vec3 translation)
+{
+	setPosition(translation + getLocalPosition());
+}
+void GameObject::rotate(osg::Quat rotation)
+{
+	//setRotation(rotation + getLocalRotation());
+	setRotation(getLocalRotation() * rotation);
+}
+
+
 osg::Vec3 GameObject::localToWorld(osg::Vec3 localVector)	/// FIXME: does not seem to work.
 {
 	osg::NodePathList paths = _transformNode->getParentalNodePaths();
@@ -233,6 +297,7 @@ void GameObject::saveGameObjectVariables(GameObjectData* dataObj)
 {
 	dataObj->addData("position", getLocalPosition());
 	dataObj->addData("rotation", getLocalRotation());
+	dataObj->addData("scale", getScale());
 	if(_modelFilename != "")
 		dataObj->addData("geometry", _modelFilename);
 	dataObj->addData("physicsBodyGeneration", _collisionShapeGenerationMethod);
@@ -268,6 +333,8 @@ void GameObject::loadGameObjectVariables(GameObjectData* dataObj)
 {
 	setPosition(dataObj->getVec3("position"));
 	setRotation(dataObj->getQuat("rotation"));
+	if(dataObj->hasVec3("scale"))
+		setScale(dataObj->getVec3("scale"));
 	if(dataObj->hasString("geometry"))
 		loadModel(dataObj->getString("geometry"));
 	for(auto kv : dataObj->getFunctionSources())
@@ -298,7 +365,6 @@ void GameObject::parentTo(osg::Group* parent)
 {
 	if(_transformNode->getNumParents() > 0)
 	{
-		logWarning("GameObject already parented.");
 		_transformNode->getParent(0)->removeChild(_transformNode);	/// Remove from current parent.
 	}
 	parent->addChild(_transformNode);
@@ -364,11 +430,14 @@ void GameObject::generateRigidBody(double mass, std::string generationMethod)
 	transform.setOrigin(osgbCollision::asBtVector3(getWorldPosition() + physicsToModelAdjustment));
 	btVector4 vector4 = osgbCollision::asBtVector4(getWorldRotation().asVec4());
 	transform.setRotation(btQuaternion(vector4.x(), vector4.y(), vector4.z(), vector4.w()));
+	shape->setLocalScaling(osgbCollision::asBtVector3(getScale()));
+
 	btVector3 localInertia;
 	shape->calculateLocalInertia(mass, localInertia);
 
 	osgbDynamics::MotionState* motionState = new osgbDynamics::MotionState();
 	motionState->setTransform(_transformNode);
+	motionState->setScale(_transformNode->getScale());
 	motionState->setWorldTransform(transform);
 
 
@@ -551,6 +620,11 @@ void GameObject::createShaders()
 	_shaderProgram->addBindAttribLocation( "a_tangent", 6 );
 	_shaderProgram->addBindAttribLocation( "a_binormal", 7 );
 	_shaderProgram->addBindAttribLocation( "a_normal", 15 );
+}
+
+ObjectOverlay* GameObject::getSelectionOverlay()
+{
+	return _overlay;
 }
 
 

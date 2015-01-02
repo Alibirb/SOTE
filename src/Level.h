@@ -26,6 +26,7 @@
 class GameObject;
 class GameObjectData;
 class Player;
+class BaseCameraManipulator;
 
 
 void myTickCallback(btDynamicsWorld *world, btScalar timeStep);
@@ -49,9 +50,11 @@ private:
 	std::list<std::string> _playerNames;
 	std::string _activePlayerName;
 
-	osg::Group* levelRoot;	/// Root node that everything in the Level is parented to.
+	osg::Group* _levelRoot;	/// Root node that everything in the Level is parented to.
 
 	std::string _filename;	/// filename used to load the level. Stored to allow reloading.
+
+	osg::ref_ptr<BaseCameraManipulator> _cameraManipulator;
 
 
 public:
@@ -110,6 +113,10 @@ public:
 	std::unordered_map<std::string, Player*> getPlayers();
 	std::list<std::string> getPlayerNames();
 	std::string getFilename();
+	osg::Group* getRootNode();
+
+	BaseCameraManipulator* getCameraManipulator() { return _cameraManipulator;}
+	void setCameraManipulator(BaseCameraManipulator* cameraManipulator);
 
 protected:
 

@@ -57,11 +57,9 @@ public:
 
 	virtual void setPosition(osg::Vec3 newPosition);
 
+
 	double getHeading();
 	void setHeading(double angle);
-
-	const osg::Quat getAttitude();
-	void setAttitude(const osg::Quat& newAttitude);
 
 	std::string getName();
 

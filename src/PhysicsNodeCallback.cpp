@@ -26,30 +26,19 @@ void Box2DPhysicsNodeCallback::operator()(osg::Node* node, osg::NodeVisitor* nv)
 
 BulletPhysicsNodeCallback::BulletPhysicsNodeCallback(btCollisionObject *physicsBody, osg::Vec3 physicsToOsgAdjustment)
 {
-	this->physicsBody = physicsBody;
-	this->physicsToOsgAdjustment = physicsToOsgAdjustment;
+	_physicsBody = physicsBody;
+	_physicsToOsgAdjustment = osg::Matrix::translate(physicsToOsgAdjustment);
 }
 
 void BulletPhysicsNodeCallback::operator()(osg::Node* node, osg::NodeVisitor* nv)
 {
-	/*osg::Matrix mat = osgbCollision::asOsgMatrix(physicsBody->getWorldTransform());
+	osg::Matrix mat = osgbCollision::asOsgMatrix(_physicsBody->getWorldTransform());
 
-	osg::PositionAttitudeTransform *pat = dynamic_cast<osg::PositionAttitudeTransform*>(node);
-	pat->setPosition(mat.getTrans() + physicsToOsgAdjustment);
-	pat->setAttitude(mat.getRotate());
+	ImprovedMatrixTransform* transformNode = dynamic_cast<ImprovedMatrixTransform*>(node);
 
-	traverse(node, nv);*/
-
-	osg::Matrix mat = osgbCollision::asOsgMatrix(physicsBody->getWorldTransform());
-
-	//osg::PositionAttitudeTransform *pat = dynamic_cast<osg::PositionAttitudeTransform*>(node);
-	ImprovedMatrixTransform *pat = dynamic_cast<ImprovedMatrixTransform*>(node);
-
-	//osg::Matrix localToWorldAdjustment = getWorldCoordinates(pat);
-
-
-	pat->setPosition(mat.getTrans() + physicsToOsgAdjustment);
-	pat->setAttitude(mat.getRotate());
+	mat.preMult(_physicsToOsgAdjustment);
+	mat.preMultScale(transformNode->getScale());
+	transformNode->setMatrix(mat);
 
 	traverse(node, nv);
 }

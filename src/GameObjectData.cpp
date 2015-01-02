@@ -144,10 +144,13 @@ bool GameObjectData::hasInt(std::string name) {
 bool GameObjectData::hasFloat(std::string name) {
 	if(floats.count(name.c_str()))
 		return true;
-	else if(ints.count(name.c_str()))	// May have been stored as an int instead
+	else if(ints.count(name.c_str()))	/// May have been stored as an int instead
 		return true;
 	else
 		return false;
+}
+bool GameObjectData::hasVec3(std::string name) {
+	return _vec3s.count(name.c_str());
 }
 bool GameObjectData::hasString(std::string name) {
 	return strings.count(name.c_str());

@@ -5,7 +5,8 @@
 
 #include "globals.h"
 
-#include "Editor.h"
+#include "Editor/Editor.h"
+#include "Editor/Tool.h"
 
 #include "Level.h"
 
@@ -46,7 +47,7 @@ TextEditor::TextEditor(const UVector2& position, const USize& size) : _itemIDsUs
 	CEGUI::MenuItem* loadFileItem = static_cast<CEGUI::MenuItem*>(CEGUI::WindowManager::getSingleton().createWindow("EditorLook/MenuItem", "TextEditorWindow/Menubar/File/LoadFile") );
 	loadFileItem->setPosition( CEGUI::UVector2(UDim(0, 0), UDim(0, 0)) );
 	loadFileItem->setSize(CEGUI::USize(UDim(1, 0), UDim(1, 0)) );
-	loadFileItem->setText("Load scene from file");
+	loadFileItem->setText("Load file");
 	dropdownMenu->addChild(loadFileItem);
 	loadFileItem->subscribeEvent(CEGUI::MenuItem::EventClicked, CEGUI::Event::Subscriber(&TextEditor::onMenuItemClicked, this));
 	_loadFileMenuItemID = _itemIDsUsed;
@@ -56,7 +57,7 @@ TextEditor::TextEditor(const UVector2& position, const USize& size) : _itemIDsUs
 	CEGUI::MenuItem* saveItem = static_cast<CEGUI::MenuItem*>(CEGUI::WindowManager::getSingleton().createWindow("EditorLook/MenuItem", "TextEditorWindow/Menubar/File/Save") );
 	saveItem->setPosition( CEGUI::UVector2(UDim(0, 0), UDim(0, 0)) );
 	saveItem->setSize(CEGUI::USize(UDim(1, 0), UDim(1, 0)) );
-	saveItem->setText("Save file");
+	saveItem->setText("Save to file");
 	dropdownMenu->addChild(saveItem);
 	saveItem->subscribeEvent(CEGUI::MenuItem::EventClicked, CEGUI::Event::Subscriber(&TextEditor::onMenuItemClicked, this));
 	_saveMenuItemID = _itemIDsUsed;
@@ -84,8 +85,27 @@ TextEditor::TextEditor(const UVector2& position, const USize& size) : _itemIDsUs
 	++_itemIDsUsed;
 
 
+	std::string welcomeText = "";
+	welcomeText += "Controls: (Most only work when in \"Play\" mode)\n\n";
+	welcomeText += "WASD: movement\nSpace: jump\n1: Previous character\n";
+	welcomeText += "3: Next character\n";
+	welcomeText += "E: Interact with object\n";
+	welcomeText += "Mouse: Adjust camera\n";
+	welcomeText += "Mouse wheel: Zoom camera in and out\n";
+	welcomeText += "Left mouse button (hold): Drag the mouse to teleport to another place in the scene\n";
+	welcomeText += "F1: Toggle between \"Edit\" and \"Play\" modes\n";
+	welcomeText += "F2: Export scene to file to reload\n";
+	welcomeText += "F3: Toggle on-screen stats\n";
+	welcomeText += "P: Toggle physics debug drawing (highly inefficient and slow)\n";
+	welcomeText += "\n";
+
+	welcomeText += "Available tools:\n\n";
+	for(Tool* tool : getEditor()->getTools())
+		welcomeText += tool->getName() + ": " + tool->getDescription() + "\n";
+
+
 	_editbox = static_cast<MultiLineEditbox*>(CEGUI::WindowManager::getSingleton().createWindow("EditorLook/MultiLineCodeEditbox", "TextEditorWindow/Editbox"));
-	_editbox->setText("Controls: (Most only work when in \"Play\" mode)\n\nWASD: movement\nSpace: jump\n1: Previous character\n3: Next character\nE: Interact with object\nMouse: Adjust camera\nMouse wheel: Zoom camera in and out\nLeft mouse button (hold): Drag the mouse to teleport to another place in the scene\nF1: Toggle between \"Edit\" and \"Play\" modes\nF2: Export scene to file to reload\nF3: Toggle on-screen stats\nP: Toggle physics debug drawing (highly inefficient and slow)\nEscape: Exit SOTE");
+	_editbox->setText(welcomeText);
 	_editbox->setPosition( UVector2( UDim( 0.0f, 0.0f ), UDim( 0, (menubarHeight) ) ));
 	_editbox->setSize(CEGUI::USize(CEGUI::UDim(1.0, 0.0), CEGUI::UDim(1.0, -menubarHeight)));
 	_editbox->setReadOnly(false);

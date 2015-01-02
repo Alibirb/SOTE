@@ -2,6 +2,11 @@ Recommended Dependency versions:
 	AngelScript: 2.29.0
 	OpenSceneGraph: 3.2.x
 	CEGUI: 0.8.x
+	
+	
+A few notes (mainly for programmers):
+	OpenSceneGraph:
+		OSG has a cmake option "OSG_GL3_AVAILABLE" that's actually not needed for GL3 support. All it does is disable support for the fixed function pipeline. And for me, it stopped OSG from compiling. Leave it off.
 
 
 
@@ -15,12 +20,13 @@ Building on Linux:
 	Install library dependencies. To make things simpler, try to use your package manager where possible, rather than building everything from source. Remember to install the development packages as well so you have header files. If you can't find a suitable package for your system, download and compile from source.
 		OpenSceneGraph
 		CEGUI
-			Must use version 0.8
+			Must use version 0.8. If you don't have that version in your repositories, you'll need to compile from source.
 		Bullet
 		AngelScript
 			Don't use your package manager for this one, because we're using some of the addons that come with it.
-			Download the latest version from http://angelcode.com/angelscript/downloads.html and extract it to the "dependencies/" folder, then use the makefile in "angelscript/sdk/angelscript/projects/gnuc/"
+			Download version 2.29.0 from http://angelcode.com/angelscript/downloads.html and extract it to "dependencies/angelscript/", then use the makefile in "angelscript/sdk/angelscript/projects/gnuc/"
 		yaml-cpp
+		Boost
 		
 
 
@@ -50,7 +56,7 @@ Building on OS X:
 			http://cegui.org.uk/download
 			Must use version 0.8
 			Compile the dependencies package first.
-				CEGUI has a bunch of options for which libraries to use as the backend. For the most part, it doesn't matter what you choose here. You'll need and xml parser, image loaders, and the GL stuff (GLEW, GLFW, and GLM). I chose expat, freetype2, GLEW, GLFW, GLM, PCRE, and Silly.
+				CEGUI has a bunch of options for which libraries to use as the backend. For the most part, it doesn't matter what you choose here. You'll need an xml parser, image loaders, and the GL stuff (GLEW, GLFW, and GLM). I chose expat, freetype2, GLEW, GLFW, GLM, PCRE, and Silly.
 				Once the dependencies are built, copy the cegui-deps-0.8.x-src/dependencies folder to cegui-0.8.4 (actual folder names/paths may differ).
 			When configuring CEGUI in cmake-gui, make sure to select the same libraries you selected when you build the dependencies.
 			Apparently OS X has system libraries with the same names as standard open source libraries (e.g. libjpeg) included in CEGUI's dependencies. To avoid confusing the linker (SOTE uses the open source libs through CEGUI, and the OS X libs through OSG, so we need both), you need to tell CEGUI to link to its dependencies staticly so they won't interfere. To do so, enable "CEGUI_BUILD_SHARED_LIBS_WITH_STATIC_DEPENDENCIES" in cmake-gui.
@@ -64,7 +70,7 @@ Building on OS X:
 			Download from http://angelcode.com/angelscript/downloads.html and extract it to the "dependencies/" folder. If it comes out as a folder named "sdk", create a new folder named "angelscript" and put "sdk" in that.
 			Use "angelscript/sdk/angelscript/projects/xcode/angelscript.xcodeproj"
 			For some reason (maybe I did things wrong), XCode puts the library in a crazy location. Move libangelscript.a to "angelscript/sdk/angelscript/lib/"
-			On OS X, we're using clang, which has AngelScript fails to account for when checking for C++11.
+			On OS X, we're using clang, which AngelScript fails to account for when checking for C++11.
 				In angelscript/sdk/addons/scripthelper/scripthelper.h, add "|| defined(__clang__)" to the end of the line that says "#if defined(__GNUC__) && __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8) " (line 53)
 				Also replace
 					bool hasAssignmentOperator = std::is_copy_assignable<T>::value && !std::has_trivial_copy_assign<T>::value;
@@ -100,7 +106,7 @@ Building on Windows:
 			
 	Install library dependencies.
 		The easy way:
-			Download the dependencies zip file from http://alicrow.org/sote/dependencies-WindowsBinaries.zip and extract to the base directory of SOTE.
+			Download the dependencies zip file from http://alicrow.com/SOTE/dependencies-WindowsBinaries.zip and extract to the base directory of SOTE.
 				
 		Build SOTE itself:
 			You need to set up Code::Blocks to recognize TDM MinGW.

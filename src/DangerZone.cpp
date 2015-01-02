@@ -57,14 +57,11 @@ DangerZone::DangerZone(GameObjectData* dataObj, osg::Group* parentNode) : Danger
 {
 	load(dataObj);
 
-	/*_objectType = "DangerZone";
-
-	load(dataObj);
-
 	//osg::Vec3 position;
 
 	physicsToModelAdjustment = osg::Vec3(0, 0, 0);
 	btSphereShape* shape = new btSphereShape(_radius/2);
+	shape->setLocalScaling(osgbCollision::asBtVector3(getScale()));
 
 	btTransform transform = btTransform();
 	transform.setIdentity();
@@ -95,7 +92,6 @@ DangerZone::DangerZone(GameObjectData* dataObj, osg::Group* parentNode) : Danger
 #else
 	_physicsBody->setUserPointer(userData);
 #endif
-*/
 }
 
 DangerZone::~DangerZone()
