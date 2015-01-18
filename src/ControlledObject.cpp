@@ -46,8 +46,9 @@ void ControlledObject::receiveMessage(std::string& message)
 
 GameObjectData* ControlledObject::save()
 {
-	GameObjectData* dataObj = new GameObjectData(_objectType);
+	GameObjectData* dataObj = new GameObjectData();
 
+	saveSaveableVariables(dataObj);
 	saveGameObjectVariables(dataObj);
 	saveControlledObjectVariables(dataObj);
 
@@ -61,6 +62,7 @@ void ControlledObject::saveControlledObjectVariables(GameObjectData* dataObj)
 }
 void ControlledObject::load(GameObjectData* dataObj)
 {
+	loadSaveableVariables(dataObj);
 	loadGameObjectVariables(dataObj);
 	loadControlledObjectVariables(dataObj);
 }

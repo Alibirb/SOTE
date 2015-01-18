@@ -150,7 +150,8 @@ Level::~Level()
 
 GameObjectData* Level::save()
 {
-	GameObjectData* dataObj = new GameObjectData("Level");
+	GameObjectData* dataObj = new GameObjectData();
+	saveSaveableVariables(dataObj);
 
 	std::vector<GameObject*> objectVector;
 
@@ -176,14 +177,21 @@ std::string Level::saveAsString()
 	this->save()->toYAML(emitter);
 	return emitter.c_str();
 }
+
+void Level::load(GameObjectData* dataObj)
+{
+	loadSaveableVariables(dataObj);
+
+	for(auto child : dataObj->getObjectList("children"))
+		addObject(GameObject::create(child, _levelRoot));
+}
 void Level::loadFromString(std::string text)
 {
 	clear();
 
 	GameObjectData* dataObj = new GameObjectData(YAML::Load(text));
 
-	for(auto child : dataObj->getObjectList("children"))
-		addObject(GameObject::create(child, _levelRoot));
+	load(dataObj);
 }
 void Level::loadFromFile(std::string filename)
 {
@@ -193,8 +201,7 @@ void Level::loadFromFile(std::string filename)
 
 	GameObjectData* dataObj = new GameObjectData(YAML::LoadFile(filename));
 
-	for(auto child : dataObj->getObjectList("children"))
-		addObject(GameObject::create(child, _levelRoot));
+	load(dataObj);
 }
 
 void Level::reload()

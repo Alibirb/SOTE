@@ -112,8 +112,9 @@ std::string DangerZone::getTeam()
 
 GameObjectData* DangerZone::save()
 {
-	GameObjectData* dataObj = new GameObjectData(_objectType);
+	GameObjectData* dataObj = new GameObjectData();
 
+	saveSaveableVariables(dataObj);
 	saveGameObjectVariables(dataObj);
 	saveDangerZoneVariables(dataObj);
 
@@ -122,6 +123,7 @@ GameObjectData* DangerZone::save()
 
 void DangerZone::load(GameObjectData* dataObj)
 {
+	loadSaveableVariables(dataObj);
 	loadGameObjectVariables(dataObj);
 	loadDangerZoneVariables(dataObj);
 }
@@ -132,10 +134,7 @@ void DangerZone::saveDangerZoneVariables(GameObjectData* dataObj)
 	std::vector<GameObjectData*> damageListData;
 	for(Damage damage : _damages)
 	{
-		GameObjectData* damageData = new GameObjectData("damage");
-		damageData->addData("type", damage.type);
-		damageData->addData("amount", damage.amount);
-		damageListData.push_back(damageData);
+		damageListData.push_back(damage.save());
 	}
 	dataObj->addData("damages", damageListData);
 
@@ -149,12 +148,9 @@ void DangerZone::loadDangerZoneVariables(GameObjectData* dataObj)
 	for(GameObjectData* damageData : dataObj->getObjectList("damages"))
 	{
 		Damage dam;
-		dam.type = damageData->getString("type");
-		dam.amount = damageData->getFloat("amount");
+		dam.load(damageData);
 		_damages.push_back(dam);
 	}
-
-
 }
 
 

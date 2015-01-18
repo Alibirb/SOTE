@@ -1,5 +1,9 @@
 dataType: Level
 children:
+
+  - prototype: Cube.yaml	# Load up the "Cube.yaml" file to use as a prototype
+    position: [50, 0, 10]	# override default position
+
   # Light And Dark level
   
   - dataType: GameObject
@@ -22,7 +26,7 @@ children:
     rotation: [0, 0, 0, 1]
     scale: [1, 1, 1]
     mass: 0
-    physicsBodyGeneration: triangleMeshShape
+    physicsBodyGeneration: convexHullShape
     attachments:
       - dataType: Light
         position: [0, 0, 0]
@@ -34,15 +38,13 @@ children:
         linearAttenuation: .0000000000000001
         quadraticAttenuation: .0000000000000001
     
-  - dataType: Player
+  - prototype: Player.yaml
     name: Malhela
     maxHealth: 100.0
-    team: Player
     geometry: LightAndDark/Malhela.osgt
     capsuleHeight: 1.25
     capsuleRadius: .4
     position: [25, 25, 5]
-    rotation: [0, 0, 0, 1]
     resistances:
       dataType: unordered_map
       ACID: 0.0
@@ -56,32 +58,6 @@ children:
             amount: 2
             type: PURE_MAGIC
         duration: 2
-    stateMachine:
-      dataType: StateMachine
-      defaultState: idle
-      states:
-        idle:
-          dataType: State
-          name: idle
-          functions:
-            onUpdate: |
-              void onUpdate(Fighter@ self)
-              {
-              	//if(self.getClosestEnemy() !is null)
-              	//self.useBestAttackOn(self.getClosestEnemy());
-              	//else
-              	//	print("No nearby enemies");
-              }
-        attacking:
-          dataType: State
-          name: attacking
-          functions:
-            onUpdate: |
-              void onUpdate(Fighter@ self)
-              {
-                if(self.getCurrentAttack().done())
-                	self.returnToPreviousState();
-              }
   
   
   # MW:ADC level
@@ -104,233 +80,54 @@ children:
         }
     controlled:
       # doors that trap Alex.
-      - dataType: Door
-        geometry: SlidingDoorOuter.osgt
+      - prototype: Door.yaml
         position: {x: 50, y: 8, z: 5}
         rotation: {x: 0, y: 0, z: .707106781, w: .707106781}
-        mass: 0
-        physicsBodyGeneration: convexHullShape
-        innerPart:
-          dataType: GameObject
-          geometry: SlidingDoorInner.osgt
-          physicsBodyGeneration: convexHullShape
-          position: {x: 0, y: 0, z: 0}
-          rotation: {x: 0, y: 0, z: 0, w: 1}
-          mass: 10
-        functions:
-          onMessage_toggle: |
-            void onMessage_toggle(ControlledObject@ self)
-            {
-                if(self.getStateName() == "closed")
-                    self.changeState("open");
-                else
-                    self.changeState("closed");
-            }
-        stateMachine:
-          dataType: StateMachine
-          defaultState: open
-          states:
-            open:
-              dataType: State
-              name: open
-              functions:
-                onEnter: |
-                  void onEnter(Door@ self)
-                  {
-                  	self.open();
-                   	print("opening");
-                  }
-            closed:
-              dataType: State
-              name: closed
-              functions:
-                onEnter: |
-                  void onEnter(Door@ self)
-                  {
-                  	self.close();
-                  	print("closing");
-                  }
-      - dataType: Door
-        geometry: SlidingDoorOuter.osgt
+        
+      - prototype: Door.yaml
         position: {x: 50, y: 8, z: 5}
         rotation: {x: 0, y: 0, z: .707106781, w: -.707106781}
-        mass: 0
-        physicsBodyGeneration: convexHullShape
-        innerPart:
-          dataType: GameObject
-          geometry: SlidingDoorInner.osgt
-          physicsBodyGeneration: convexHullShape
-          position: {x: 0, y: 0, z: 0}
-          rotation: {x: 0, y: 0, z: 0, w: 1}
-          mass: 10
-        functions:
-          onMessage_toggle: |
-            void onMessage_toggle(ControlledObject@ self)
-            {
-                if(self.getStateName() == "closed")
-                    self.changeState("open");
-                else
-                    self.changeState("closed");
-            }
-        stateMachine:
-          dataType: StateMachine
-          defaultState: open
-          states:
-            open:
-              dataType: State
-              name: open
-              functions:
-                onEnter: |
-                  void onEnter(Door@ self)
-                  {
-                  	self.open();
-                   	print("opening");
-                  }
-            closed:
-              dataType: State
-              name: closed
-              functions:
-                onEnter: |
-                  void onEnter(Door@ self)
-                  {
-                  	self.close();
-                  	print("closing");
-                  }
+        
       #	doors blocking main passage
-      - dataType: Door
-        geometry: SlidingDoorOuter.osgt
+      - prototype: Door.yaml
         position: {x: 58, y: 0, z: 5}
         rotation: {x: 0, y: 0, z: 0, w: 1}
-        mass: 0
-        physicsBodyGeneration: convexHullShape
-        innerPart:
-          dataType: GameObject
-          geometry: SlidingDoorInner.osgt
-          physicsBodyGeneration: convexHullShape
-          position: {x: 0, y: 0, z: 0}
-          rotation: {x: 0, y: 0, z: 0, w: 1}
-          mass: 10
-        functions:
-          onMessage_toggle: |
-            void onMessage_toggle(ControlledObject@ self)
-            {
-                if(self.getStateName() == "closed")
-                    self.changeState("open");
-                else
-                    self.changeState("closed");
-            }
         stateMachine:
-          dataType: StateMachine
+          prototype: Door.yaml:/stateMachine	# load the prototype from "Door.yaml", but instead of using the root of the document, we use the "stateMachine" node.
           defaultState: closed
-          states:
-            open:
-              dataType: State
-              name: open
-              functions:
-                onEnter: |
-                  void onEnter(Door@ self)
-                  {
-                  	self.open();
-                   	print("opening");
-                  }
-            closed:
-              dataType: State
-              name: closed
-              functions:
-                onEnter: |
-                  void onEnter(Door@ self)
-                  {
-                  	self.close();
-                  	print("closing");
-                  }
-      - dataType: Door
-        geometry: SlidingDoorOuter.osgt
+        
+      - prototype: Door.yaml
         position: {x: 58, y: 0, z: 5}
         rotation: {x: 0, y: 0, z: 1, w: 0}
-        mass: 0
-        physicsBodyGeneration: convexHullShape
-        innerPart:
-          dataType: GameObject
-          geometry: SlidingDoorInner.osgt
-          physicsBodyGeneration: convexHullShape
-          position: {x: 0, y: 0, z: 0}
-          rotation: {x: 0, y: 0, z: 0, w: 1}
-          mass: 10
-        functions:
-          onMessage_toggle: |
-            void onMessage_toggle(ControlledObject@ self)
-            {
-                if(self.getStateName() == "closed")
-                    self.changeState("open");
-                else
-                    self.changeState("closed");
-            }
         stateMachine:
-          dataType: StateMachine
+          prototype: Door.yaml:/stateMachine
           defaultState: closed
-          states:
-            open:
-              dataType: State
-              name: open
-              functions:
-                onEnter: |
-                  void onEnter(Door@ self)
-                  {
-                  	self.open();
-                   	print("opening");
-                  }
-            closed:
-              dataType: State
-              name: closed
-              functions:
-                onEnter: |
-                  void onEnter(Door@ self)
-                  {
-                  	self.close();
-                  	print("closing");
-                  }
                   
-  - dataType: DangerZone
-    radius: 5
-    mass: 0
-    physicsBodyGeneration: none
-    geometry: Fire.osgt
+  - prototype: Fire.yaml
     position: {x: 50, y: 14, z: 6}
     scale: [2, 2, 2]
     damages:
       - dataType: damage
         amount: .5
         type: FIRE
-    damageFrequency: 2
     
-  - dataType: DangerZone
-    radius: 5
-    mass: 0
-    physicsBodyGeneration: none
-    geometry: Fire.osgt
+  - prototype: Fire.yaml
     position: {x: 50, y: 17, z: 6}
     damages:
       - dataType: damage
         amount: .5
         type: FIRE
-    damageFrequency: 2
     
-  - dataType: DangerZone
-    radius: 5
-    mass: 0
-    physicsBodyGeneration: none
-    geometry: Fire.osgt
+  - prototype: Fire.yaml
     position: {x: 50, y: 20, z: 6}
     damages:
       - dataType: damage
         amount: .5
         type: FIRE
-    damageFrequency: 2
     
-  - dataType: Player
+  - prototype: Player.yaml
     name: Alex
     maxHealth: 100.0
-    team: Player
     geometry: humanmodelNoBones.osg
     capsuleHeight: 1.25
     capsuleRadius: .4
@@ -348,37 +145,10 @@ children:
             amount: 2
             type: FIRE
         duration: 2
-    stateMachine:
-      dataType: StateMachine
-      defaultState: idle
-      states:
-        idle:
-          dataType: State
-          name: idle
-          functions:
-            onUpdate: |
-              void onUpdate(Fighter@ self)
-              {
-              	//if(self.getClosestEnemy() !is null)
-              	//	self.useBestAttackOn(self.getClosestEnemy());
-                //else
-              	//	print("No nearby enemies");
-              }
-        attacking:
-          dataType: State
-          name: attacking
-          functions:
-            onUpdate: |
-              void onUpdate(Fighter@ self)
-              {
-                if(self.getCurrentAttack().done())
-                	self.returnToPreviousState();
-              }
               
-  - dataType: Player
+  - prototype: Player.yaml
     name: Tanner
     maxHealth: 100.0
-    team: Player
     geometry: tiger.osgt
     capsuleHeight: 0.1
     capsuleRadius: .4
@@ -397,32 +167,6 @@ children:
             amount: 2
             type: NAP
         duration: 2
-    stateMachine:
-      dataType: StateMachine
-      defaultState: idle
-      states:
-        idle:
-          dataType: State
-          name: idle
-          functions:
-            onUpdate: |
-              void onUpdate(Fighter@ self)
-              {
-              	//if(self.getClosestEnemy() !is null)
-              	//	self.useBestAttackOn(self.getClosestEnemy());
-                //else
-              	//	print("No nearby enemies");
-              }
-        attacking:
-          dataType: State
-          name: attacking
-          functions:
-            onUpdate: |
-              void onUpdate(Fighter@ self)
-              {
-                if(self.getCurrentAttack().done())
-                	self.returnToPreviousState();
-              }
               
   # Tanner's switch
   - dataType: Controller
@@ -439,96 +183,17 @@ children:
         }
     controlled:
       # doors allowing Alex further passage
-      - dataType: Door
-        geometry: SlidingDoorOuter.osgt
+      - prototype: Door.yaml
         position: {x: 54, y: 28, z: 5}
         rotation: {x: 0, y: 0, z: 0, w: 1}
-        mass: 0
-        physicsBodyGeneration: convexHullShape
-        innerPart:
-          dataType: GameObject
-          geometry: SlidingDoorInner.osgt
-          physicsBodyGeneration: convexHullShape
-          position: {x: 0, y: 0, z: 0}
-          rotation: {x: 0, y: 0, z: 0, w: 1}
-          mass: 10
-        functions:
-          onMessage_toggle: |
-            void onMessage_toggle(ControlledObject@ self)
-            {
-                if(self.getStateName() == "closed")
-                    self.changeState("open");
-                else
-                    self.changeState("closed");
-            }
         stateMachine:
-          dataType: StateMachine
+          prototype: Door.yaml:/stateMachine
           defaultState: closed
-          states:
-            open:
-              dataType: State
-              name: open
-              functions:
-                onEnter: |
-                  void onEnter(Door@ self)
-                  {
-                  	self.open();
-                   	print("opening");
-                  }
-            closed:
-              dataType: State
-              name: closed
-              functions:
-                onEnter: |
-                  void onEnter(Door@ self)
-                  {
-                  	self.close();
-                  	print("closing");
-                  }
-      - dataType: Door
-        geometry: SlidingDoorOuter.osgt
+        
+      - prototype: Door.yaml
         position: {x: 54, y: 28, z: 5}
         rotation: {x: 0, y: 0, z: 1, w: 0}
-        mass: 0
-        physicsBodyGeneration: convexHullShape
-        innerPart:
-          dataType: GameObject
-          geometry: SlidingDoorInner.osgt
-          physicsBodyGeneration: convexHullShape
-          position: {x: 0, y: 0, z: 0}
-          rotation: {x: 0, y: 0, z: 0, w: 1}
-          mass: 10
-        functions:
-          onMessage_toggle: |
-            void onMessage_toggle(ControlledObject@ self)
-            {
-                if(self.getStateName() == "closed")
-                    self.changeState("open");
-                else
-                    self.changeState("closed");
-            }
         stateMachine:
-          dataType: StateMachine
+          prototype: Door.yaml:/stateMachine
           defaultState: closed
-          states:
-            open:
-              dataType: State
-              name: open
-              functions:
-                onEnter: |
-                  void onEnter(Door@ self)
-                  {
-                  	self.open();
-                   	print("opening");
-                  }
-            closed:
-              dataType: State
-              name: closed
-              functions:
-                onEnter: |
-                  void onEnter(Door@ self)
-                  {
-                  	self.close();
-                  	print("closing");
-                  }
   

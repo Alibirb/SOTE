@@ -192,8 +192,9 @@ void Fighter::onUpdate(float deltaTime)
 
 GameObjectData* Fighter::save()
 {
-	GameObjectData* dataObj = new GameObjectData(_objectType);
+	GameObjectData* dataObj = new GameObjectData();
 
+	saveSaveableVariables(dataObj);
 	saveGameObjectVariables(dataObj);
 	saveEntityVariables(dataObj);
 	saveFighterData(dataObj);
@@ -207,7 +208,8 @@ void Fighter::saveFighterData(GameObjectData* dataObj)
 		dataObj->addData("weapon", getWeapon()->save());
 	dataObj->addData("maxHealth", _maxHealth);
 
-	GameObjectData* resistanceData = new GameObjectData("unordered_map");
+	GameObjectData* resistanceData = new GameObjectData();
+	resistanceData->setType("unordered_map");	/// This might not even be necessary.
 	for(auto kv : _resistances)
 	{
 		resistanceData->addData(kv.first, kv.second);
@@ -225,6 +227,7 @@ void Fighter::saveFighterData(GameObjectData* dataObj)
 
 void Fighter::load(GameObjectData* dataObj)
 {
+	loadSaveableVariables(dataObj);
 	loadGameObjectVariables(dataObj);
 	loadEntityVariables(dataObj);
 	loadFighterData(dataObj);

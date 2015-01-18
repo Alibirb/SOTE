@@ -2,23 +2,24 @@
 
 TODO:
 	DoneThisCommit:
-		Added basic graphical scene manipulation tools:
-			Select objects
-			Transformation tools
-				With ability to constrain to x/y/z axes
-			Camera manipulation in Edit mode
-
+		Fixed minor previously-unknown bugs (one with the transform tool, one with dynamic objects using triangle collision meshes)
+		Improved import/export to allow it to link to prototypes.
 
 	Current Task:
 
-	Next Steps:
+
+	Next Steps (not in any particular order):
+		Allow you to select which file to load/save
+		Use maps instead of lists for Attachments, Damages, and Attacks
+
+
 		Editor stuff:
 			Primitive selection
 			Copy and paste objects in scene
 			Undo/Redo
+			Should have a way to make new tools entirely through scripts.
 			Text editor improvements:
 				Line numbers
-				Allow you to select which file to load/save
 				Search function
 				Should use the native clipboard
 			Better GUI theme
@@ -26,20 +27,18 @@ TODO:
 			Cats
 			Script console (AngelScriptConsole is outdated and uses osgWidgets. We ought to turn it into a proper scripting console using CEGUI, and make it part of the editor).
 		Allow specifying the level file with command-line argument.
-
 		Fix any bugs that cause the program to crash if you load an invalid scene
-
 		Basic engine features needed to convey story:
 			Event triggering
 			Dialog
 			Rudimentary AI so we can have NPCs.
+		First actual level.
 
 
 	Sometime later:
 		Game should pause when in Edit mode.
 			A bit more complicated than I thought. We want to stop updating the objects in the scene, but still allow them to be moved around by the manipulators.
 		Figure out a better system for displaying warnings and errors (currently the screen gets filled up with warnings from OSG and CEGUI and if one of MY warnings shows up, it's lost in the mess)
-		Improve import/export to allow it to link to prototypes.
 		Make a class to wrap around the physics stuff
 		Expose all GameObject-derived classes to AngelScript (also exposing the type hierarchy (see http://www.angelcode.com/angelscript/sdk/docs/manual/doc_adv_class_hierarchy.html))
 		Fix the object initialization system (figure out what goes where in the constructors)
@@ -98,6 +97,7 @@ BUGS:
 		Not enough cats!!
 	Low Priority (it works, but might be ugly):
 		Inefficient physics debug rendering. The rendering itself is actually fine, but updating the geometry every frame is horribly inefficient. (You can tell the rendering is fine because the framerate is okay in Edit mode, when Bullet isn't running and the geometry isn't updated.)
+	Any object lists in a prototype are ignored during loading (Haven't figured out how to properly handle overwriting list components)
 
 Bugs/issues I expect to see later:
 

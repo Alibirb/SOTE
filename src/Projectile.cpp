@@ -120,13 +120,15 @@ void Projectile::onCollision(GameObject* other)
 
 GameObjectData* Projectile::save()
 {
-	GameObjectData* dataObj =  new GameObjectData(_objectType);
+	GameObjectData* dataObj =  new GameObjectData();
+	saveSaveableVariables(dataObj);
 	saveGameObjectVariables(dataObj);
 	saveProjectileData(dataObj);
 	return dataObj;
 }
 void Projectile::load(GameObjectData* dataObj)
 {
+	loadSaveableVariables(dataObj);
 	loadGameObjectVariables(dataObj);
 	loadProjectileData(dataObj);
 }
@@ -137,11 +139,7 @@ void Projectile::saveProjectileData(GameObjectData* dataObj)
 	std::vector<GameObjectData*> damageDataVector;
 	for(Damage damage : _damages)
 	{
-		GameObjectData* damageData = new GameObjectData("damage");
-		damageData->addData("type", damage.type);
-		damageData->addData("amount", damage.amount);
-		//dataObj->addChild(damageData);
-		damageDataVector.push_back(damageData);
+		damageDataVector.push_back(damage.save());
 	}
 	dataObj->addData("damages", damageDataVector);
 

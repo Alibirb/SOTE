@@ -1,0 +1,12 @@
+dataType: DangerZone
+radius: 5
+scale: [1, 1, 1]
+rotation: [0, 0, 0, 1]
+mass: 0
+physicsBodyGeneration: none
+geometry: Fire.osgt
+# damages:
+#  - dataType: damage
+#    amount: .5
+#    type: FIRE
+damageFrequency: 2

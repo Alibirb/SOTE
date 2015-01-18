@@ -60,8 +60,9 @@ Door::~Door()
 
 GameObjectData* Door::save()
 {
-	GameObjectData* dataObj = new GameObjectData(_objectType);
+	GameObjectData* dataObj = new GameObjectData();
 
+	saveSaveableVariables(dataObj);
 	saveGameObjectVariables(dataObj);
 	saveControlledObjectVariables(dataObj);
 	saveDoorVariables(dataObj);
@@ -75,6 +76,7 @@ void Door::saveDoorVariables(GameObjectData* dataObj)
 
 void Door::load(GameObjectData* dataObj)
 {
+	loadSaveableVariables(dataObj);
 	loadGameObjectVariables(dataObj);
 	loadControlledObjectVariables(dataObj);
 	loadDoorVariables(dataObj);

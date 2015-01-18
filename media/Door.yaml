@@ -1,0 +1,47 @@
+dataType: Door
+geometry: SlidingDoorOuter.osgt
+scale: [1, 1, 1]
+rotation: [0, 0, 0, 1]
+mass: 0
+physicsBodyGeneration: convexHullShape
+innerPart:
+  dataType: GameObject
+  geometry: SlidingDoorInner.osgt
+  physicsBodyGeneration: convexHullShape
+  position: [0, 0, 0]
+  rotation: [0, 0, 0, 1]
+  scale: [1, 1, 1]
+  mass: 10
+functions:
+  onMessage_toggle: |
+    void onMessage_toggle(ControlledObject@ self)
+    {
+        if(self.getStateName() == "closed")
+            self.changeState("open");
+        else
+            self.changeState("closed");
+    }
+stateMachine:
+  dataType: StateMachine
+  defaultState: open
+  states:
+    open:
+      dataType: State
+      name: open
+      functions:
+        onEnter: |
+          void onEnter(Door@ self)
+          {
+          	self.open();
+           	//print("opening");
+          }
+    closed:
+      dataType: State
+      name: closed
+      functions:
+        onEnter: |
+          void onEnter(Door@ self)
+          {
+          	self.close();
+          	//print("closing");
+          }

@@ -28,12 +28,14 @@ class GameObjectData;
 class Player;
 class BaseCameraManipulator;
 
+#include "GameObjectData.h"
+
 
 void myTickCallback(btDynamicsWorld *world, btScalar timeStep);
 
 
 /// Class for a game level.
-class Level
+class Level : public Saveable
 {
 private:
 #ifdef USE_BOX2D_PHYSICS
@@ -93,10 +95,10 @@ public:
 	}
 
 	virtual GameObjectData* save();	/// Saves the object's data
-
 	void saveAsFile(std::string filename);
 	std::string saveAsString();
 
+	void load(GameObjectData* dataObj);
 	void loadFromFile(std::string filename);
 	void loadFromString(std::string text);
 	void reload();

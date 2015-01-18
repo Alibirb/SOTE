@@ -101,8 +101,9 @@ void Entity::returnToPreviousState()
 
 GameObjectData* Entity::save()
 {
-	GameObjectData* dataObj = new GameObjectData("entity");
+	GameObjectData* dataObj = new GameObjectData();
 
+	saveSaveableVariables(dataObj);
 	saveGameObjectVariables(dataObj);
 	saveEntityVariables(dataObj);
 
@@ -119,6 +120,7 @@ void Entity::saveEntityVariables(GameObjectData* dataObj)
 
 void Entity::load(GameObjectData* dataObj)
 {
+	loadSaveableVariables(dataObj);
 	loadGameObjectVariables(dataObj);
 	loadEntityVariables(dataObj);
 }

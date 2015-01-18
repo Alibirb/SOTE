@@ -1,9 +1,9 @@
 SOTE
 ====
 
-SOTE is a game creation system under development by [Alicrow Entertainment](http://alicrow.org), which aims to provide game developers with a powerful workflow and high-level tools akin to that offered by other game creation systems like Unity or Unreal, while allowing them to choose which libaries power their game.
+SOTE is a game creation system under development by [Alicrow Entertainment](http://alicrow.org), which aims to provide game developers with a powerful workflow and high-level tools akin to that offered by other game creation systems like Unity or Unreal, but with far greater flexibility.
 
-SOTE is not a complete "game engine"; it's just the top level. It uses the libraries of your choice for rendering, physics, scripting, et cetera. If you have a problem with one of the libraries, you can swap it out for one better suited to you and your project (Note that at this point, you can't really do that. We're gonna get things working using the middleware we want first, and then we'll add the proper abstraction to make things swappable).
+SOTE is not a complete "game engine" on its own; it's just the top level. It uses the libraries of your choice for rendering, physics, scripting, et cetera. If you have a problem with one of the libraries, you can swap it out for one better suited to you and your project (Note that at this point, you can't really do that. We're gonna get things working using the middleware we want first, and then we'll add the proper abstraction to make things swappable).
 
 Please note that SOTE is still in the very early stages of development, so expect frequent changes, missing features, and general ugliness.
 
@@ -16,10 +16,10 @@ It's a good idea to run "git pull" fairly regularly so you have the most up-to-d
 
 Current Library Integrations:
 -----------------------------
-Physics: Bullet Physics
-Rendering: OpenSceneGraph
-Scripting: AngelScript
-GUI: CEGUI
+* Physics: Bullet Physics
+* Rendering: OpenSceneGraph
+* Scripting: AngelScript
+* GUI: CEGUI
 
 
 License
@@ -31,7 +31,7 @@ Using the Editor
 ----------------
 The SOTE editor is built into the game. Press F1 to toggle between "Edit" and "Play" modes.
 
-The editor contains a text editor box, which can be used to alter the scene and the objects in it. The data is stored as YAML, with AngelScript for update functions, callbacks, and other scripting needs. Take a look at the sample level (loaded into the editor by default, and located at media/SampleLevel.yaml) to see how things work.
+The editor contains a text editor box, which can be used to alter the scene and the objects in it. The data is stored as YAML, with AngelScript for update functions, callbacks, and other scripting needs. Take a look at the sample level (loaded into the editor by default, and located at media/SampleLevel.yaml) to see how things work. It should be self-explanatory for the most part.
 
 
 The Attachment System

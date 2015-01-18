@@ -143,8 +143,9 @@ void Controller::sendMessage(std::string& message)
 
 GameObjectData* Controller::save()
 {
-	GameObjectData* dataObj = new GameObjectData(_objectType);
+	GameObjectData* dataObj = new GameObjectData();
 
+	saveSaveableVariables(dataObj);
 	saveGameObjectVariables(dataObj);
 	saveControllerVariables(dataObj);
 
@@ -161,6 +162,7 @@ void Controller::saveControllerVariables(GameObjectData* dataObj)
 
 void Controller::load(GameObjectData* dataObj)
 {
+	loadSaveableVariables(dataObj);
 	loadGameObjectVariables(dataObj);
 	loadControllerVariables(dataObj);
 }

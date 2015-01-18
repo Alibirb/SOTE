@@ -4,6 +4,24 @@
 #include "stdvector.h"
 
 
+GameObjectData* Damage::save()
+{
+	GameObjectData* dataObj = new GameObjectData();
+	saveSaveableVariables(dataObj);
+
+	dataObj->addData("type", type);
+	dataObj->addData("amount", amount);
+
+	return dataObj;
+}
+
+void Damage::load(GameObjectData* dataObj)
+{
+	loadSaveableVariables(dataObj);
+	type = dataObj->getString("type");
+	amount = dataObj->getFloat("amount");
+}
+
 void registerDamage()
 {
 	getScriptEngine()->registerObjectType("Damage", sizeof(Damage), asOBJ_VALUE | asOBJ_POD | GetTypeTraits<Damage>());

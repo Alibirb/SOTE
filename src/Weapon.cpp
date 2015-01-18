@@ -94,8 +94,9 @@ void Weapon::aimAt(osg::Vec3 target)
 
 GameObjectData* Weapon::save()
 {
-	GameObjectData* dataObj = new GameObjectData(_objectType);
+	GameObjectData* dataObj = new GameObjectData();
 
+	saveSaveableVariables(dataObj);
 	saveGameObjectVariables(dataObj);
 	saveWeaponData(dataObj);
 
@@ -112,6 +113,7 @@ void Weapon::saveWeaponData(GameObjectData* dataObj)
 
 void Weapon::load(GameObjectData* dataObj)
 {
+	loadSaveableVariables(dataObj);
 	loadGameObjectVariables(dataObj);
 	loadWeaponData(dataObj);
 }

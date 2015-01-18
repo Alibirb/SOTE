@@ -57,12 +57,14 @@ void Attack::onUpdate(float deltaTime)
 
 GameObjectData* Attack::save()
 {
-	GameObjectData* dataObj =  new GameObjectData(_objectType);
+	GameObjectData* dataObj =  new GameObjectData();
+	saveSaveableVariables(dataObj);
 	saveAttackData(dataObj);
 	return dataObj;
 }
 void Attack::load(GameObjectData* dataObj)
 {
+	loadSaveableVariables(dataObj);
 	loadAttackData(dataObj);
 }
 
@@ -72,9 +74,7 @@ void Attack::saveAttackData(GameObjectData* dataObj)
 	std::vector<GameObjectData*> damageListData;
 	for(Damage damage : _damages)
 	{
-		GameObjectData* damageData = new GameObjectData("damage");
-		damageData->addData("type", damage.type);
-		damageData->addData("amount", damage.amount);
+		GameObjectData* damageData = damage.save();
 		damageListData.push_back(damageData);
 	}
 	dataObj->addData("damages", damageListData);
@@ -86,8 +86,7 @@ void Attack::loadAttackData(GameObjectData* dataObj)
 	for(GameObjectData* damageData : dataObj->getObjectList("damages"))
 	{
 		Damage dam;
-		dam.type = damageData->getString("type");
-		dam.amount = damageData->getFloat("amount");
+		dam.load(damageData);
 		_damages.push_back(dam);
 	}
 

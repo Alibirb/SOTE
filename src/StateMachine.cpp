@@ -36,8 +36,9 @@ void State::onExit()
 
 GameObjectData* State::save()
 {
-	GameObjectData* dataObj = new GameObjectData("State");
+	GameObjectData* dataObj = new GameObjectData();
 
+	saveSaveableVariables(dataObj);
 	saveStateVariables(dataObj);
 
 	return dataObj;
@@ -56,6 +57,7 @@ void State::saveStateVariables(GameObjectData* dataObj)
 
 void State::load(GameObjectData* dataObj)
 {
+	loadSaveableVariables(dataObj);
 	loadStateVariables(dataObj);
 }
 void State::loadStateVariables(GameObjectData* dataObj)
@@ -165,8 +167,9 @@ void StateMachine::onUpdate(float deltaTime)
 
 GameObjectData* StateMachine::save()
 {
-	GameObjectData* dataObj = new GameObjectData("StateMachine");
+	GameObjectData* dataObj = new GameObjectData();
 
+	saveSaveableVariables(dataObj);
 	saveStateMachineVariables(dataObj);
 	return dataObj;
 }
@@ -180,6 +183,7 @@ void StateMachine::saveStateMachineVariables(GameObjectData* dataObj)
 
 void StateMachine::load(GameObjectData* dataObj)
 {
+	loadSaveableVariables(dataObj);
 	loadStateMachineVariables(dataObj);
 }
 
@@ -194,3 +198,4 @@ void StateMachine::loadStateMachineVariables(GameObjectData* dataObj)
 	_defaultState = dataObj->getString("defaultState");
 	setCurrentState(_defaultState);
 }
+

@@ -50,8 +50,9 @@ Light::~Light()
 
 GameObjectData* Light::save()
 {
-	GameObjectData* dataObj = new GameObjectData(_objectType);
+	GameObjectData* dataObj = new GameObjectData();
 
+	saveSaveableVariables(dataObj);
 	saveGameObjectVariables(dataObj);
 	//saveAttachmentVariables(dataObj);
 	saveLightVariables(dataObj);
@@ -69,6 +70,7 @@ void Light::saveLightVariables(GameObjectData* dataObj)
 }
 void Light::load(GameObjectData* dataObj)
 {
+	loadSaveableVariables(dataObj);
 	loadGameObjectVariables(dataObj);
 	//loadAttachmentVariables(dataObj);
 	loadLightVariables(dataObj);

@@ -27,14 +27,21 @@ class Saveable
 {
 public:
 	std::string _objectType;
+	std::string _prototype;
 
 public:
 	std::string getType() {
 		return _objectType;
 	}
+	std::string getPrototype() {
+		return _prototype;
+	}
 
 	virtual GameObjectData* save()=0;
 	virtual void load(GameObjectData* dataObj)=0;
+
+	void saveSaveableVariables(GameObjectData* dataObj);	/// Saves the variables declared in "Saveable"
+	void loadSaveableVariables(GameObjectData* dataObj);
 };
 
 
@@ -53,6 +60,7 @@ class GameObjectData
 {
 private:
 	std::string objectType;
+	std::string _prototype;
 
 	std::unordered_map<std::string, int> ints;
 	std::unordered_map<std::string, double> floats;
@@ -61,14 +69,14 @@ private:
 	std::unordered_map<std::string, osg::Vec3> _vec3s;
 	std::unordered_map<std::string, osg::Vec4> _vec4s;
 	std::unordered_map<std::string, asIScriptFunction*> _scriptFunctions;
-	std::unordered_map<std::string, std::string> _scriptFunctionSource;
+	std::unordered_map<std::string, std::string> _scriptFunctionSources;
 
 	std::unordered_map<std::string, GameObjectData*> _objects;	/// Other objects
 	std::unordered_map<std::string, std::vector<GameObjectData*>> _objectLists;	/// Lists of objects. TODO: maybe it should be std::list?
 	std::unordered_map<std::string, std::unordered_map<std::string, GameObjectData*>> _objectMaps;
 
 public:
-	GameObjectData(std::string type);
+	GameObjectData();
 	GameObjectData(YAML::Node node);
 	virtual ~GameObjectData();
 
@@ -137,11 +145,23 @@ public:
 	bool hasFunctionSource(std::string name);
 
 	std::string getType();
+	void setType(std::string type);
+
+	std::string getPrototype();
+	void setPrototype(std::string prototype);
 
 	YAML::Emitter& toYAML(YAML::Emitter& emitter);
 	void fromYAML(YAML::Node node);
 
+	static YAML::Node loadYamlFile(std::string filenameAndNodeLocation);	/// Loads (part of) a YAML file into nodes. You can pass in a string containing the filename and location in the file, or just the filename.
+	void saveAsYamlFile(std::string filename);
+
 	static void testYamlImportExport(std::string importFilename, std::string exportFilename);	/// Helper testing function. Imports a YAML file, then exports it. Check (manually) to ensure no data was lost
+
+	void simplify();	/// Simplifies the data object for a more condensed output by removing all attributes that show no difference from the prototype.
+	void simplify(GameObjectData* prototypeData, std::string prototypeLocation);
+
+	bool isEmpty();
 
 };
 

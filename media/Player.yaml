@@ -1,0 +1,33 @@
+dataType: Player
+maxHealth: 100.0
+team: Player
+capsuleHeight: 1.25
+capsuleRadius: .4
+rotation: [0, 0, 0, 1]
+scale: [1, 1, 1]
+stateMachine:
+  dataType: StateMachine
+  defaultState: idle
+  states:
+    idle:
+      dataType: State
+      name: idle
+      functions:
+        onUpdate: |
+          void onUpdate(Fighter@ self)
+          {
+          	//if(self.getClosestEnemy() !is null)
+          	//self.useBestAttackOn(self.getClosestEnemy());
+          	//else
+          	//	print("No nearby enemies");
+          }
+    attacking:
+      dataType: State
+      name: attacking
+      functions:
+        onUpdate: |
+          void onUpdate(Fighter@ self)
+          {
+            if(self.getCurrentAttack().done())
+            	self.returnToPreviousState();
+          }

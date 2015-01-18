@@ -225,6 +225,10 @@ void GameObject::recalculatePhysicsTransform()
 		_physicsBody->setWorldTransform(transform);
 		_physicsBody->getCollisionShape()->setLocalScaling(osgbCollision::asBtVector3(getScale()));
 
+		if(_physicsBody->getInternalType() == btCollisionObject::CO_RIGID_BODY && !_physicsBody->isStaticObject())
+			((osgbDynamics::MotionState*) ((btRigidBody*)_physicsBody)->getMotionState())->setScale(getScale());
+		_physicsBody->setInterpolationWorldTransform(transform);	/// Must set interpolation world transform, otherwise the MotionState will temporarily warp the visual object back to where it was before.
+
 #endif // USE_BOX2D_PHYSICS
 	}
 
@@ -287,8 +291,9 @@ osg::Vec3 GameObject::worldToLocal(osg::Vec3 worldVector)	/// FIXME: May not wor
 
 GameObjectData* GameObject::save()
 {
-	GameObjectData* dataObj = new GameObjectData(_objectType);
+	GameObjectData* dataObj = new GameObjectData();
 
+	saveSaveableVariables(dataObj);
 	saveGameObjectVariables(dataObj);
 
 	return dataObj;
@@ -307,12 +312,13 @@ void GameObject::saveGameObjectVariables(GameObjectData* dataObj)
 	if(_physicsBody)
 	{
 #ifndef USE_BOX2D_PHYSICS
-		if((btRigidBody*)_physicsBody)
+		if(dynamic_cast<btRigidBody*>(_physicsBody))
 		{
-			if(((btRigidBody*)_physicsBody)->getInvMass() == 0)
+			btRigidBody* rigidBody = dynamic_cast<btRigidBody*>(_physicsBody);
+			if(rigidBody->getInvMass() == 0)
 				dataObj->addData("mass", 0.0);
 			else
-				dataObj->addData("mass", 1.0/((btRigidBody*)_physicsBody)->getInvMass());
+				dataObj->addData("mass", 1.0/(rigidBody->getInvMass()));
 		}
 #endif
 	}
@@ -327,6 +333,7 @@ void GameObject::saveGameObjectVariables(GameObjectData* dataObj)
 }
 void GameObject::load(GameObjectData* dataObj)
 {
+	loadSaveableVariables(dataObj);
 	loadGameObjectVariables(dataObj);
 }
 void GameObject::loadGameObjectVariables(GameObjectData* dataObj)
@@ -417,7 +424,10 @@ void GameObject::generateRigidBody(double mass, std::string generationMethod)
 #ifndef USE_BOX2D_PHYSICS
 	btCollisionShape* shape;
 	if(generationMethod == "triangleMeshShape")
-		shape = osgbCollision::btTriMeshCollisionShapeFromOSG(_modelNode);
+		if(mass == 0)
+			shape = osgbCollision::btTriMeshCollisionShapeFromOSG(_modelNode);
+		else
+			shape = osgbCollision::btConvexTriMeshCollisionShapeFromOSG(_modelNode);
 	else if(generationMethod == "convexHullShape")
 		shape = osgbCollision::btConvexHullCollisionShapeFromOSG(_modelNode);
 	else if(generationMethod == "boxShape")
@@ -633,9 +643,9 @@ namespace AngelScriptWrapperFunctions
 {
 	GameObject* GameObjectFactoryFunction()
 	{
-		GameObjectData* dataObj = new GameObjectData("GameObject");
+		GameObjectData* dataObj = new GameObjectData();
+		dataObj->setType("GameObject");
 		return GameObject::create(dataObj, root);
-		//return new GameObject(root);
 	}
 }
 
