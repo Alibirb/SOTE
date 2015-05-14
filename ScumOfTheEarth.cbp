@@ -219,6 +219,8 @@
 		<Unit filename="src/Editor/Editor.h" />
 		<Unit filename="src/Editor/EditorCameraManipulator.cpp" />
 		<Unit filename="src/Editor/EditorCameraManipulator.h" />
+		<Unit filename="src/Editor/FileDialog.cpp" />
+		<Unit filename="src/Editor/FileDialog.h" />
 		<Unit filename="src/Editor/MultiLineCodeEditbox.cpp" />
 		<Unit filename="src/Editor/MultiLineCodeEditbox.h" />
 		<Unit filename="src/Editor/ObjectOverlay.cpp" />

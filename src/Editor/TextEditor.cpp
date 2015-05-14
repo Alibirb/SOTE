@@ -7,6 +7,7 @@
 
 #include "Editor/Editor.h"
 #include "Editor/Tool.h"
+#include "Editor/FileDialog.h"
 
 #include "Level.h"
 
@@ -139,7 +140,8 @@ bool TextEditor::onMenuItemClicked(const CEGUI::EventArgs& e)
 	}
 	else if(we.window->getID() == _loadFileMenuItemID)
 	{
-		loadFile();
+		//loadFile();
+		FileDialog* dialog = new FileDialog(std::bind(&TextEditor::loadFiles, this, std::placeholders::_1));
 		return true;
 	}
 	else if(we.window->getID() == _applyMenuItemID)
@@ -196,5 +198,11 @@ void TextEditor::loadFile()
 		_currentFilename = getCurrentLevel()->getFilename();
 
 	loadFile(_currentFilename);
+}
+
+void TextEditor::loadFiles(FileDialog::FileList files)
+{
+	for(std::string file : files)
+		loadFile(file);
 }
 

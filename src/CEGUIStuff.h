@@ -38,6 +38,10 @@
 
 #include <iostream>
 
+#include <functional>
+#include <deque>
+
+
 /// Drawable for the CEGUI system.
 class CEGUIDrawable : public osg::Drawable
 {
@@ -57,12 +61,16 @@ public:
 
     void drawImplementation(osg::RenderInfo& renderInfo) const;
 
+    void addToDrawOperationQueue(std::function<void(void)> func);
+
 protected:
 
     virtual ~CEGUIDrawable();
 
     mutable unsigned int _activeContextID;
     mutable bool _initialized = false;
+
+    mutable std::deque<std::function<void(void)>> _callOnNextDraw;	/// Functions to call next time we perform rendering, because certain CEGUI operations must be done with a valid GL context.
 
 };
 

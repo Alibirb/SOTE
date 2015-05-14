@@ -2,14 +2,11 @@
 
 TODO:
 	DoneThisCommit:
-		Fixed minor previously-unknown bugs (one with the transform tool, one with dynamic objects using triangle collision meshes)
-		Improved import/export to allow it to link to prototypes.
 
 	Current Task:
-
+		Add file dialog
 
 	Next Steps (not in any particular order):
-		Allow you to select which file to load/save
 		Use maps instead of lists for Attachments, Damages, and Attacks
 
 
@@ -81,6 +78,7 @@ TODO:
 BUGS:
 	input handler does not respond to releasing a key if Ctrl is pressed. Most likely due to the way OSG reports the button. I think it's a different value if a modkey is pressed.
 	Various 2D overlay stuff (TextDisplay and CEGUI) have rendering bugs that can be solved by resizing the window. Likely due to some calculations that use cached values of some sort. Parameters change (e.g. the window is moved so text should move with it), and things need to be recalculated. Change the window size, and you force recalculation.
+		Actually, some discussions on the Internet seem to suggest the issue is that CEGUI tries to do OpenGL operations without a valid GL context, and that causes the issue.
 	Weapons do not point in the correct direction (rotated relative to the owner)
 	Collision checking (in Level) may call onCollision() multiple times for the same pair of objects if they have multiple manifolds, or if Bullet takes multiple simulation steps for one rendering step.
 	Can easily push through doors.

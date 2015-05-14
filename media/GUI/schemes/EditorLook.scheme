@@ -2,7 +2,7 @@
 <GUIScheme version="5" name="EditorLook">
 	<!-- Originally copied from TaharezLook, but it won't be similar for long -->
 	<Imageset filename="EditorLook.imageset" />
-	<Font filename="DejaVuSansMono-11.font" />
+	<Font filename="DejaVuSansMono-14-NoScale.font" />
 	<LookNFeel filename="EditorLook.looknfeel" />
 	<WindowRendererSet filename="CEGUICoreWindowRendererSet" />
 

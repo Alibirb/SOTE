@@ -192,8 +192,22 @@ void CEGUIDrawable::drawImplementation(osg::RenderInfo& renderInfo) const
 
 		//std::cout << "GUI rendered" << std::endl;
 
+	/// Perform queued operations
+	while(_callOnNextDraw.size() > 0)
+	{
+		std::function<void(void)> func = _callOnNextDraw.front();
+		func();
+		_callOnNextDraw.pop_front();
+	}
+
+
 	glPopAttrib();
 	glPopMatrix();
+}
+
+void CEGUIDrawable::addToDrawOperationQueue(std::function<void(void)> func)
+{
+	_callOnNextDraw.push_back(func);
 }
 
 

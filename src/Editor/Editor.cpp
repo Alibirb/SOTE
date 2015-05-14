@@ -19,6 +19,7 @@
 #include "Editor/SelectionTool.h"
 #include "Editor/TransformTool.h"
 #include "Editor/ObjectOverlay.h"
+#include "Editor/FileDialog.h"
 
 #include "CEGUIStuff.h"
 
@@ -80,8 +81,6 @@ void Editor::setMode(EditorMode mode)
 	{
 	case EditorMode::Play:
 		getMainEventHandler()->setInputMode(MainEventHandler::Standard);
-		//((BaseCameraManipulator*)getViewer()->getCameraManipulator())->setActive(true);
-		//_editModeCameraManipulator->setActive(false);
 		getViewer()->setCameraManipulator(getCurrentLevel()->getCameraManipulator(), false);
 		removeFromSceneGraph(_ceguiGeode);	/// TODO: should use an osg::Switch node
 		for(GameObject* object : _selectedObjects)
@@ -89,8 +88,6 @@ void Editor::setMode(EditorMode mode)
 		break;
 	case EditorMode::Edit:
 		getMainEventHandler()->setInputMode(MainEventHandler::Editor);
-		//((BaseCameraManipulator*)getViewer()->getCameraManipulator())->setActive(false);
-		//_editModeCameraManipulator->setActive(true);
 		getViewer()->setCameraManipulator(_cameraManipulator, false);
 		addToSceneGraph(_ceguiGeode);
 		for(GameObject* object : _selectedObjects)
@@ -113,6 +110,8 @@ void Editor::setupDefaultWindows()
 		_toolbar->addEntryForTool(tool);
 
 	TextEditor* textEditor = new TextEditor(CEGUI::UVector2(cegui_reldim(2.0/3), cegui_reldim(0)), CEGUI::USize(cegui_reldim(1.0/3), cegui_reldim(1)));
+
+	//FileDialog* dialog = new FileDialog();
 }
 
 

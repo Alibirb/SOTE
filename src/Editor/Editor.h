@@ -75,6 +75,8 @@ public:
 	std::list<Tool*> getTools()	{return _tools;}
 
 	EditorCameraManipulator* getCameraManipulator() {return _cameraManipulator;}
+
+	CEGUIDrawable* getCeguiDrawable()	{return _cd;}
 };
 
 Editor* getEditor();

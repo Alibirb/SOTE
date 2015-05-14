@@ -5,6 +5,10 @@
 #include "CEGUIStuff.h"
 #include <CEGUI/WindowRendererSets/Core/MultiLineEditbox.h>
 
+
+#include "Editor/FileDialog.h"
+
+
 /// Text editor widget.
 class TextEditor
 {
@@ -39,6 +43,7 @@ public:
 	void saveFile();
 	void loadFile(std::string filename);
 	void loadFile();
+	void loadFiles(FileDialog::FileList files);
 
 };
 
